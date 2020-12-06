@@ -35,7 +35,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private LevelEditorSettings levelEditorSettings;
 
-
+        //Mouse Block
         private bool blockMouse = false;
         private bool _hoveringButton = false;
         private bool HoveringButton
@@ -50,12 +50,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         }
 
         //Window preferences
+        private GUISkin guiSkin;
         private readonly float width = 300f;
         private readonly Vector2 margin = new Vector2(10f, 5f);
 
-        //Middle textbox preferences
-        private readonly Vector2 messageboxSize = new Vector2(400f, 70f);
-        private readonly float messageboxMargin = 10f;
+        //Messagebox preferences
+        private readonly Vector2 messageboxSize = new Vector2(400f, 140f);
 
         //Icon button preferences
         private readonly float menuElementImageToHeaderRatio = .65f;
@@ -95,6 +95,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 text = "Level Editor",
                 tooltip = "Custom Level Editor"
             };
+
+            //Grab GUI skin
+            guiSkin = Resources.Load<GUISkin>("LevelEditor/Skin/LESkin");
+            if(guiSkin == null)
+            {
+                Debug.LogError("LevelEditorTool: GUI Skin not found!");
+            }
 
             LevelEditorStyles.RefreshStyles();
             levelEditorSettings = GetLevelEditorSettings();
@@ -148,16 +155,30 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // This is called for each window that your tool is active in. Put the functionality of your tool here.
         public override void OnToolGUI(EditorWindow window)
         {
+            blockMouse = false;
+
             //Fix GUI breaking randomly
-            if(GUI.skin == null)
-                GUI.skin = new GUISkin();
+            GUI.skin = guiSkin;
 
             //Get scene camera
             GameObject sceneCam = GameObject.Find("SceneCamera");
             if (sceneCam != null)
             {
+                
                 //Compute bounds
                 Rect cameraBounds = sceneCam.GetComponent<Camera>().pixelRect;
+                Rect messageBox = new Rect
+                {
+                    position = new Vector2(cameraBounds.width/2f-messageboxSize.x/2f, cameraBounds.height/2f-messageboxSize.y/2f),
+                    size = messageboxSize
+                };
+
+                //Debug: Draw Window
+                //ShowMessage(cameraBounds, "Test Window", "Test message asdklfjsdfkl asdkjasld woqpie c msldj asopid  klsa di asijklas jkaldkl asdkljaskjdkas klas djklasd as kdjaskl dald dklasdj aklsdj");
+                ShowButtonMessage(cameraBounds, "Test Window", "aaskljdh ASDqwiom askldj aö da spoi wqop sa opasiod", 
+                    "Button text", null);
+                
+                /*
                 Rect windowRect = new Rect()
                 {
                     position = new Vector2(cameraBounds.width - width - margin.x, cameraBounds.center.y - cameraBounds.height / 2f + margin.y),
@@ -205,6 +226,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         }
                     }
                 }
+                */
 
 
                 //Does the mouse input need to be blocked
@@ -213,13 +235,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     blockMouse = false;
                     SceneView.currentDrawingSceneView.Repaint();
                 }
-                else
-                    blockMouse = windowRect.Contains(Event.current.mousePosition);
+
             }
         }
 
         #endregion
 
+        /*
         #region GUI
 
         private void DrawGUI(Rect windowRect)
@@ -246,14 +268,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
 
 
-            /*
-            isTestSelected = DrawLevelObjectButton(windowRect.size / 2f, windowRect.width, new LevelEditorItem()
-            {
-                name = "Test name",
-                thumbnail = m_ToolIcon,
-                description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fringilla pellentesque porttitor. In dignissim, ante ac faucibus varius, enim dui molestie justo, sit amet suscipit nibh nibh nec lorem. Curabitur."
-            });
-            */
+            //isTestSelected = DrawLevelObjectButton(windowRect.size / 2f, windowRect.width, new LevelEditorItem()
+            //{
+            //    name = "Test name",
+            //    thumbnail = m_ToolIcon,
+            //    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam fringilla pellentesque porttitor. In dignissim, ante ac faucibus varius, enim dui molestie justo, sit amet suscipit nibh nibh nec lorem. Curabitur."
+            //});
+
             GUILayout.EndVertical();
             GUILayout.EndArea();
             Handles.EndGUI();
@@ -448,7 +469,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             result.Apply();
             return result;
         }
-
+        */
         private void ShowMessage(Rect cameraBounds, string header, string message)
         {
             Rect messageRect = new Rect()
@@ -460,22 +481,16 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             Handles.BeginGUI();
             GUILayout.BeginArea(messageRect);
             GUILayout.BeginVertical(LevelEditorStyles.Messagebox);
-            GUILayout.Space(messageboxMargin);
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(messageboxMargin);
-            GUILayout.BeginVertical();
             GUILayout.Label(header, LevelEditorStyles.MessageboxHeader);
             GUILayout.Label(message, LevelEditorStyles.MessageboxText);
             GUILayout.EndVertical();
-            GUILayout.Space(messageboxMargin);
-            GUILayout.EndHorizontal();
-            GUILayout.Space(messageboxMargin);
-            GUILayout.EndVertical();
             GUILayout.EndArea();
             Handles.EndGUI();
+
+            BlockMouseInArea(messageRect);
         }
 
-        private void ShowButtonMessage(Rect cameraBounds, string header, string buttonText, Action callback)
+        private void ShowButtonMessage(Rect cameraBounds, string header, string text, string buttonText, Action callback)
         {
             Rect messageRect = new Rect()
             {
@@ -483,28 +498,21 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 size = messageboxSize
             };
 
-            DrawButtonMessage(messageRect, header, buttonText, callback);
+            DrawButtonMessage(messageRect, header, text, buttonText, callback);
         }
 
-        private void DrawButtonMessage(Rect messageRect, string header, string buttonText, Action callback)
+        private void DrawButtonMessage(Rect messageRect, string header, string text, string buttonText, Action callback)
         {
             Handles.BeginGUI();
             GUILayout.BeginArea(messageRect);
             GUILayout.BeginVertical(LevelEditorStyles.Messagebox);
-            GUILayout.Space(messageboxMargin);
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(messageboxMargin);
-            GUILayout.BeginVertical();
             GUILayout.Label(header, LevelEditorStyles.MessageboxHeader);
+            GUILayout.Label(text, LevelEditorStyles.MessageboxText);
             if (GUILayout.Button(buttonText, LevelEditorStyles.MessageboxButton) && callback != null)
             {
                 callback.Invoke();
             }
             EnableMouse();
-            GUILayout.EndVertical();
-            GUILayout.Space(messageboxMargin);
-            GUILayout.EndHorizontal();
-            GUILayout.Space(messageboxMargin);
             GUILayout.EndVertical();
             GUILayout.EndArea();
             Handles.EndGUI();
@@ -517,6 +525,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 HoveringButton = true;
             }
         }
+
+        private void EnableMouse(Rect containingRect)
+        {
+            if (containingRect.Contains(Event.current.mousePosition))
+            {
+                HoveringButton = true;
+            }
+        }
+
+        private void BlockMouseInArea(Rect containingRect)
+        {
+            //Debug.Log(containingRect);
+            if (containingRect.Contains(Event.current.mousePosition))
+            {
+                blockMouse = true;
+            }
+        }
+        /*
 
         private bool CreateInvisibleButton(Rect rect)
         {
@@ -595,18 +621,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             lvlObj.item = new LevelEditorItem();
             lvlObj.item.name = lvlObj.name;
 
-            /*
-            while (AssetPreview.IsLoadingAssetPreviews())
-            {
-                ;
-            }
-            Texture2D thumbnail = AssetPreview.GetAssetPreview(lvlObj.objectPrefab);
+            //while (AssetPreview.IsLoadingAssetPreviews())
+            //{
+            //    ;
+            //}
+            //Texture2D thumbnail = AssetPreview.GetAssetPreview(lvlObj.objectPrefab);
 
-            lvlObj.levelEditorItem.thumbnail = new Texture2D(thumbnail.width, thumbnail.height);
+            //lvlObj.levelEditorItem.thumbnail = new Texture2D(thumbnail.width, thumbnail.height);
 
-            lvlObj.levelEditorItem.thumbnail.SetPixels(thumbnail.GetPixels());
-            lvlObj.levelEditorItem.thumbnail.SetPixels32(thumbnail.GetPixels32());
-            */
+            //lvlObj.levelEditorItem.thumbnail.SetPixels(thumbnail.GetPixels());
+            //lvlObj.levelEditorItem.thumbnail.SetPixels32(thumbnail.GetPixels32());
+
             string rootPath = AssetDatabase.GetAssetPath(levelEditorSettings);
             rootPath = rootPath.Substring(0, rootPath.LastIndexOf('/'));
             if (!AssetDatabase.IsValidFolder(rootPath + "/LevelObjects"))
@@ -615,6 +640,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         }
 
         #endregion
+        */
     }
 
     public enum LevelEditorMenuState {None = 0, SelectCategory, SelectSubCategory, SelectLevelObject }
