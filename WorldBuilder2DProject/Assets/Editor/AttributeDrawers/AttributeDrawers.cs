@@ -33,11 +33,11 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
     }
 
     [CustomPropertyDrawer(typeof(LevelLayerAttribute))]
-    public class ParallaxLayerDrawer : PropertyDrawer
+    public class LevelLayerAttributeDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            
+            /*
             if (property.propertyType == SerializedPropertyType.Integer)
             {
                 LevelEditorSettings levelEditorSettings = LevelEditorTool.GetLevelEditorSettings();
@@ -58,6 +58,8 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
 
                 EditorGUI.EndProperty();
             }
+            */
+            EditorGUI.PropertyField(position, property, label);
         }
     }
 

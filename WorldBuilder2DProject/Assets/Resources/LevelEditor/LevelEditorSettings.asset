@@ -12,9 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c790e2fb0976312418c87b3007785984, type: 3}
   m_Name: LevelEditorSettings
   m_EditorClassIdentifier: 
-  nextLayerId: 3
-  deletedLayerIds: 
-  levelRootTag: LevelRoot
+  levelEditorRootTag: LevelRoot
   levelObjectCategories:
   - guid: dd9fd444-ae01-4363-af35-3acbb45a1746
     item:
@@ -42,19 +40,19 @@ MonoBehaviour:
       thumbnail: {fileID: 0}
       description: 
   levelLayers:
-  - id: 0
+  - guid: e6992642-75f4-4bb2-b486-93324ede4631
     item:
       name: Background
       thumbnail: {fileID: 0}
       description: 
     parallaxSpeed: 0
-  - id: 1
+  - guid: 10f9539c-0064-4ebc-8396-00ad886b3ff7
     item:
       name: Mainground
       thumbnail: {fileID: 0}
       description: 
     parallaxSpeed: 0
-  - id: 2
+  - guid: fcbb5301-d298-43e5-a67c-7951e1951022
     item:
       name: Foreground
       thumbnail: {fileID: 0}

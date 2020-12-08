@@ -24,6 +24,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Editor Window
         private static GUIStyle _editorWindow;
 
+        //Menu Bar
+        private static GUIStyle _menuBar;
+        private static GUIStyle _menuButtonCircle;
+        private static GUIStyle _menuButtonSquare;
+
         //Buttons style
         private static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
         private static GUIStyle _button;
@@ -116,6 +121,49 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 return _editorWindow;
             }
+        }
+
+        #endregion
+
+        #region Menu Bar
+
+        public static GUIStyle MenuBar
+        {
+            get
+            {
+                if (_menuBar == null)
+                {
+                    _menuBar = new GUIStyle(GUI.skin.customStyles[3]);
+                }
+                return _menuBar;
+            }
+            
+        }
+
+        public static GUIStyle MenuButtonCircle
+        {
+            get
+            {
+                if (_menuButtonCircle == null)
+                {
+                    _menuButtonCircle = new GUIStyle(GUI.skin.customStyles[4]);
+                }
+                return _menuButtonCircle;
+            }
+
+        }
+
+        public static GUIStyle MenuButtonSquare
+        {
+            get
+            {
+                if (_menuButtonSquare == null)
+                {
+                    _menuButtonSquare = new GUIStyle(GUI.skin.customStyles[5]);
+                }
+                return _menuButtonSquare;
+            }
+
         }
 
         #endregion
@@ -260,6 +308,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Editor Window
             _editorWindow = null;
+
+            //Menu Bar
+            _menuBar = null;
+            _menuButtonCircle = null;
+            _menuButtonSquare = null;
 
             //Buttons style
             _button = null;

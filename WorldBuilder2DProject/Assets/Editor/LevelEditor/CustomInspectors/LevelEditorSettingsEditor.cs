@@ -64,65 +64,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             layerList.onAddCallback = (ReorderableList list) =>
             {
-                SerializedProperty nextId = serializedObject.FindProperty("nextLayerId");
-                SerializedProperty deletedLayerIds = serializedObject.FindProperty("deletedLayerIds");
-                if (nextId.intValue < LevelEditorSettings.MAX_LAYER_SIZE || deletedLayerIds.arraySize > 0)
-                {
-                    //Add a new object
-                    list.serializedProperty.arraySize += 1;
-                    SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
+                //Add a new object
+                list.serializedProperty.arraySize += 1;
+                SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
+                addedObj.FindPropertyRelative("guid").stringValue = Guid.NewGuid().ToString();
 
-                    //ID assignment
-                    if(deletedLayerIds.arraySize > 0) //Get smallest ID if an object was already deleted
-                    {
-                        int delId = deletedLayerIds.GetArrayElementAtIndex(deletedLayerIds.arraySize - 1).intValue;
-                        deletedLayerIds.arraySize -= 1;
-                        addedObj.FindPropertyRelative("id").intValue = delId;
-                    }
-                    else //Assign next ID sequentially
-                    {
-                        addedObj.FindPropertyRelative("id").intValue = nextId.intValue;
-                        nextId.intValue += 1;
-                    }
-
-                    if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
-                        addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
-                    else
-                        addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Layer";
-
-                }
-            };
-
-            layerList.onRemoveCallback = (ReorderableList list) =>
-            {
-                //Sort add new element in descending order
-                SerializedProperty deletedLayerIds = serializedObject.FindProperty("deletedLayerIds");
-                int deletedId = list.serializedProperty.GetArrayElementAtIndex(list.index).FindPropertyRelative("id").intValue;
-                list.serializedProperty.DeleteArrayElementAtIndex(list.index);
-
-                //Add new empty id at the end
-                deletedLayerIds.arraySize += 1;
-                deletedLayerIds.GetArrayElementAtIndex(deletedLayerIds.arraySize - 1).intValue = -1;
-
-                //Search for insert index
-                int insertIndex = 0;
-                bool searchInsert = true;
-                while (searchInsert)
-                {
-                    if (deletedLayerIds.GetArrayElementAtIndex(insertIndex).intValue > deletedId)
-                        insertIndex++;
-                    else
-                        searchInsert = false;
-                }
-
-                //Move all the elements in front one index to the right (override the rightmost one)
-                for(int i = deletedLayerIds.arraySize - 2; i >= insertIndex; i--)
-                {
-                    deletedLayerIds.GetArrayElementAtIndex(i + 1).intValue = deletedLayerIds.GetArrayElementAtIndex(i).intValue;
-                }
-
-                //Finally insert the new deleted index
-                deletedLayerIds.GetArrayElementAtIndex(insertIndex).intValue = deletedId;
+                if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
+                else
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Layer";
 
             };
         }
@@ -182,7 +132,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (layerList.index >= 0 && layerList.index < layerList.serializedProperty.arraySize)
             {
                 EditorGUILayout.LabelField("Layer Properties", headerMiddle);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("id"));
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("guid"));
+                EditorGUILayout.EndVertical();
                 DrawItemProperty(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("item"));
             }
         }

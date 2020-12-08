@@ -27,7 +27,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /////////////
         // Methods //
         /////////////
-
+        /*
         /// <summary>
         /// Puts all ids of the layers this level object is in into returnList
         /// </summary>
@@ -59,6 +59,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             return (levelLayers & (1 << layerID)) != 0;
         }
+        */
     }
 
 }

@@ -8,16 +8,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelEditorSettings : ScriptableObject
     {
 
-        public const int MAX_LAYER_SIZE = 31;
-
-        //Layers don't use GUID's
-        [HideInInspector] public int nextLayerId = 0;
-        [HideInInspector] public int[] deletedLayerIds;
-
         [Header("General")]
 
         //Tag which specifies where the object root for all the level objects is located
-        [Tag] public string levelRootTag;
+        [Tag] public string levelEditorRootTag;
 
         //List of all the level object tags
         [HideInInspector] public LevelObjectCategory[] levelObjectCategories;
@@ -52,7 +46,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelLayer
     {
         //The current layer id
-        [ReadOnly] public int id = 0;
+        [ReadOnly] public string guid = Guid.Empty.ToString();
 
         //The representation of an element in the level editor
         public LevelEditorItem item;
