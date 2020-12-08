@@ -131,6 +131,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     _button = new GUIStyle(GUI.skin.button);
                     _button.hover.textColor = buttonHoverColor;
                     _button.hover.background = TintTexture(buttonHoverColor, GUI.skin.button.hover.background);
+                    _button.active.textColor = buttonHoverColor;
+                    _button.active.background = TintTexture(buttonHoverColor, GUI.skin.button.active.background);
                 }
                 return _button;
             }
@@ -231,13 +233,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 if (_messageboxButton == null)
                 {
-                    _messageboxButton = new GUIStyle(GUI.skin.button);
+                    _messageboxButton = new GUIStyle(Button);
                     _messageboxButton.alignment = TextAnchor.LowerCenter;
-                    _messageboxButton.hover.textColor = buttonHoverColor;
-                    _messageboxButton.hover.background = TintTexture(buttonHoverColor, GUI.skin.button.hover.background);
-                    _messageboxButton.active.textColor = buttonHoverColor;
-                    _messageboxButton.active.background = TintTexture(buttonHoverColor, GUI.skin.button.active.background);
-
                 }
                 return _messageboxButton;
             }

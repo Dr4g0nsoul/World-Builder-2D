@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c790e2fb0976312418c87b3007785984, type: 3}
+  m_Name: LevelEditorSettings
+  m_EditorClassIdentifier: 
+  nextLayerId: 3
+  deletedLayerIds: 
+  levelRootTag: LevelRoot
+  levelObjectCategories:
+  - guid: dd9fd444-ae01-4363-af35-3acbb45a1746
+    item:
+      name: Terrain
+      thumbnail: {fileID: 0}
+      description: 
+  - guid: 5d4b3fff-9aee-4353-8056-18d0fffe60ad
+    item:
+      name: Enemy
+      thumbnail: {fileID: 0}
+      description: 
+  - guid: 04d42be4-489a-42c9-9aaa-675cd6bf23c9
+    item:
+      name: Player
+      thumbnail: {fileID: 0}
+      description: 
+  - guid: 8f35c2cd-eaab-4b97-a816-ee3151a86b33
+    item:
+      name: Decoration
+      thumbnail: {fileID: 0}
+      description: 
+  - guid: f7aa0192-a8a7-43f0-ba88-58d774ba9924
+    item:
+      name: Forest
+      thumbnail: {fileID: 0}
+      description: 
+  levelLayers:
+  - id: 0
+    item:
+      name: Background
+      thumbnail: {fileID: 0}
+      description: 
+    parallaxSpeed: 0
+  - id: 1
+    item:
+      name: Mainground
+      thumbnail: {fileID: 0}
+      description: 
+    parallaxSpeed: 0
+  - id: 2
+    item:
+      name: Foreground
+      thumbnail: {fileID: 0}
+      description: 
+    parallaxSpeed: 0

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using UnityEditor;
 using UnityEditorInternal;
@@ -11,7 +10,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelEditorSettingsEditor : Editor
     {
         private ReorderableList categoryList;
-        private ReorderableList subCategoryList;
         private ReorderableList layerList;
 
         private int selectedListOption = 0;
@@ -27,7 +25,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void OnEnable()
         {
 
-            categoryList = new ReorderableList(serializedObject, serializedObject.FindProperty("levelEditorCategories"), true, true, true, true);
+            categoryList = new ReorderableList(serializedObject, serializedObject.FindProperty("levelObjectCategories"), true, true, true, true);
 
             categoryList.drawHeaderCallback = (Rect rect) =>
             {
@@ -36,54 +34,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             categoryList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
-                SerializedProperty item = serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(index).FindPropertyRelative("item");
+                SerializedProperty item = serializedObject.FindProperty("levelObjectCategories").GetArrayElementAtIndex(index).FindPropertyRelative("item");
                 EditorGUI.LabelField(rect, item.FindPropertyRelative("name").stringValue);
             };
 
             categoryList.onAddCallback = (ReorderableList list) =>
             {
-                SerializedProperty nextId = serializedObject.FindProperty("nextCategoryId");
-                
                 list.serializedProperty.arraySize += 1;
                 SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
-                addedObj.FindPropertyRelative("id").intValue = nextId.intValue;
-                if(addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
-                    addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
-
-                nextId.intValue += 1;
-            };
-
-            subCategoryList = new ReorderableList(serializedObject, null, true, true, true, true);
-
-            subCategoryList.drawHeaderCallback = (Rect rect) =>
-            {
-                if(categoryList.index >= 0 && categoryList.index < serializedObject.FindProperty("levelEditorCategories").arraySize)
-                EditorGUI.LabelField(rect, serializedObject.FindProperty("levelEditorCategories")
-                    .GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("item").FindPropertyRelative("name").stringValue + " - Sub Categories");
-            };
-
-            subCategoryList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
-            {
-                SerializedProperty item = serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index)
-                    .FindPropertyRelative("subCategories").GetArrayElementAtIndex(index).FindPropertyRelative("item");
-                EditorGUI.LabelField(rect, item.FindPropertyRelative("name").stringValue);
-            };
-
-            subCategoryList.onAddCallback = (ReorderableList list) =>
-            {
-                SerializedProperty nextId = serializedObject.FindProperty("levelEditorCategories")
-                    .GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("nextSubId");
-
-                list.serializedProperty.arraySize += 1;
-                SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
-                addedObj.FindPropertyRelative("id").intValue = nextId.intValue;
+                addedObj.FindPropertyRelative("guid").stringValue = Guid.NewGuid().ToString();
                 if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
                     addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
-
-                nextId.intValue += 1;
+                else
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Category";
             };
 
-            layerList = new ReorderableList(serializedObject, serializedObject.FindProperty("levelEditorLayers"), true, true, true, true);
+            layerList = new ReorderableList(serializedObject, serializedObject.FindProperty("levelLayers"), true, true, true, true);
 
             layerList.drawHeaderCallback = (Rect rect) =>
             {
@@ -92,7 +58,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             layerList.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
             {
-                SerializedProperty item = serializedObject.FindProperty("levelEditorLayers").GetArrayElementAtIndex(index).FindPropertyRelative("item");
+                SerializedProperty item = serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(index).FindPropertyRelative("item");
                 EditorGUI.LabelField(rect, item.FindPropertyRelative("name").stringValue);
             };
 
@@ -100,7 +66,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 SerializedProperty nextId = serializedObject.FindProperty("nextLayerId");
                 SerializedProperty deletedLayerIds = serializedObject.FindProperty("deletedLayerIds");
-                if (nextId.intValue < LevelObject.MAX_LAYER_SIZE || deletedLayerIds.arraySize > 0)
+                if (nextId.intValue < LevelEditorSettings.MAX_LAYER_SIZE || deletedLayerIds.arraySize > 0)
                 {
                     //Add a new object
                     list.serializedProperty.arraySize += 1;
@@ -121,13 +87,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
                         addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
+                    else
+                        addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Layer";
 
                 }
             };
 
             layerList.onRemoveCallback = (ReorderableList list) =>
             {
-                //Sort add new element ín descending order
+                //Sort add new element in descending order
                 SerializedProperty deletedLayerIds = serializedObject.FindProperty("deletedLayerIds");
                 int deletedId = list.serializedProperty.GetArrayElementAtIndex(list.index).FindPropertyRelative("id").intValue;
                 list.serializedProperty.DeleteArrayElementAtIndex(list.index);
@@ -203,32 +171,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 EditorGUILayout.LabelField("Category Properties", headerMiddle);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("id"));
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("nextSubId"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelObjectCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("guid"));
                 EditorGUILayout.EndVertical();
-                DrawItemProperty(serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("item"));
-                DrawSubCategoryList(serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("subCategories"));
-            }
-        }
-
-        private void DrawSubCategoryList(SerializedProperty subCategories)
-        {
-            EditorGUILayout.Separator();
-            EditorGUILayout.LabelField("Sub-Categories", headerMiddle);
-            subCategoryList.serializedProperty = subCategories;
-            subCategoryList.DoLayoutList();
-            if(subCategoryList.index >= 0 && subCategoryList.index < subCategoryList.serializedProperty.arraySize)
-            {
-                SerializedProperty currSubCategory = serializedObject.FindProperty("levelEditorCategories").GetArrayElementAtIndex(categoryList.index)
-                    .FindPropertyRelative("subCategories").GetArrayElementAtIndex(subCategoryList.index);
-                if(currSubCategory != null)
-                {
-                    EditorGUILayout.LabelField("Sub-Category Properties", headerMiddle);
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                    EditorGUILayout.PropertyField(currSubCategory.FindPropertyRelative("id"));
-                    EditorGUILayout.EndVertical();
-                    DrawItemProperty(currSubCategory.FindPropertyRelative("item"));
-                }
+                DrawItemProperty(serializedObject.FindProperty("levelObjectCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("item"));
             }
         }
 
@@ -237,8 +182,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (layerList.index >= 0 && layerList.index < layerList.serializedProperty.arraySize)
             {
                 EditorGUILayout.LabelField("Layer Properties", headerMiddle);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelEditorLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("id"));
-                DrawItemProperty(serializedObject.FindProperty("levelEditorLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("item"));
+                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("id"));
+                DrawItemProperty(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("item"));
             }
         }
 

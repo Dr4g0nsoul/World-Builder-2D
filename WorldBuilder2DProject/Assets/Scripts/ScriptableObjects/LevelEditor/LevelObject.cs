@@ -5,9 +5,8 @@ using UnityEngine;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
-    public class LevelObject : ScriptableObject
+    public class LevelObject : UniqueScriptableObject
     {
-        public const int MAX_LAYER_SIZE = 31;
 
         //Prefab that will be spawned
         [ReadOnly] public GameObject objectPrefab;
@@ -17,12 +16,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Item display properties
         public LevelEditorItem item;
 
-        //In which parallax layers this item is available
-        [ParallaxLayer] public int parallaxLayers;
+        //In which layers this item is available
+        [LevelLayer] public int levelLayers;
         //Item category (e.g. Hazards, Semisolids, Enemies, Bosses, ...)
         [LevelObjectCategory] public int category = -1;
-        //Sub category (e.g. Traps, Ground Enemies, Flying Enemies, ...)
-        [LevelObjectSubCategory] public int subCategory = -1;
         
 
 
@@ -43,12 +40,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public int GetParallaxLayerIds(out List<int> returnList)
         {
             returnList = new List<int>();
-            if (parallaxLayers == 0)
+            if (levelLayers == 0)
                 return 1;
-            else if (parallaxLayers < 0)
+            else if (levelLayers < 0)
                 return 2;
             
-            for(int i = 0; i<MAX_LAYER_SIZE; i++)
+            for(int i = 0; i<LevelEditorSettings.MAX_LAYER_SIZE; i++)
             {
                 if(HasParallaxLayer(i))
                 {
@@ -60,7 +57,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public bool HasParallaxLayer(int layerID)
         {
-            return (parallaxLayers & (1 << layerID)) != 0;
+            return (levelLayers & (1 << layerID)) != 0;
         }
     }
 

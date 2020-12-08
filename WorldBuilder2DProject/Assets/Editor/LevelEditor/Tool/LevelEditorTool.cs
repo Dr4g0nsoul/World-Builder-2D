@@ -51,8 +51,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Window preferences
         private GUISkin guiSkin;
-        private readonly float width = 300f;
-        private readonly Vector2 margin = new Vector2(10f, 5f);
 
         //Messagebox preferences
         private readonly Vector2 messageboxSize = new Vector2(400f, 140f);
@@ -167,66 +165,51 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 
                 //Compute bounds
                 Rect cameraBounds = sceneCam.GetComponent<Camera>().pixelRect;
-                Rect messageBox = new Rect
-                {
-                    position = new Vector2(cameraBounds.width/2f-messageboxSize.x/2f, cameraBounds.height/2f-messageboxSize.y/2f),
-                    size = messageboxSize
-                };
 
                 //Debug: Draw Window
                 //ShowMessage(cameraBounds, "Test Window", "Test message asdklfjsdfkl asdkjasld woqpie c msldj asopid  klsa di asijklas jkaldkl asdkljaskjdkas klas djklasd as kdjaskl dald dklasdj aklsdj");
-                ShowButtonMessage(cameraBounds, "Test Window", "aaskljdh ASDqwiom askldj aö da spoi wqop sa opasiod", 
-                    "Button text", null);
-                
-                /*
-                Rect windowRect = new Rect()
-                {
-                    position = new Vector2(cameraBounds.width - width - margin.x, cameraBounds.center.y - cameraBounds.height / 2f + margin.y),
-                    size = new Vector2(width, cameraBounds.height - margin.y * 2f)
-                };
+                //ShowButtonMessage(cameraBounds, "Test Window", "aaskljdh ASDqwiom askldj aö da spoi wqop sa opasiod", 
+                //    "Button text", null);
 
-
-                PrefabStage currPrefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+                //PrefabStage currPrefabStage = PrefabStageUtility.GetCurrentPrefabStage();
                 //Show add item menu
-                if (currPrefabStage != null)
-                {
-                    DrawAddNewPrefabDialog(windowRect, currPrefabStage);
-                }
-                else //Draw Level Editor
-                {
-                    //Checks before drawing GUI
+                //if (currPrefabStage != null)
+                //{
+                //    DrawAddNewPrefabDialog(windowRect, currPrefabStage);
+                //}
+                //else 
+                //{
 
-                    if (levelEditorSettings == null)
+                //--- Checks before drawing GUI ---
+                if (levelEditorSettings == null)
+                {
+                    ShowButtonMessage(cameraBounds, "No Level Editor setting found!", "Please add one at Resources/LevelEditor with the name \"LevelEditorSettings\".\nOr just press the button below:", "Create Level Editor Settings", () => CreateLevelEditorSettings());
+                }
+                else if (levelEditorSettings.levelRootTag == null || levelEditorSettings.levelRootTag.Length <= 0
+                    || levelEditorSettings.levelRootTag == "Untagged")
+                {
+                    ShowMessage(cameraBounds, "Level Root Tag missing!", "Set the tag for the game object who acts as root for the level strucure.");
+                }
+                else
+                {
+                    /*
+                    GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(levelEditorSettings.levelObjectsRootTag);
+                    if (gameObjects.Length > 1)
                     {
-                        ShowMessage(cameraBounds, "No Level Editor setting found!", "Please add one at Resources/LevelEditor with the name \"LevelEditorSettings\".");
+                        ShowMessage(cameraBounds, "Too many level roots!", $"There are multiple objects that share the root tag \"{levelEditorSettings.levelObjectsRootTag}\"");
                     }
-                    else if (levelEditorSettings.levelPrefab == null)
+                    else if (gameObjects.Length < 1)
                     {
-                        ShowMessage(cameraBounds, "Level Prefab missing!", "Add the level gameobject prefab to the settings to continue.");
-                    }
-                    else if (levelEditorSettings.levelObjectsRootTag == null || levelEditorSettings.levelObjectsRootTag.Length <= 0
-                        || levelEditorSettings.levelObjectsRootTag == "Untagged")
-                    {
-                        ShowMessage(cameraBounds, "Level Root Tag missing!", "Set the tag for the game object who acts as root for the level strucure.");
+                        ShowButtonMessage(cameraBounds, "Almost ready!", "Press to instantiate level", () => InstantiateLevel());
                     }
                     else
                     {
-                        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(levelEditorSettings.levelObjectsRootTag);
-                        if (gameObjects.Length > 1)
-                        {
-                            ShowMessage(cameraBounds, "Too many level roots!", $"There are multiple objects that share the root tag \"{levelEditorSettings.levelObjectsRootTag}\"");
-                        }
-                        else if (gameObjects.Length < 1)
-                        {
-                            ShowButtonMessage(cameraBounds, "Almost ready!", "Press to instantiate level", () => InstantiateLevel());
-                        }
-                        else
-                        {
-                            DrawGUI(windowRect);
-                        }
+                        //--- Draw Level Editor ---
+                        DrawGUI(cameraBounds);
                     }
+                    */
                 }
-                */
+                //}
 
 
                 //Does the mouse input need to be blocked
@@ -459,17 +442,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        */
         #region Utility
 
-        private Texture2D GetBackgroundTexture(Color color)
-        {
+        #region Message Boxes
 
-            var result = new Texture2D(1, 1);
-            result.SetPixels(new Color[] { color });
-            result.Apply();
-            return result;
-        }
-        */
         private void ShowMessage(Rect cameraBounds, string header, string message)
         {
             Rect messageRect = new Rect()
@@ -518,6 +495,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             Handles.EndGUI();
         }
 
+        #endregion
+
+        #region Mouse and Buttons
+
         private void EnableMouse()
         {
             if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
@@ -542,7 +523,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 blockMouse = true;
             }
         }
-        /*
 
         private bool CreateInvisibleButton(Rect rect)
         {
@@ -553,6 +533,33 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         }
 
         #endregion
+
+        #region Button Functions
+
+        private void CreateLevelEditorSettings()
+        {
+            levelEditorSettings = GetLevelEditorSettings();
+
+            if (levelEditorSettings == null)
+            {
+                if (!AssetDatabase.IsValidFolder("Assets/Resources"))
+                {
+                    AssetDatabase.CreateFolder("Assets/", "Resources");
+                }
+                if (!AssetDatabase.IsValidFolder("Assets/Resources/LevelEditor"))
+                {
+                    AssetDatabase.CreateFolder("Assets/Resources/", "LevelEditor");
+                }
+
+                AssetDatabase.CreateAsset(new LevelEditorSettings(), "Assets/Resources/LevelEditor/LevelEditorSettings.asset");
+                levelEditorSettings = GetLevelEditorSettings();
+            }
+        }
+
+        #endregion
+
+        #endregion
+        /*
 
         #region Level Editor
 
