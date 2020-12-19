@@ -37,6 +37,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private Transform levelEditorRoot;
         private Transform levelRoot;
 
+        //Timing
+        private double lastTimeSinceStartup = 0f;
+        private double deltaTime = 0f;
+        private readonly double timeUntilBlockingReset = 0.3;
+
         //Mouse Block
         private bool blockMouse = false;
         private bool _hoveringButton = false;
@@ -51,6 +56,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 
+        //Scrolling and scroll block
+        private bool blockScroll = false;
+        private double currScrollBlockingTime = 0;
+        private float lastScrollDelta = 0;
+        private readonly float scrollMultiplier = 10f;
+        private bool scrollDone = false;
+
         //Window preferences
         private GUISkin guiSkin;
 
@@ -59,11 +71,19 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Menu Bar
         private float menuBarHeight = 50f;
+        private LevelEditorItem[] systemMenuBarItems;
 
         //Object Picker
         private float objectPickerVerticalOffset;
         private float objectPickerVerticalSizeReduction;
         private RectOffset objectPickerMargin;
+
+        //Quick Select Bar
+        private readonly float quickSelectBarHeight = 70f;
+        private float quickSelectBarScrollPosition = 0f;
+
+        //Object Drawer
+        private float objectDrawerScrollPosition = 0f;
 
         //Icon button preferences
         private readonly float menuElementImageToHeaderRatio = .65f;
@@ -130,6 +150,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Menu Bar
             menuBarHeight = 50f;
+            SetupMenuBarIcons();
+            
 
             //Object Picker
             objectPickerVerticalOffset = 0f;
@@ -137,6 +159,48 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             objectPickerMargin = new RectOffset(10, 10, 10, 10);
 
         }
+
+        private void SetupMenuBarIcons()
+        {
+            systemMenuBarItems = new LevelEditorItem[6];
+            systemMenuBarItems[0] = new LevelEditorItem
+            {
+                name = "All Categories",
+                description = "Show all categories",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/category")
+            };
+            systemMenuBarItems[1] = new LevelEditorItem
+            {
+                name = "Level favorites",
+                description = "Filter for objects specific to this level",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/extension")
+            };
+            systemMenuBarItems[2] = new LevelEditorItem
+            {
+                name = "World favorites",
+                description = "Filter for objects specific to this world",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/language")
+            };
+            systemMenuBarItems[3] = new LevelEditorItem
+            {
+                name = "All layers",
+                description = "Show all layers",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/layers")
+            };
+            systemMenuBarItems[4] = new LevelEditorItem
+            {
+                name = "Search",
+                description = "Press to show search bar",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/search")
+            };
+            systemMenuBarItems[5] = new LevelEditorItem
+            {
+                name = "Options",
+                description = "Display Level Editor Settings",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/miscellaneous_services")
+            };
+        }
+
 
         private void OnDisable()
         {
@@ -156,7 +220,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (Tools.current == Tool.Custom)
             {
                 Event e = Event.current;
-                if (e.type == EventType.MouseUp || e.type == EventType.MouseDown)
+                if (/*e.type == EventType.MouseUp || */e.type == EventType.MouseDown)
                 {
                     if (blockMouse)
                     {
@@ -176,6 +240,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         LevelEditorStyles.RefreshStyles();
                 }
             }
+
+            if (Event.current.isScrollWheel)
+            {
+                lastScrollDelta = Event.current.delta.y * scrollMultiplier;
+                if (blockScroll)
+                {
+                    Event.current.Use();
+                }
+            }
         }
 
         #endregion
@@ -183,6 +256,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // This is called for each window that your tool is active in. Put the functionality of your tool here.s
         public override void OnToolGUI(EditorWindow window)
         {
+            deltaTime = EditorApplication.timeSinceStartup - lastTimeSinceStartup;
+            lastTimeSinceStartup = EditorApplication.timeSinceStartup;
+
+            if (blockScroll)
+            {
+                currScrollBlockingTime -= deltaTime;
+                if (currScrollBlockingTime < 0)
+                    blockScroll = false;
+            }
             blockMouse = false;
 
             //Fix GUI breaking randomly
@@ -265,13 +347,16 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 //}
 
-
                 //Does the mouse input need to be blocked
                 if (HoveringButton)
                 {
                     blockMouse = false;
                     SceneView.currentDrawingSceneView.Repaint();
                 }
+
+                //Reset scroll delta
+                if (scrollDone || !blockScroll)
+                    lastScrollDelta = 0f;
 
             }
         }
@@ -307,6 +392,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 size = new Vector2(objectPickerRect.size.x, menuBarHeight)
             };
 
+            //Block mouse
+            BlockMouseInArea(objectPickerRect);
 
             //Draw GUI Elements
             Handles.BeginGUI();
@@ -351,6 +438,31 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.EndArea();
         }
 
+        private void DrawMenubarButton(LevelEditorItem item, Action action)
+        {
+            Rect buttonRect = GUILayoutUtility.GetRect(LevelEditorStyles.MenuButtonCircle.fixedWidth, LevelEditorStyles.MenuButtonCircle.fixedHeight, LevelEditorStyles.MenuButtonCircle);
+
+            //Hover tinting
+            if (buttonRect.Contains(Event.current.mousePosition))
+            {
+                if (item.accentColor.a > 0)
+                {
+                    GUI.color = item.accentColor;
+                }
+                else
+                {
+                    GUI.color = LevelEditorStyles.buttonHoverColor;
+                }
+            }
+
+            if(GUI.Button(buttonRect, item.thumbnail, LevelEditorStyles.MenuButtonCircle) && action != null)
+            {
+                action.Invoke();
+            }
+
+            GUI.color = Color.white;
+        }
+
         #endregion
 
         #region Categories
@@ -362,7 +474,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.Button("C3", LevelEditorStyles.MenuButtonCircle);
             GUILayout.Button("C4", LevelEditorStyles.MenuButtonCircle);
             GUILayout.Button("C5", LevelEditorStyles.MenuButtonCircle);
-            GUILayout.Button("C6", LevelEditorStyles.MenuButtonCircle);
+            DrawMenubarButton(systemMenuBarItems[0], null);
         }
 
         #endregion
@@ -371,8 +483,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuPreferredItems()
         {
-            GUILayout.Button("PI1", LevelEditorStyles.MenuButtonCircle);
-            GUILayout.Button("PI2", LevelEditorStyles.MenuButtonCircle);
+            DrawMenubarButton(systemMenuBarItems[1], null);
+            DrawMenubarButton(systemMenuBarItems[2], null);
         }
 
         #endregion
@@ -384,7 +496,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.Button("L1", LevelEditorStyles.MenuButtonCircle);
             GUILayout.Button("L2", LevelEditorStyles.MenuButtonCircle);
             GUILayout.Button("L3", LevelEditorStyles.MenuButtonCircle);
-            GUILayout.Button("L4", LevelEditorStyles.MenuButtonCircle);
+            DrawMenubarButton(systemMenuBarItems[3], null);
         }
 
         #endregion
@@ -393,8 +505,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuOther()
         {
-            GUILayout.Button("O1", LevelEditorStyles.MenuButtonCircle);
-            GUILayout.Button("O2", LevelEditorStyles.MenuButtonCircle);
+            DrawMenubarButton(systemMenuBarItems[4], null);
+            DrawMenubarButton(systemMenuBarItems[5], null);
         }
 
         #endregion
@@ -405,18 +517,93 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region General
 
-        public void DrawObjectPicker(Rect objectPickerRect)
+        private void DrawObjectPicker(Rect objectPickerRect)
         {
             GUILayout.BeginArea(objectPickerRect, LevelEditorStyles.EditorContainer);
+
+            GUILayout.BeginVertical();
+            GUILayout.BeginVertical(GUILayout.Height(quickSelectBarHeight));
+            DrawQuickSelectBar();
+            GUILayout.EndVertical();
+            GUILayout.Label("All Items", LevelEditorStyles.HeaderCenteredBig);
+            DrawObjectDrawer(objectPickerRect.width, objectPickerRect.height
+                - LevelEditorStyles.EditorContainer.margin.top
+                - LevelEditorStyles.EditorContainer.margin.bottom
+                - quickSelectBarHeight
+                - LevelEditorStyles.HeaderCenteredBig.fontSize
+                - 50);
+            GUILayout.EndVertical();
+
+
             GUILayout.EndArea();
         }
 
         #endregion
 
         #region Quick Select Bar
+
+        private void DrawQuickSelectBar() {
+
+            quickSelectBarScrollPosition = GUILayout.BeginScrollView(new Vector2(quickSelectBarScrollPosition, 0f), false, false).x;
+            GUILayout.BeginHorizontal();
+            for(int i = 0; i<25; i++)
+                GUILayout.Button(systemMenuBarItems[i % 6].thumbnail, LevelEditorStyles.LevelObjectButton);
+            GUILayout.EndHorizontal();
+            GUILayout.EndScrollView();
+            if(GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+            {
+                quickSelectBarScrollPosition += lastScrollDelta;
+                scrollDone = lastScrollDelta != 0;
+            }
+            EnableMouse();
+            DisableScroll();
+        }
+
         #endregion
 
         #region All Objects
+
+        private void DrawObjectDrawer(float containerWidth, float remainingHeight)
+        {
+            int objectsPerRow = Mathf.FloorToInt(containerWidth / 
+                (LevelEditorStyles.LevelObjectButton.fixedWidth + (LevelEditorStyles.LevelObjectButton.margin.right + LevelEditorStyles.LevelObjectButton.margin.left)/2) + 0.23f) - 1;
+            int objectCount = 200;
+            objectDrawerScrollPosition = GUILayout.BeginScrollView(new Vector2(0, objectDrawerScrollPosition), false, false, GUILayout.Height(remainingHeight)).y;
+            
+            GUILayout.BeginVertical();
+            for (int i = 0; i < objectCount; i++)
+            {
+                if (i % objectsPerRow == 0)
+                    GUILayout.BeginHorizontal();
+
+                try
+                {
+                    GUILayout.Button(systemMenuBarItems[i % 6].thumbnail, LevelEditorStyles.LevelObjectButton);
+                }
+                catch(Exception e)
+                {
+                    ;
+                }
+
+                if ((i + 1) % objectsPerRow == 0 || i == objectCount - 1)
+                {
+                    GUILayout.EndHorizontal();
+                    if (i < objectCount - 1)
+                        GUILayout.Space(Mathf.Max(LevelEditorStyles.LevelObjectButton.margin.right,LevelEditorStyles.LevelObjectButton.margin.left));
+                }
+            }
+            GUILayout.EndVertical();
+            GUILayout.EndScrollView();
+
+            if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+            {
+                objectDrawerScrollPosition += lastScrollDelta;
+                scrollDone = lastScrollDelta != 0;
+            }
+            EnableMouse();
+            DisableScroll();
+        }
+
         #endregion
 
         #endregion
@@ -731,6 +918,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             return ret;
         }
 
+        private void DisableScroll()
+        {
+            if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+            {
+                blockScroll = true;
+                currScrollBlockingTime = timeUntilBlockingReset;
+            }
+        }
+
         #endregion
 
         #region Button Functions
@@ -764,6 +960,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             obj.tag = levelEditorSettings.levelEditorRootTag;
             Selection.activeTransform = obj.transform;
         }
+
+        #endregion
+
+        #region MenuBar
+
+        
 
         #endregion
 
@@ -863,9 +1065,4 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
     public enum LevelEditorMenuState { None = 0, SelectCategory, SelectSubCategory, SelectLevelObject }
 
-    public class LevelEditorItemWithId
-    {
-        public int id;
-        public LevelEditorItem item;
-    }
 }

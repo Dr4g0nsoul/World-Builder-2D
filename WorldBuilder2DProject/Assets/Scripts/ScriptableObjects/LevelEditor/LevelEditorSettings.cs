@@ -30,6 +30,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public Texture2D thumbnail;
         //Description that is displayed when hovering over the item
         [TextArea] public string description;
+        //Accent Color that is displayed on hover
+        public Color accentColor = Color.clear;
     }
 
     [System.Serializable]

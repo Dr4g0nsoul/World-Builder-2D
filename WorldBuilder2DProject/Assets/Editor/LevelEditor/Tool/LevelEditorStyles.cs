@@ -9,17 +9,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelEditorStyles
     {
 
-        public const string ICON_ROOT = "LevelEditor/Icons/";
+        public const string ICON_ROOT = "LevelEditor/Skin/Icons/";
 
         //Text style
         private static GUIStyle _textLeft;
         private static GUIStyle _textCentered;
         private static GUIStyle _headerLeft;
         private static GUIStyle _headerCentered;
-
-        //Scrollbar style
-        private static GUIStyle _horizontalScrollbar;
-        private static GUIStyle _verticalScrollbar;
+        private static GUIStyle _headerCenteredBig;
+        private static readonly int bigFontSize = 28;
 
         //Editor Window
         private static GUIStyle _editorWindow;
@@ -30,10 +28,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _menuButtonSquare;
 
         //Buttons style
-        private static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
+        public static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
         private static GUIStyle _button;
-        private static GUIStyle _iconButton;
-        private static GUIStyle _iconButtonImage;
         private static GUIStyle _levelObjectButton;
 
         //Search field preferences
@@ -96,11 +92,26 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 if (_headerCentered == null)
                 {
-                    _headerCentered = GUI.skin.label;
+                    _headerCentered = new GUIStyle(GUI.skin.label);
                     _headerCentered.alignment = TextAnchor.UpperCenter;
                     _headerCentered.fontStyle = FontStyle.Bold;
                 }
                 return _headerCentered;
+            }
+        }
+
+        public static GUIStyle HeaderCenteredBig
+        {
+            get
+            {
+                if (_headerCenteredBig == null)
+                {
+                    _headerCenteredBig = new GUIStyle(GUI.skin.label);
+                    _headerCenteredBig.alignment = TextAnchor.UpperCenter;
+                    _headerCenteredBig.fontStyle = FontStyle.Bold;
+                    _headerCenteredBig.fontSize = bigFontSize;
+                }
+                return _headerCenteredBig;
             }
         }
 
@@ -186,27 +197,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 
-        public static GUIStyle IconButton
+        public static GUIStyle LevelObjectButton
         {
             get
             {
-                if (_iconButton == null)
+                if (_levelObjectButton == null)
                 {
-                    _iconButton = null;
+                    _levelObjectButton = new GUIStyle(GUI.skin.customStyles[6]);
                 }
-                return _iconButton;
-            }
-        }
-
-        public static GUIStyle IconButtonImage
-        {
-            get
-            {
-                if (_iconButtonImage == null)
-                {
-                    _iconButtonImage = null;
-                }
-                return _iconButtonImage;
+                return _levelObjectButton;
             }
         }
 
@@ -301,10 +300,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _textCentered = null;
             _headerLeft = null;
             _headerCentered = null;
-
-            //Scrollbar style
-            _horizontalScrollbar = null;
-            _verticalScrollbar = null;
+            _headerCenteredBig = null;
 
             //Editor Window
             _editorWindow = null;
@@ -316,8 +312,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Buttons style
             _button = null;
-            _iconButton = null;
-            _iconButtonImage = null;
             _levelObjectButton = null;
 
             //Search field preferences
