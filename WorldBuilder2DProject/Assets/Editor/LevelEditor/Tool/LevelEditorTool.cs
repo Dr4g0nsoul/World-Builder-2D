@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unglide;
 using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Experimental.SceneManagement;
@@ -36,11 +37,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private LevelEditorSettings levelEditorSettings;
         private Transform levelEditorRoot;
         private Transform levelRoot;
+        private Camera sceneCam;
 
         //Timing
         private double lastTimeSinceStartup = 0f;
         private double deltaTime = 0f;
         private readonly double timeUntilBlockingReset = 0.3;
+        private Tweener tweener;
 
         //Mouse Block
         private bool blockMouse = false;
@@ -84,6 +87,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Object Drawer
         private float objectDrawerScrollPosition = 0f;
+        private float objectDrawerHeight;
+        private bool objectDrawerHidden = true;
 
         //Icon button preferences
         private readonly float menuElementImageToHeaderRatio = .65f;
@@ -140,11 +145,20 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (currLevelEditorState == LevelEditorMenuState.None)
                 currLevelEditorState = LevelEditorMenuState.SelectCategory;
 
-            SetupVariables();
+            try
+            {
+                SetupVariables();
+            } catch (Exception e)
+            {
+                ;
+            }
         }
 
         private void SetupVariables()
         {
+            //Animation
+            tweener = new Tweener();
+
             //Messagebox preferences
             messageboxSize = new Vector2(400f, 140f);
 
@@ -155,8 +169,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Object Picker
             objectPickerVerticalOffset = 0f;
-            objectPickerVerticalSizeReduction = 0f;
+            objectPickerVerticalSizeReduction = 50f;
             objectPickerMargin = new RectOffset(10, 10, 10, 10);
+            objectDrawerHeight = 0;
 
         }
 
@@ -238,6 +253,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         view.maximized = !view.maximized;
                     else if (e.keyCode == KeyCode.F11)
                         LevelEditorStyles.RefreshStyles();
+                    else if (e.keyCode == KeyCode.Space)
+                        ToggleObjectDrawer();
                 }
             }
 
@@ -259,6 +276,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             deltaTime = EditorApplication.timeSinceStartup - lastTimeSinceStartup;
             lastTimeSinceStartup = EditorApplication.timeSinceStartup;
 
+            tweener.Update((float)deltaTime);
+
             if (blockScroll)
             {
                 currScrollBlockingTime -= deltaTime;
@@ -271,12 +290,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUI.skin = guiSkin;
 
             //Get scene camera
-            GameObject sceneCam = GameObject.Find("SceneCamera");
+            GameObject sceneCamObj = GameObject.Find("SceneCamera");
+            if (sceneCam == null && sceneCamObj != null)
+                sceneCam = sceneCamObj.GetComponent<Camera>();
             if (sceneCam != null)
             {
 
                 //Compute bounds
-                Rect cameraBounds = sceneCam.GetComponent<Camera>().pixelRect;
+                Rect cameraBounds = sceneCam.pixelRect;
 
                 //Debug: Draw Window
                 //ShowMessage(cameraBounds, "Test Window", "Test message asdklfjsdfkl asdkjasld woqpie c msldj asopid  klsa di asijklas jkaldkl asdkljaskjdkas klas djklasd as kdjaskl dald dklasdj aklsdj");
@@ -374,7 +395,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //-Get objectPicker rect
             Rect objectPickerRect = new Rect()
             {
-                position = screenRect.position - Vector2.up * objectPickerVerticalOffset,
+                position = screenRect.position - Vector2.up * (objectPickerVerticalOffset - objectPickerVerticalSizeReduction),
                 size = screenRect.size - Vector2.up * objectPickerVerticalSizeReduction
             };
             //-Reduce by margin
@@ -544,7 +565,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawQuickSelectBar() {
 
-            quickSelectBarScrollPosition = GUILayout.BeginScrollView(new Vector2(quickSelectBarScrollPosition, 0f), false, false).x;
+            quickSelectBarScrollPosition = GUILayout.BeginScrollView(new Vector2(Mathf.Max(quickSelectBarScrollPosition, 0f), 0f), false, false).x;
             GUILayout.BeginHorizontal();
             for(int i = 0; i<25; i++)
                 GUILayout.Button(systemMenuBarItems[i % 6].thumbnail, LevelEditorStyles.LevelObjectButton);
@@ -568,7 +589,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             int objectsPerRow = Mathf.FloorToInt(containerWidth / 
                 (LevelEditorStyles.LevelObjectButton.fixedWidth + (LevelEditorStyles.LevelObjectButton.margin.right + LevelEditorStyles.LevelObjectButton.margin.left)/2) + 0.23f) - 1;
             int objectCount = 200;
-            objectDrawerScrollPosition = GUILayout.BeginScrollView(new Vector2(0, objectDrawerScrollPosition), false, false, GUILayout.Height(remainingHeight)).y;
+            objectDrawerScrollPosition = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(objectDrawerScrollPosition, 0f)), false, true, GUILayout.Height(remainingHeight)).y;
             
             GUILayout.BeginVertical();
             for (int i = 0; i < objectCount; i++)
@@ -578,7 +599,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 try
                 {
+                    GUI.color = LevelEditorStyles.buttonHoverColor;
                     GUILayout.Button(systemMenuBarItems[i % 6].thumbnail, LevelEditorStyles.LevelObjectButton);
+                    GUI.color = Color.white;
                 }
                 catch(Exception e)
                 {
@@ -604,7 +627,50 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             DisableScroll();
         }
 
+        private void ToggleObjectDrawer()
+        {
+            if (objectDrawerHeight <= 0)
+            {
+                objectDrawerHeight = objectPickerVerticalSizeReduction
+                + LevelEditorStyles.MenuButtonCircle.margin.top
+                + LevelEditorStyles.EditorContainer.padding.top
+                + LevelEditorStyles.EditorContainer.padding.bottom
+                + quickSelectBarHeight
+                + menuBarHeight;
+            }
+
+            tweener.TargetCancelAndComplete(this);
+            if (objectDrawerHidden)
+            {
+                tweener.Tween(this, null, .2f).Ease(Ease.SineIn).OnUpdate((value) => ShowObjectDrawer(value)).OnComplete(() => ShowObjectDrawer(1f));
+                objectDrawerHidden = false;
+            }
+            else
+            {
+                tweener.Tween(this, null, .2f).Ease(Ease.SineIn).OnUpdate((value) => HideObjectDrawer(value)).OnComplete(() => HideObjectDrawer(1f));
+                objectDrawerHidden = true;
+            }
+        }
+
         #endregion
+
+        #endregion
+
+        #region Animations
+
+        private void HideObjectDrawer(float value)
+        {
+            objectPickerVerticalOffset = Mathf.Lerp(0f, -sceneCam.pixelHeight 
+                + objectDrawerHeight, value);
+            SceneView.currentDrawingSceneView.Repaint();
+        }
+
+        private void ShowObjectDrawer(float value)
+        {
+            objectPickerVerticalOffset = Mathf.Lerp(-sceneCam.pixelHeight
+                + objectDrawerHeight, 0f, value);
+            SceneView.currentDrawingSceneView.Repaint();
+        }
 
         #endregion
 
