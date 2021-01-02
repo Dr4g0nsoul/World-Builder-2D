@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
+  m_Name: Mushroom
+  m_EditorClassIdentifier: 
+  guid: 16db7cf4-5b7f-4813-a4ec-c4098b33c1b1
+  objectPrefab: {fileID: 6937123199290148165, guid: 1d073a169a678444cad2e2094f8df788,
+    type: 3}
+  item:
+    name: Mushroom
+    thumbnail: {fileID: 0}
+    description: 
+    accentColor: {r: 1, g: 0, b: 0.43513203, a: 1}
+  mainCategory: 
+  categories: []
+  levelLayers: []

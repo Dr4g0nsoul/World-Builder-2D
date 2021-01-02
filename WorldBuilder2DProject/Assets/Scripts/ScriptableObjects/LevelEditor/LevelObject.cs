@@ -11,16 +11,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Prefab that will be spawned
         [ReadOnly] public GameObject objectPrefab;
 
-        public bool useCustomThumbnail;
-
         //Item display properties
         public LevelEditorItem item;
 
-        //In which layers this item is available
-        [LevelLayer] public int levelLayers;
+        //Main category (Color displayed in the level editor)
+        public string mainCategory = null;
         //Item category (e.g. Hazards, Semisolids, Enemies, Bosses, ...)
-        [LevelObjectCategory] public int category = -1;
-        
+        public string[] categories = null;
+        //In which layers this item is available
+        public string[] levelLayers = null;
 
 
 

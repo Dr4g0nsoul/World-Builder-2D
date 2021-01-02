@@ -9,7 +9,7 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
         [ReadOnly] public string guid = Guid.Empty.ToString();
 
         //Genereate Unique Identifier
-        public void GenerateGUID()
+        public string GenerateGUID()
         {
             if (guid == Guid.Empty.ToString())
             {
@@ -19,6 +19,7 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             {
                 Debug.LogWarning($"{name} already has the unique identifier: {guid}");
             }
+            return guid;
         }
     }
 }

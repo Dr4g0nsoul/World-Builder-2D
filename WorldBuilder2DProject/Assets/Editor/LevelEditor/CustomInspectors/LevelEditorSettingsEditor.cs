@@ -44,9 +44,16 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
                 addedObj.FindPropertyRelative("guid").stringValue = Guid.NewGuid().ToString();
                 if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
+                {
                     addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue =
+                    list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 2).FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue;
+                }
                 else
+                {
                     addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Category";
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue = Color.white;
+                }
             };
 
             layerList = new ReorderableList(serializedObject, serializedObject.FindProperty("levelLayers"), true, true, true, true);
@@ -70,9 +77,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 addedObj.FindPropertyRelative("guid").stringValue = Guid.NewGuid().ToString();
 
                 if (addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue.Length > 0)
+                {
                     addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue += " (Copy)";
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue =
+                    list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 2).FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue;
+                }
                 else
+                {
                     addedObj.FindPropertyRelative("item").FindPropertyRelative("name").stringValue = "Unnamed Layer";
+                    addedObj.FindPropertyRelative("item").FindPropertyRelative("accentColor").colorValue = Color.white;
+                }
+
 
             };
         }
@@ -150,6 +165,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 property.FindPropertyRelative("thumbnail").objectReferenceValue = EditorGUILayout.ObjectField(property.FindPropertyRelative("thumbnail").objectReferenceValue,
                     typeof(Texture2D), false, GUILayout.Width(70f), GUILayout.Height(70f));
                 EditorGUILayout.EndHorizontal();
+                EditorGUILayout.PropertyField(property.FindPropertyRelative("accentColor"));
                 EditorGUILayout.PropertyField(property.FindPropertyRelative("description"), GUILayout.Height(100f));
                 EditorGUILayout.EndVertical();
             }

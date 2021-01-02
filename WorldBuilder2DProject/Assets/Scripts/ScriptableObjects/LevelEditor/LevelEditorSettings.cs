@@ -19,6 +19,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //List of all the parallax layers
         [HideInInspector] public LevelLayer[] levelLayers;
 
+        [Header("Other Settings")]
+        //Size of the quick select bar
+        public int quickSelectBarSize = 20;
+
     }
 
     [System.Serializable]
@@ -31,7 +35,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Description that is displayed when hovering over the item
         [TextArea] public string description;
         //Accent Color that is displayed on hover
-        public Color accentColor = Color.clear;
+        [ColorUsage(false)] public Color accentColor = Color.white;
     }
 
     [System.Serializable]

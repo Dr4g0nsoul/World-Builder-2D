@@ -14,47 +14,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelEditorRootTag: LevelRoot
   levelObjectCategories:
-  - guid: dd9fd444-ae01-4363-af35-3acbb45a1746
+  - guid: 09271e61-9543-4944-8024-557227e73140
     item:
-      name: Terrain
-      thumbnail: {fileID: 0}
+      name: Ground
+      thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
-  - guid: 5d4b3fff-9aee-4353-8056-18d0fffe60ad
-    item:
-      name: Enemy
-      thumbnail: {fileID: 0}
-      description: 
-  - guid: 04d42be4-489a-42c9-9aaa-675cd6bf23c9
+      accentColor: {r: 0.5660378, g: 0.35683766, b: 0.15218939, a: 1}
+  - guid: eeae123a-5fc2-465b-944a-801e8e45e381
     item:
       name: Player
-      thumbnail: {fileID: 0}
+      thumbnail: {fileID: 2800000, guid: 4d8fc2dac4a975c4bb29ef0174d5abf0, type: 3}
       description: 
-  - guid: 8f35c2cd-eaab-4b97-a816-ee3151a86b33
+      accentColor: {r: 0.6660055, g: 0.23820755, b: 0.9528302, a: 1}
+  - guid: e74c1e07-5b1e-4051-b82d-ef180254a462
     item:
-      name: Decoration
-      thumbnail: {fileID: 0}
+      name: Enemy
+      thumbnail: {fileID: 2800000, guid: b95b0a65d062060419a9824a6d928dd0, type: 3}
       description: 
-  - guid: f7aa0192-a8a7-43f0-ba88-58d774ba9924
+      accentColor: {r: 0.8962264, g: 0.3616805, b: 0.29169634, a: 1}
+  - guid: 7fcf29ce-9a4e-48b8-9f9a-24af34e7d640
     item:
-      name: Forest
-      thumbnail: {fileID: 0}
+      name: Hazard
+      thumbnail: {fileID: 2800000, guid: 286a977ce95637c45b171ad489ddc7f4, type: 3}
       description: 
+      accentColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
+  - guid: 17865518-a62f-44c4-b3bb-efbb3c282810
+    item:
+      name: Environment
+      thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
+      description: 
+      accentColor: {r: 0.23082057, g: 0.8584906, b: 0.60305536, a: 1}
   levelLayers:
-  - guid: e6992642-75f4-4bb2-b486-93324ede4631
+  - guid: 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
     item:
       name: Background
-      thumbnail: {fileID: 0}
+      thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
+      accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
     parallaxSpeed: 0
-  - guid: 10f9539c-0064-4ebc-8396-00ad886b3ff7
+  - guid: 7537e771-bde1-4499-9b15-2a7cd77fd6da
     item:
       name: Mainground
-      thumbnail: {fileID: 0}
+      thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
       description: 
+      accentColor: {r: 0.5757373, g: 0.8962264, b: 0.2494215, a: 1}
     parallaxSpeed: 0
-  - guid: fcbb5301-d298-43e5-a67c-7951e1951022
+  - guid: abcc027e-5800-4c96-a981-ffbd8a2c03d4
     item:
       name: Foreground
-      thumbnail: {fileID: 0}
+      thumbnail: {fileID: 2800000, guid: 4bab9ded5c6d112488d2923cd5e5f3e9, type: 3}
       description: 
+      accentColor: {r: 0.4528302, g: 0.36383852, b: 0.254183, a: 1}
     parallaxSpeed: 0

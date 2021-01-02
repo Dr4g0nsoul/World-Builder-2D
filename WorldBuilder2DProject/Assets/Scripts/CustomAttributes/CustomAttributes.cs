@@ -8,8 +8,4 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
 
     public class ReadOnlyAttribute : PropertyAttribute { }
 
-    public class LevelLayerAttribute : PropertyAttribute { }
-
-    public class LevelObjectCategoryAttribute : PropertyAttribute { }
-
 }
