@@ -94,6 +94,13 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             return Vector2.zero;
         }
 
+        public static bool IsMouseInsideSceneView(SceneView view)
+        {
+            return view != null && EditorWindow.focusedWindow == view
+                && Event.current.mousePosition.x >= 0 && Event.current.mousePosition.y >= 0
+                && Event.current.mousePosition.x <= view.camera.pixelWidth && Event.current.mousePosition.y <= view.camera.pixelHeight;
+        }
+
         #endregion
     }
 

@@ -29,7 +29,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Buttons style
         public static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
-        public static readonly Vector2 levelObjectPreviewImageOffset = new Vector2(9f, 9f);
+        public static readonly Vector2 levelObjectPreviewImageOffset = new Vector2(8f, 8f);
         private static GUIStyle _button;
         private static GUIStyle _levelObjectImage;
         private static GUIStyle _levelObjectPreviewImage;
@@ -209,7 +209,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     _levelObjectImage = new GUIStyle(GUI.skin.label);
                     _levelObjectImage.margin = new RectOffset(0,0,0,0);
-                    _levelObjectImage.padding = new RectOffset(0, 0, 0, 0);
+                    _levelObjectImage.padding = GUI.skin.customStyles[6].padding;
                     _levelObjectImage.alignment = TextAnchor.MiddleCenter;
                     _levelObjectImage.imagePosition = ImagePosition.ImageOnly;
                 }

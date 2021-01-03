@@ -10,19 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
-  m_Name: Mushroom
+  m_Name: Fly
   m_EditorClassIdentifier: 
-  guid: 621e246a-a055-4d87-95a4-b8894fe4b1a1
-  objectPrefab: {fileID: 5268754934598890759, guid: 1d073a169a678444cad2e2094f8df788,
+  guid: d17a9121-1d59-43e5-a5dc-c94e935be491
+  objectPrefab: {fileID: 7311618406564186807, guid: b3e3ef778e1da814d8d479e2030c4b9a,
     type: 3}
   item:
-    name: Mushroom
+    name: Fly
     thumbnail: {fileID: 0}
     description: 
     accentColor: {r: 1, g: 1, b: 1, a: 1}
   mainCategory: 
   categories:
   - e74c1e07-5b1e-4051-b82d-ef180254a462
-  - 09271e61-9543-4944-8024-557227e73140
   levelLayers:
   - 7537e771-bde1-4499-9b15-2a7cd77fd6da

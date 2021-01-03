@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -23,42 +24,49 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
 
 
-        /////////////
-        // Methods //
-        /////////////
-        /*
+        ///////////////////////////////////////
+        // Extendable Properties and Methods //
+        ///////////////////////////////////////
+        
         /// <summary>
-        /// Puts all ids of the layers this level object is in into returnList
+        /// Set to true if you want to turn the mouse into the currently selected GameObject in SceneView,
+        /// false otherwise
         /// </summary>
-        /// <param name="returnList">An empty array that gets filled with ids (is empty if return value is not 0)</param>
-        /// <returns>
-        ///     0 if returnList was correctly filled
-        ///     1 if no parallax Layer was assigned
-        ///     2 if all parallax layers were assigned
-        /// </returns>
-        public int GetParallaxLayerIds(out List<int> returnList)
+        public virtual bool UseTemporaryIndicator => true;
+
+        /// <summary>
+        /// Called on each SceneView GUI call if the mouse is in a valid position inside the SceneView Window
+        /// </summary>
+        /// <param name="temporaryObject">The gameobject used for the temporary indicator, null if UseTemporaryIndicator is false</param>
+        /// <param name="worldPos">Position of the mouse in world coordinates</param>
+        /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
+        public virtual void HoverObject(GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
         {
-            returnList = new List<int>();
-            if (levelLayers == 0)
-                return 1;
-            else if (levelLayers < 0)
-                return 2;
-            
-            for(int i = 0; i<LevelEditorSettings.MAX_LAYER_SIZE; i++)
-            {
-                if(HasParallaxLayer(i))
-                {
-                    returnList.Add(i);
-                }
-            }
-            return 0;
+            Debug.Log($"Hovering {item.name}");
         }
 
-        public bool HasParallaxLayer(int layerID)
+        /// <summary>
+        /// Called whenever the user wants to spawn this object
+        /// </summary>
+        /// <param name="temporaryObject">The gameobject used for the temporary indicator, null if UseTemporaryIndicator is false</param>
+        /// <param name="parentTransform">
+        ///     The transform of the Level Object container.
+        ///     Set the parent transform of the Instantiated object to this transform.
+        /// </param>
+        /// <param name="worldPos">Position of the mouse in world coordinates</param>
+        /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
+        public virtual void SpawnObject(GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
         {
-            return (levelLayers & (1 << layerID)) != 0;
+            Debug.Log($"Spawn {item.name} at {worldPos}");
+            GameObject newObject = PrefabUtility.InstantiatePrefab(objectPrefab) as GameObject;
+            if (newObject != null)
+            {
+                newObject.transform.position = worldPos;
+                newObject.transform.rotation = Quaternion.identity;
+                Undo.RegisterCreatedObjectUndo(newObject, $"LevelEditor: Placed {item.name}");//
+                Selection.activeObject = newObject;
+            }
         }
-        */
     }
 
 }

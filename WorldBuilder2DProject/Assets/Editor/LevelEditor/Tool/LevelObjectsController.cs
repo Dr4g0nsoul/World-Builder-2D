@@ -103,6 +103,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             return levelObjects;
         }
 
+        public SortedDictionary<int, LevelObject> GetDummyLevelObjects(int amount)
+        {
+            int i = 0;
+            SortedDictionary<int, LevelObject> result = new SortedDictionary<int, LevelObject>();
+            while (i < amount)
+            {
+                foreach (LevelObject lobj in levelObjects.Values)
+                {
+                    result.Add(i, lobj);
+                    i++;
+                    if (i >= amount) break;
+                }
+            }
+            return result;
+        }
+
         #endregion
 
         #region Quick Select Bar
