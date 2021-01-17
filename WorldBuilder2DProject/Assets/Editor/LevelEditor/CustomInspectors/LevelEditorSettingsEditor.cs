@@ -138,6 +138,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.PropertyField(serializedObject.FindProperty("levelObjectCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("guid"));
                 EditorGUILayout.EndVertical();
+                
                 DrawItemProperty(serializedObject.FindProperty("levelObjectCategories").GetArrayElementAtIndex(categoryList.index).FindPropertyRelative("item"));
             }
         }

@@ -36,6 +36,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private SortedDictionary<string, LevelObject> levelObjects = new SortedDictionary<string, LevelObject>();
 
+        //Level Object data
         private List<string> quickSelectBar = new List<string>();
         private SortedDictionary<string, List<string>> levelObjectsPerCategory = new SortedDictionary<string, List<string>>();
         private List<string> currentWorldFavorites = new List<string>();
@@ -45,11 +46,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public void LoadLevelObjects()
         {
+
             //Reset lists
-            levelObjects = new SortedDictionary<string, LevelObject>();
-            levelObjectsPerCategory = new SortedDictionary<string, List<string>>();
-            currentWorldFavorites = new List<string>();
-            currentLevelFavorites = new List<string>();
+            levelObjects.Clear();
+            levelObjectsPerCategory.Clear();
+            currentWorldFavorites.Clear();
+            currentLevelFavorites.Clear();
+
 
             //Load level objects
             LevelObject[] loadedLevelObjects = Resources.LoadAll<LevelObject>(LEVEL_OBJECTS_PATH);

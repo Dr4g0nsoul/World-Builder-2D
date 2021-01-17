@@ -25,7 +25,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Menu Bar
         private static GUIStyle _menuBar;
         private static GUIStyle _menuButtonCircle;
+        private static GUIStyle _menuButtonCircleActive;
         private static GUIStyle _menuButtonSquare;
+
+        //More Box
+        private static GUIStyle _moreBox;
 
         //Buttons style
         public static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
@@ -37,7 +41,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _levelObjectButtonActive;
 
         //Search field preferences
-        private static GUIStyle _searchField;
+        private static GUIStyle _searchFieldLeft;
+        private static GUIStyle _searchFieldCenter;
+        private static GUIStyle _searchFieldRigth;
 
         //Message box style
         private static readonly RectOffset messageBoxPadding = new RectOffset(10, 10, 10, 10);
@@ -152,7 +158,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 return _menuBar;
             }
-            
+
         }
 
         public static GUIStyle MenuButtonCircle
@@ -168,6 +174,23 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         }
 
+        public static GUIStyle MenuButtonCircleActive
+        {
+            get
+            {
+                if (_menuButtonCircleActive == null)
+                {
+                    _menuButtonCircleActive = new GUIStyle(GUI.skin.customStyles[4]);
+                    _menuButtonCircleActive.hover.background = _menuButtonCircleActive.active.background;
+                    _menuButtonCircleActive.active.background = _menuButtonCircleActive.normal.background;
+                    _menuButtonCircleActive.normal.background = _menuButtonCircleActive.hover.background;
+                }
+                return _menuButtonCircleActive;
+            }
+
+        }
+
+
         public static GUIStyle MenuButtonSquare
         {
             get
@@ -179,6 +202,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 return _menuButtonSquare;
             }
 
+        }
+
+        #endregion
+
+        #region More Box
+
+        public static GUIStyle MoreBox
+        {
+            get
+            {
+                if (_moreBox == null)
+                {
+                    _moreBox = new GUIStyle(GUI.skin.box);
+                }
+                return _moreBox;
+            }
         }
 
         #endregion
@@ -208,7 +247,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (_levelObjectImage == null)
                 {
                     _levelObjectImage = new GUIStyle(GUI.skin.label);
-                    _levelObjectImage.margin = new RectOffset(0,0,0,0);
+                    _levelObjectImage.margin = new RectOffset(0, 0, 0, 0);
                     _levelObjectImage.padding = GUI.skin.customStyles[6].padding;
                     _levelObjectImage.alignment = TextAnchor.MiddleCenter;
                     _levelObjectImage.imagePosition = ImagePosition.ImageOnly;
@@ -264,17 +303,39 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Search Field
 
-        public static GUIStyle SearchField
+        public static GUIStyle SearchFieldLeft
         {
             get
             {
-                if (_searchField == null)
+                if (_searchFieldLeft == null)
                 {
-                    _searchField = null;
-                    //_searchField.stretchHeight = true;
-                    //_searchField.fixedHeight = 0f;
+                    _searchFieldLeft = GUI.skin.customStyles[9];
                 }
-                return _searchField;
+                return _searchFieldLeft;
+            }
+        }
+
+        public static GUIStyle SearchFieldRight
+        {
+            get
+            {
+                if (_searchFieldRigth == null)
+                {
+                    _searchFieldRigth = GUI.skin.customStyles[10];
+                }
+                return _searchFieldRigth;
+            }
+        }
+
+        public static GUIStyle SearchFieldCenter
+        {
+            get
+            {
+                if (_searchFieldCenter == null)
+                {
+                    _searchFieldCenter = GUI.skin.customStyles[11];
+                }
+                return _searchFieldCenter;
             }
         }
 
@@ -360,7 +421,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Menu Bar
             _menuBar = null;
             _menuButtonCircle = null;
+            _menuButtonCircleActive = null;
             _menuButtonSquare = null;
+
+            //More Box
+            _moreBox = null;
 
             //Buttons style
             _button = null;
@@ -370,7 +435,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _levelObjectButtonActive = null;
 
             //Search field preferences
-            _searchField = null;
+            _searchFieldLeft = null;
+            _searchFieldRigth = null;
+            _searchFieldCenter = null;
 
             //Message box style
             _messagebox = null;
@@ -398,7 +465,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             Texture2D destTexture = new Texture2D(srcTexture.width, srcTexture.height, srcTexture.format, false);
             Color[] pixels = srcTexture.GetPixels();
-            for(int i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] *= color;
             }

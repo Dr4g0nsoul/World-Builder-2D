@@ -44,13 +44,19 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
       description: 
       accentColor: {r: 0.23082057, g: 0.8584906, b: 0.60305536, a: 1}
-  levelLayers:
-  - guid: 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+  - guid: fdd6b701-a366-46fe-8d27-6ab94fe655e5
     item:
-      name: Background
-      thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
+      name: Puzzle
+      thumbnail: {fileID: 2800000, guid: 53bb323699ebdbc4c8a05ecab503357c, type: 3}
       description: 
-      accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
+      accentColor: {r: 0.8811517, g: 0.9339623, b: 0.23349057, a: 1}
+  levelLayers:
+  - guid: abcc027e-5800-4c96-a981-ffbd8a2c03d4
+    item:
+      name: Foreground
+      thumbnail: {fileID: 2800000, guid: 4bab9ded5c6d112488d2923cd5e5f3e9, type: 3}
+      description: 
+      accentColor: {r: 0.4528302, g: 0.36383852, b: 0.254183, a: 1}
     parallaxSpeed: 0
   - guid: 7537e771-bde1-4499-9b15-2a7cd77fd6da
     item:
@@ -59,10 +65,18 @@ MonoBehaviour:
       description: 
       accentColor: {r: 0.5757373, g: 0.8962264, b: 0.2494215, a: 1}
     parallaxSpeed: 0
-  - guid: abcc027e-5800-4c96-a981-ffbd8a2c03d4
+  - guid: 67426602-3f83-4931-91bf-0dd33464a7ff
     item:
-      name: Foreground
-      thumbnail: {fileID: 2800000, guid: 4bab9ded5c6d112488d2923cd5e5f3e9, type: 3}
+      name: Background
+      thumbnail: {fileID: 2800000, guid: 24430aae6bc171f44b0211a8e3d21c18, type: 3}
       description: 
-      accentColor: {r: 0.4528302, g: 0.36383852, b: 0.254183, a: 1}
+      accentColor: {r: 0.09878961, g: 0.5660378, b: 0.4646788, a: 1}
     parallaxSpeed: 0
+  - guid: 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+    item:
+      name: Background Far
+      thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
+      description: 
+      accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
+    parallaxSpeed: 0
+  quickSelectBarSize: 20

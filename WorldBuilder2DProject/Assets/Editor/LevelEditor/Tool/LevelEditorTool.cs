@@ -87,6 +87,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Window preferences
         private GUISkin guiSkin;
+        private readonly float minWindowHeight = 550f;
 
         //Messagebox preferences
         private Vector2 messageboxSize = new Vector2(400f, 140f);
@@ -95,6 +96,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float menuBarHeight = 50f;
         private LevelEditorItem[] systemMenuBarItems;
         private bool mouseHoveringMenuBar;
+        //private readonly Vector3Int responsiveViewWidth = new Vector3Int(1020, 900, 700);
+        private readonly Vector3Int responsiveViewWidth = new Vector3Int(1120, 1000, 800);
+
+        //Categories
+        private readonly Vector3Int menuBarCategoriesAmount = new Vector3Int(5, 3, 1);
+        private List<string> selectedCategories;
+        private float categoriesMoreBoxScrollPos;
+        private Tween showCategoryMoreBoxAnimation;
+        private float showCategoryMoreBoxAnimationValue;
+
+        //Layers
+        private readonly Vector3Int menuBarLayersAmount = new Vector3Int(3, 3, 1);
+        private string selectedLayer;
+        private readonly Vector3 layerMoreBoxXPos = new Vector3(465f, 380f, 350f);
+        private float layersMoreBoxScrollPos;
+        private Tween showLayerMoreBoxAnimation;
+        private float showLayerMoreBoxAnimationValue;
+
+        //More Box
+        private readonly Vector2 moreBoxSize = new Vector2(330f, 200f);
+        private readonly float moreBoxAnimationTime = .2f;
+
+        //Search Bar
+        private string searchString;
+        private readonly float searchBarWidth = 250f;
+        private Tween searchBarAnimation;
+        private float searchBarAnimationValue;
+        private readonly float searchBarAnimationTime = .2f;
 
         //Object Picker
         private float objectPickerVerticalOffset;
@@ -171,7 +200,21 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Menu Bar
             menuBarHeight = 50f;
             SetupMenuBarIcons();
-            
+
+            //Categories
+            selectedCategories = new List<string>();
+            categoriesMoreBoxScrollPos = 0f;
+            showCategoryMoreBoxAnimationValue = 0f;
+
+            //Layers
+            selectedLayer = null;
+            layersMoreBoxScrollPos = 0f;
+            showLayerMoreBoxAnimationValue = 0f;
+
+            //Search
+            searchString = "";
+            searchBarAnimationValue = 0f;
+
             //Object Picker
             objectPickerVerticalOffset = 0f;
             objectPickerVerticalSizeReduction = 50f;
@@ -205,7 +248,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void SetupMenuBarIcons()
         {
-            systemMenuBarItems = new LevelEditorItem[6];
+            systemMenuBarItems = new LevelEditorItem[7];
             systemMenuBarItems[0] = new LevelEditorItem
             {
                 name = "All Categories",
@@ -246,6 +289,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 name = "Options",
                 description = "Display Level Editor Settings",
                 thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/miscellaneous_services"),
+                accentColor = LevelEditorStyles.buttonHoverColor
+            };
+            systemMenuBarItems[6] = new LevelEditorItem
+            {
+                name = "Clear Category Filter",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/delete_forever"),
                 accentColor = LevelEditorStyles.buttonHoverColor
             };
         }
@@ -402,17 +451,26 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                         //TODO: --- Level Select ---
 
-
-                        //--- Draw GUI ---
-                        try
+                        if (cameraBounds.width < responsiveViewWidth.z || cameraBounds.height < minWindowHeight)
                         {
-                            DrawGui(cameraBounds);
+                            ShowMessage(cameraBounds, "Window too small!", "Resize window to show level editor.");
                         }
-                        catch (ArgumentException ex) 
+                        else
                         {
-                            //Remove harmless error Message
-                            if (!ex.Message.Contains("Getting control 1's position in a group with only 1 controls when doing repaint"))
-                                Debug.LogError(ex.Message);
+
+                            //--- Draw GUI ---
+                            DrawGui(cameraBounds);
+                            /*
+                            try
+                            {
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                //Remove harmless error Message
+                                if (!ex.Message.Contains("Getting control 1's position in a group with only 1 controls when doing repaint"))
+                                    Debug.LogError(ex.Message);
+                            }
+                            */
                         }
                     }
                 }
@@ -458,6 +516,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //--Horizontal
             objectPickerRect.position += Vector2.right * objectPickerMargin.right;
             objectPickerRect.size -= Vector2.right * (objectPickerMargin.right + objectPickerMargin.left);
+            //--Clamp by morebox height
+            objectPickerRect.position = new Vector2(objectPickerRect.position.x, Mathf.Max(objectPickerRect.position.y, GetMoreBoxHeight()));
+            objectPickerRect.size = new Vector2(objectPickerRect.size.x, Mathf.Min(objectPickerRect.size.y, sceneCam.pixelHeight - GetMoreBoxHeight() - objectPickerMargin.bottom));
 
             //-Get menuBarRect rect
             Rect menuBarRect = new Rect()
@@ -480,6 +541,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             DrawObjectPicker(objectPickerRect);
 
             Handles.EndGUI();
+
+            //Check wether Mouse is hovering over gui element or not
             if (Util.EditorUtility.IsMouseInsideSceneView(SceneView.currentDrawingSceneView) && !mouseHoveringMenuBar && !objectPickerRect.Contains(Event.current.mousePosition))
             {
                 canObjectBePlaced = true;
@@ -534,24 +597,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             Rect optionButtonsRect = new Rect()
             {
-                position = new Vector2(menuBarRect.x + menuBarRect.width - LevelEditorStyles.MenuBar.padding.right - optionsRectWidth, menuBarRect.y + LevelEditorStyles.MenuButtonCircle.margin.top),
-                size = new Vector2(optionsRectWidth, menuBarRect.height)
+                position = new Vector2(menuBarRect.x + menuBarRect.width - LevelEditorStyles.MenuBar.padding.right - optionsRectWidth - (searchBarWidth * searchBarAnimationValue), menuBarRect.y + LevelEditorStyles.MenuButtonCircle.margin.top),
+                size = new Vector2(optionsRectWidth + (searchBarWidth * searchBarAnimationValue), menuBarRect.height)
             };
             GUILayout.BeginArea(optionButtonsRect);
             GUILayout.BeginHorizontal();
             DrawMenuOther();
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
+
+            //Menu Boxes
+            categoriesMoreBoxScrollPos = DrawMoreBox(menuBarRect.position + Vector2.down * LevelEditorStyles.MoreBox.margin.bottom, 
+                (index) => DrawCategoryButton(levelEditorSettings.levelObjectCategories[index + GetResponsiveAmount(menuBarCategoriesAmount)]), levelEditorSettings.levelObjectCategories.Length - GetResponsiveAmount(menuBarCategoriesAmount), categoriesMoreBoxScrollPos, showCategoryMoreBoxAnimationValue,
+                systemMenuBarItems[6], () => ClearCategoryFilter());
+            layersMoreBoxScrollPos = DrawMoreBox(new Vector2(menuBarRect.position.x + GetResponsiveAmount(layerMoreBoxXPos), menuBarRect.position.y - LevelEditorStyles.MoreBox.margin.bottom),
+                (index) => DrawLayerButton(levelEditorSettings.levelLayers[index + GetResponsiveAmount(menuBarLayersAmount)]), levelEditorSettings.levelLayers.Length - GetResponsiveAmount(menuBarLayersAmount), layersMoreBoxScrollPos, showLayerMoreBoxAnimationValue);
+
         }
 
-        private void DrawMenubarButton(LevelEditorItem item, Action action)
+        private void DrawMenuBarButton(LevelEditorItem item, Action action, bool selected = false)
         {
             Rect buttonRect = GUILayoutUtility.GetRect(LevelEditorStyles.MenuButtonCircle.fixedWidth, LevelEditorStyles.MenuButtonCircle.fixedHeight, LevelEditorStyles.MenuButtonCircle);
 
             //Hover tinting
-            if (buttonRect.Contains(Event.current.mousePosition))
+            if (buttonRect.Contains(Event.current.mousePosition) || selected)
             {
-                mouseHoveringMenuBar = true;
+                if(buttonRect.Contains(Event.current.mousePosition))
+                    mouseHoveringMenuBar = true;
+
                 if (item.accentColor.a > 0)
                 {
                     GUI.color = item.accentColor;
@@ -562,12 +635,55 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
             }
 
-            if(GUI.Button(buttonRect, item.thumbnail, LevelEditorStyles.MenuButtonCircle) && action != null)
+            GUIStyle btnStyle = selected ? LevelEditorStyles.MenuButtonCircleActive : LevelEditorStyles.MenuButtonCircle;
+                
+
+            if(GUI.Button(buttonRect, item.thumbnail, btnStyle) && action != null)
             {
                 action.Invoke();
             }
 
             GUI.color = Color.white;
+        }
+
+        private void DrawCategoryButton(LevelObjectCategory cat)
+        {
+            if (cat != null)
+            {
+                DrawMenuBarButton(cat.item, () => ToggleCategory(cat.guid), selectedCategories.Contains(cat.guid));
+            }
+        }
+
+        private void DrawLayerButton(LevelLayer layer)
+        {
+            if (layer != null)
+            {
+                DrawMenuBarButton(layer.item, () => ToggleLayer(layer.guid), selectedLayer == layer.guid);
+            }
+        }
+
+        private int GetResponsiveAmount(Vector3Int amounts)
+        {
+            if (sceneCam.pixelWidth < responsiveViewWidth.x)
+            {
+                if (sceneCam.pixelWidth < responsiveViewWidth.y)
+                    return amounts.z;
+                else
+                    return amounts.y;
+            }
+            return amounts.x;
+        }
+
+        private float GetResponsiveAmount(Vector3 amounts)
+        {
+            if (sceneCam.pixelWidth < responsiveViewWidth.x)
+            {
+                if (sceneCam.pixelWidth < responsiveViewWidth.y)
+                    return amounts.z;
+                else
+                    return amounts.y;
+            }
+            return amounts.x;
         }
 
         #endregion
@@ -576,12 +692,19 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuCategories()
         {
-            DrawMenubarButton(systemMenuBarItems[0], null);
-            DrawMenubarButton(systemMenuBarItems[0], null);
-            DrawMenubarButton(systemMenuBarItems[0], null);
-            DrawMenubarButton(systemMenuBarItems[0], null);
-            DrawMenubarButton(systemMenuBarItems[0], null);
-            DrawMenubarButton(systemMenuBarItems[0], null);
+            for(int i = 0; i<Mathf.Min(GetResponsiveAmount(menuBarCategoriesAmount), levelEditorSettings.levelObjectCategories.Length); i++)
+            {
+                DrawCategoryButton(levelEditorSettings.levelObjectCategories[i]);
+            }
+
+            if (GetResponsiveAmount(menuBarCategoriesAmount) < levelEditorSettings.levelObjectCategories.Length)
+            {
+                DrawMenuBarButton(systemMenuBarItems[0], () => ToggleCategoryMoreBox(), showCategoryMoreBoxAnimationValue > 0f);
+            }
+            else if (showCategoryMoreBoxAnimationValue > 0f)
+            {
+                showCategoryMoreBoxAnimationValue = 0f;
+            }
         }
 
         #endregion
@@ -590,8 +713,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuPreferredItems()
         {
-            DrawMenubarButton(systemMenuBarItems[1], null);
-            DrawMenubarButton(systemMenuBarItems[2], null);
+            DrawMenuBarButton(systemMenuBarItems[1], null);
+            DrawMenuBarButton(systemMenuBarItems[2], null);
         }
 
         #endregion
@@ -600,10 +723,19 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuLayers()
         {
-            DrawMenubarButton(systemMenuBarItems[3], null);
-            DrawMenubarButton(systemMenuBarItems[3], null);
-            DrawMenubarButton(systemMenuBarItems[3], null);
-            DrawMenubarButton(systemMenuBarItems[3], null);
+            for (int i = 0; i < Mathf.Min(GetResponsiveAmount(menuBarLayersAmount), levelEditorSettings.levelLayers.Length); i++)
+            {
+                DrawLayerButton(levelEditorSettings.levelLayers[i]);
+            }
+
+            if (GetResponsiveAmount(menuBarLayersAmount) < levelEditorSettings.levelLayers.Length)
+            {
+                DrawMenuBarButton(systemMenuBarItems[3], () => ToggleLayerMoreBox(), showLayerMoreBoxAnimationValue > 0f);
+            }
+            else if (showLayerMoreBoxAnimationValue > 0f)
+            {
+                showLayerMoreBoxAnimationValue = 0f;
+            }
         }
 
         #endregion
@@ -612,8 +744,105 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuOther()
         {
-            DrawMenubarButton(systemMenuBarItems[4], null);
-            DrawMenubarButton(systemMenuBarItems[5], null);
+            if (searchBarAnimationValue <= 0f)
+                DrawMenuBarButton(systemMenuBarItems[4], () => ToggleSearchMenu());
+            else
+                DrawSearchBar();
+            DrawMenuBarButton(systemMenuBarItems[5], null);
+        }
+
+        private void DrawSearchBar()
+        {
+            Debug.Log(searchBarWidth * searchBarAnimationValue);
+            GUILayout.Label("", LevelEditorStyles.SearchFieldLeft);
+            searchString = GUILayout.TextField(searchString, LevelEditorStyles.SearchFieldCenter, GUILayout.Width(searchBarWidth * searchBarAnimationValue));
+            //GUILayout.BeginHorizontal(LevelEditorStyles.SearchFieldCenter);
+
+            //GUILayout.EndHorizontal();
+            GUILayout.Label("", LevelEditorStyles.SearchFieldRight);
+        }
+
+        #endregion
+
+        #region MoreBox
+
+        private float DrawMoreBox(Vector2 bottomLeft, Action<int> contentDrawFunction, int itemCount, float scrollPos, float animationValue, LevelEditorItem bottomButton = null, Action bottomClickAction = null)
+        {
+            float newScrollPos = scrollPos;
+
+            if (animationValue > 0f)
+            {
+                if (contentDrawFunction != null)
+                {
+                    Rect moreBoxRect = new Rect()
+                    {
+                        position = bottomLeft + Vector2.down * moreBoxSize.y * animationValue,
+                        size = new Vector2(moreBoxSize.x, moreBoxSize.y * animationValue)
+                    };
+
+                    if (Event.current.type == EventType.Layout)
+                    {
+                        BlockMouseInArea(moreBoxRect);
+                    }
+
+                    if(moreBoxRect.Contains(Event.current.mousePosition))
+                    {
+                        mouseHoveringMenuBar = true;
+                    }
+
+                    GUILayout.BeginArea(moreBoxRect, LevelEditorStyles.MoreBox);
+                    int objectsPerRow = Mathf.FloorToInt(moreBoxSize.x / (LevelEditorStyles.MenuButtonCircle.fixedWidth + LevelEditorStyles.MenuButtonCircle.margin.right + LevelEditorStyles.MenuButtonCircle.margin.left) + 1);
+
+                    newScrollPos = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(scrollPos, 0f)), false, false).y;
+
+                    GUILayout.BeginVertical();
+                    for (int i = 0; i < itemCount; i++)
+                    {
+                        if (i % objectsPerRow == 0)
+                            GUILayout.BeginHorizontal();
+
+                        contentDrawFunction.Invoke(i);
+
+                        EnableMouse();
+
+                        if ((i + 1) % objectsPerRow == 0 || i == itemCount - 1)
+                        {
+                            GUILayout.EndHorizontal();
+                        }
+                    }
+
+                    if (bottomButton != null && bottomClickAction != null)
+                    {
+                        GUILayout.BeginHorizontal(GUI.skin.GetStyle("HorizontalRule"));
+                        GUILayout.EndHorizontal();
+                        GUILayout.BeginHorizontal();
+                        if (GUILayout.Button("Clear Category Filter", LevelEditorStyles.MenuButtonSquare))
+                            bottomClickAction.Invoke();
+                        GUILayout.EndHorizontal();
+                    }
+                    GUILayout.EndVertical();
+                    GUILayout.EndScrollView();
+
+                    if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+                    {
+                        newScrollPos += lastScrollDelta;
+                        scrollDone = lastScrollDelta != 0;
+                    }
+                    DisableScroll();
+                    GUILayout.EndArea();
+
+
+
+                    
+                }
+            }
+
+            return newScrollPos;
+        }
+
+        private float GetMoreBoxHeight()
+        {
+            return (moreBoxSize.y + LevelEditorStyles.MoreBox.margin.bottom + LevelEditorStyles.MoreBox.margin.top + menuBarHeight) * Math.Max(showCategoryMoreBoxAnimationValue, showLayerMoreBoxAnimationValue);
         }
 
         #endregion
@@ -953,14 +1182,121 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region MenuBar
 
-        
+        #region Categories
+
+        private void ToggleCategory(string guid)
+        {
+            if (selectedCategories.Contains(guid))
+                selectedCategories.Remove(guid);
+            else
+                selectedCategories.Add(guid);
+        }
+
+        private void ClearCategoryFilter()
+        {
+            selectedCategories.Clear();
+            ToggleCategoryMoreBox();
+        }
+
+        private void ToggleCategoryMoreBox()
+        {
+            if (showCategoryMoreBoxAnimation == null || showCategoryMoreBoxAnimation.Paused)
+            {
+                if (showCategoryMoreBoxAnimationValue < 0.5f)
+                {
+                    showCategoryMoreBoxAnimation = tweener.Tween(this, null, moreBoxAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => showCategoryMoreBoxAnimationValue = val)
+                        .OnComplete(() =>
+                        {
+                            showCategoryMoreBoxAnimationValue = Mathf.Round(showCategoryMoreBoxAnimationValue);
+                            showCategoryMoreBoxAnimation = null;
+                        });
+                }
+                else
+                {
+                    showCategoryMoreBoxAnimation = tweener.Tween(this, null, moreBoxAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => showCategoryMoreBoxAnimationValue = 1f - val)
+                        .OnComplete(() =>
+                        {
+                            showCategoryMoreBoxAnimationValue = Mathf.Round(showCategoryMoreBoxAnimationValue);
+                            showCategoryMoreBoxAnimation = null;
+                        });
+                }
+            }
+        }
+
+        #endregion
+
+        #region Layers
+
+        private void ToggleLayer(string guid)
+        {
+            if (selectedLayer == guid)
+                selectedLayer = null;
+            else
+                selectedLayer = guid;
+        }
+
+        private void ToggleLayerMoreBox()
+        {
+            if (showLayerMoreBoxAnimation == null || showLayerMoreBoxAnimation.Paused)
+            {
+                if (showLayerMoreBoxAnimationValue < 0.5f)
+                {
+                    showLayerMoreBoxAnimation = tweener.Tween(this, null, moreBoxAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => showLayerMoreBoxAnimationValue = val)
+                        .OnComplete(() =>
+                        {
+                            showLayerMoreBoxAnimationValue = Mathf.Round(showLayerMoreBoxAnimationValue);
+                            showLayerMoreBoxAnimation = null;
+                        });
+                }
+                else
+                {
+                    showLayerMoreBoxAnimation = tweener.Tween(this, null, moreBoxAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => showLayerMoreBoxAnimationValue = 1f - val)
+                        .OnComplete(() =>
+                        {
+                            showLayerMoreBoxAnimationValue = Mathf.Round(showLayerMoreBoxAnimationValue);
+                            showLayerMoreBoxAnimation = null;
+                        });
+                }
+            }
+        }
+
+        #endregion
+
+        #region Search/Settings
+
+        private void ToggleSearchMenu()
+        {
+            if (searchBarAnimation == null || searchBarAnimation.Paused)
+            {
+                if (searchBarAnimationValue < 0.5f)
+                {
+                    searchBarAnimation = tweener.Tween(this, null, searchBarAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => searchBarAnimationValue = val)
+                        .OnComplete(() =>
+                        {
+                            searchBarAnimationValue = Mathf.Round(searchBarAnimationValue);
+                            searchBarAnimation = null;
+                        });
+                }
+                else
+                {
+                    searchBarAnimation = tweener.Tween(this, null, searchBarAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => searchBarAnimationValue = 1f - val)
+                        .OnComplete(() =>
+                        {
+                            searchBarAnimationValue = Mathf.Round(searchBarAnimationValue);
+                            searchBarAnimation = null;
+                        });
+                }
+            }
+        }
 
         #endregion
 
         #endregion
 
         #endregion
-       
+
+        #endregion
+
         #region Add Prefab To Level Objects
 
         private void DrawAddNewPrefabDialog(Rect windowRect, PrefabStage currPrefabStage)
