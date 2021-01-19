@@ -26,6 +26,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _menuBar;
         private static GUIStyle _menuButtonCircle;
         private static GUIStyle _menuButtonCircleActive;
+        private static GUIStyle _menuLabelCircle;
         private static GUIStyle _menuButtonSquare;
 
         //More Box
@@ -190,6 +191,20 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         }
 
+        public static GUIStyle MenuLabelCircle
+        {
+            get
+            {
+                if (_menuLabelCircle == null)
+                {
+                    _menuLabelCircle = new GUIStyle(GUI.skin.customStyles[4]);
+                    _menuLabelCircle.normal.background = null;
+                    _menuLabelCircle.hover.background = null;
+                    _menuLabelCircle.active.background = null;
+                }
+                return _menuLabelCircle;
+            }
+        }
 
         public static GUIStyle MenuButtonSquare
         {
@@ -422,6 +437,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _menuBar = null;
             _menuButtonCircle = null;
             _menuButtonCircleActive = null;
+            _menuLabelCircle = null;
             _menuButtonSquare = null;
 
             //More Box

@@ -114,6 +114,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             serializedObject.Update();
             selectedListOption = GUILayout.Toolbar(selectedListOption, listOptions);
+
+            EditorGUI.BeginChangeCheck();
             if (selectedListOption == 0)
             {
                 categoryList.DoLayoutList();
@@ -123,6 +125,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 layerList.DoLayoutList();
                 DrawLayerProperty();
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                LevelObjectsController.Instance.ReloadSettingsCache();
             }
 
             EditorGUILayout.EndVertical();

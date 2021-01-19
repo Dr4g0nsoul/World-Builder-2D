@@ -20,7 +20,7 @@ MonoBehaviour:
     thumbnail: {fileID: 0}
     description: 
     accentColor: {r: 1, g: 1, b: 1, a: 1}
-  mainCategory: 
+  mainCategory: e74c1e07-5b1e-4051-b82d-ef180254a462
   categories:
   - e74c1e07-5b1e-4051-b82d-ef180254a462
   - 09271e61-9543-4944-8024-557227e73140

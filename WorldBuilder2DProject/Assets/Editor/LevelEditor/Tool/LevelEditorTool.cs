@@ -120,10 +120,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Search Bar
         private string searchString;
+        private readonly int searchMaxChars = 25;
         private readonly float searchBarWidth = 250f;
         private Tween searchBarAnimation;
         private float searchBarAnimationValue;
         private readonly float searchBarAnimationTime = .2f;
+        private bool searchFocused;
+
+        //Settings button
+        private bool openLevelEditorSettings = false;
 
         //Object Picker
         private float objectPickerVerticalOffset;
@@ -214,6 +219,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Search
             searchString = "";
             searchBarAnimationValue = 0f;
+            searchFocused = false;
+
+            //Settings button
+            openLevelEditorSettings = false;
 
             //Object Picker
             objectPickerVerticalOffset = 0f;
@@ -319,8 +328,42 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void ToolInput(SceneView view)
         {
             Event e = Event.current;
+
+            //Block Keyboard input when focusing search bar
+            if (GUI.GetNameOfFocusedControl() == "Search")
+            {
+                if (Event.current.type == EventType.KeyDown)
+                {
+                    TextEditor te = GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl) as TextEditor;
+                    if (te != null)
+                    {
+                        if (Event.current.keyCode == KeyCode.RightArrow)
+                        {
+                            te.cursorIndex += 1;
+                            te.selectIndex = te.cursorIndex;
+                            Event.current.Use();
+                        }
+                        else if (Event.current.keyCode == KeyCode.LeftArrow)
+                        {
+                            te.cursorIndex -= 1;
+                            te.selectIndex = te.cursorIndex;
+                            Event.current.Use();
+                        }
+                        else if (Event.current.keyCode == KeyCode.Return)
+                        {
+                            GUI.FocusControl(null);
+                            ToggleSearchMenu();
+                        }
+                        else if (Event.current.keyCode == KeyCode.Escape)
+                        {
+                            searchString = "";
+                            ToggleSearchMenu();
+                        }
+                    }
+                }
+            }
             //Locked to current tool
-            if (Tools.current == Tool.Custom)
+            else if (Tools.current == Tool.Custom)
             {
                 if (e.type == EventType.MouseDown)
                 {
@@ -340,6 +383,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                             
                             //Instantiate(objectToPlace.objectPrefab, Util.EditorUtility.SceneViewToWorldPos(view), Quaternion.identity);
                         }
+                    }
+
+                    //Toggle search menu when clicking out of it
+                    if(searchFocused)
+                    {
+                        ToggleSearchMenu();
                     }
                 }
                 else if (e.type == EventType.KeyUp)
@@ -368,11 +417,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     HoveringButton = false;
                 }
+
+                
             }
         }
 
         private void WindowFocus(SceneView view)
         {
+            //Clicked Open Level Editor Settings
+            if(openLevelEditorSettings)
+            {
+                openLevelEditorSettings = false;
+
+                EditorUtility.FocusProjectWindow();
+                ProjectWindowUtil.ShowCreatedAsset(levelEditorSettings);
+                //EditorGUIUtility.PingObject(levelEditorSettings);
+            }
             //Lost Focus
             if (EditorWindow.focusedWindow != view)
             {
@@ -748,18 +808,25 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 DrawMenuBarButton(systemMenuBarItems[4], () => ToggleSearchMenu());
             else
                 DrawSearchBar();
-            DrawMenuBarButton(systemMenuBarItems[5], null);
+            DrawMenuBarButton(systemMenuBarItems[5], () => OpenLevelEditorSettings());
         }
 
         private void DrawSearchBar()
         {
-            Debug.Log(searchBarWidth * searchBarAnimationValue);
             GUILayout.Label("", LevelEditorStyles.SearchFieldLeft);
-            searchString = GUILayout.TextField(searchString, LevelEditorStyles.SearchFieldCenter, GUILayout.Width(searchBarWidth * searchBarAnimationValue));
-            //GUILayout.BeginHorizontal(LevelEditorStyles.SearchFieldCenter);
+            GUI.SetNextControlName("Search");
+            searchString = GUILayout.TextField(searchString, searchMaxChars, LevelEditorStyles.SearchFieldCenter, GUILayout.Width(searchBarWidth * searchBarAnimationValue));
 
-            //GUILayout.EndHorizontal();
+            if (!searchFocused)
+            {
+                GUI.FocusControl("Search");
+                searchFocused = true;
+            }
             GUILayout.Label("", LevelEditorStyles.SearchFieldRight);
+
+            Rect searchLabel = GUILayoutUtility.GetLastRect();
+            searchLabel.position = new Vector2(searchLabel.position.x - searchLabel.size.x, searchLabel.position.y);
+            GUI.Label(searchLabel, systemMenuBarItems[4].thumbnail, LevelEditorStyles.MenuLabelCircle);
         }
 
         #endregion
@@ -964,7 +1031,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             Rect buttonRect = GUILayoutUtility.GetRect(LevelEditorStyles.LevelObjectButton.fixedWidth + LevelEditorStyles.LevelObjectButton.margin.left + LevelEditorStyles.LevelObjectButton.margin.right,
                     LevelEditorStyles.LevelObjectButton.fixedHeight + LevelEditorStyles.LevelObjectButton.margin.top + LevelEditorStyles.LevelObjectButton.margin.bottom,
                     GUILayout.ExpandWidth(false));
-            GUI.color = obj.item.accentColor;
+            GUI.color = levelObjectsController.GetAccentColor(obj);
             if (buttonRect.Contains(Event.current.mousePosition))
             {
                 EnableMouse();
@@ -1264,7 +1331,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Search/Settings
 
-        private void ToggleSearchMenu()
+        private void ToggleSearchMenu(bool force = false)
         {
             if (searchBarAnimation == null || searchBarAnimation.Paused)
             {
@@ -1277,16 +1344,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                             searchBarAnimation = null;
                         });
                 }
-                else
+                else if(force || searchString == null || searchString.Length <= 0)
                 {
+                    GUI.FocusControl(null);
+                    searchString = "";
                     searchBarAnimation = tweener.Tween(this, null, searchBarAnimationTime).Ease(Ease.SineIn).OnUpdate((val) => searchBarAnimationValue = 1f - val)
                         .OnComplete(() =>
                         {
+                            searchFocused = false;
                             searchBarAnimationValue = Mathf.Round(searchBarAnimationValue);
                             searchBarAnimation = null;
                         });
                 }
             }
+        }
+
+        private void OpenLevelEditorSettings()
+        {
+            openLevelEditorSettings = true;
         }
 
         #endregion

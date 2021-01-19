@@ -29,6 +29,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private LevelObjectsController()
         {
+            ReloadSettingsCache();
             LoadLevelObjects();
         }
 
@@ -41,6 +42,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private SortedDictionary<string, List<string>> levelObjectsPerCategory = new SortedDictionary<string, List<string>>();
         private List<string> currentWorldFavorites = new List<string>();
         private List<string> currentLevelFavorites = new List<string>();
+
+        //Cached Level Editor Settings Data
+        private SortedDictionary<string, LevelObjectCategory> levelObjectCategoryCache;
+        private SortedDictionary<string, LevelLayer> levelLayerCache;
 
         #region Initialization
 
@@ -72,6 +77,36 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     {
                         quickSelectBar.RemoveAt(i);
                     }
+                }
+            }
+        }
+
+        public void ReloadSettingsCache()
+        {
+            LevelEditorSettings settings = LevelEditorTool.GetLevelEditorSettings();
+            if(settings != null)
+            {
+
+                //Build category cache
+                if (levelObjectCategoryCache == null)
+                    levelObjectCategoryCache = new SortedDictionary<string, LevelObjectCategory>();
+                
+                levelObjectCategoryCache.Clear();
+
+                foreach(LevelObjectCategory cat in settings.levelObjectCategories)
+                {
+                    levelObjectCategoryCache.Add(cat.guid, cat);
+                }
+
+                //Build level layer cache
+                if (levelLayerCache == null)
+                    levelLayerCache = new SortedDictionary<string, LevelLayer>();
+
+                levelLayerCache.Clear();
+
+                foreach (LevelLayer layer in settings.levelLayers)
+                {
+                    levelLayerCache.Add(layer.guid, layer);
                 }
             }
         }
@@ -155,6 +190,40 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
 
             return result;
+        }
+
+        #endregion
+
+        #region Utility
+
+        public Color GetAccentColor(string guid)
+        {
+            if (levelObjects.TryGetValue(guid, out LevelObject obj)) {
+                return GetAccentColor(obj);
+            }
+            return Color.white;
+        }
+
+        public Color GetAccentColor(LevelObject obj)
+        {
+            if (obj.mainCategory != null && obj.mainCategory.Length > 0 && levelObjectCategoryCache.TryGetValue(obj.mainCategory, out LevelObjectCategory cat))
+            {
+                if (cat != null && cat.item.accentColor.a > 0)
+                    return cat.item.accentColor;
+            }
+            else if (obj.categories.Length > 0)
+            {
+                string firstCategory = obj.categories[0];
+                if (firstCategory != null && firstCategory.Length > 0 && levelObjectCategoryCache.TryGetValue(firstCategory, out LevelObjectCategory cat2))
+                {
+                    if (cat2 != null && cat2.item.accentColor.a > 0)
+                        return cat2.item.accentColor;
+                }
+            }
+            else if (obj.item.accentColor.a > 0)
+                return obj.item.accentColor;
+
+            return Color.white;
         }
 
         #endregion

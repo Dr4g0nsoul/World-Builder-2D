@@ -178,22 +178,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
 
             //Get assigned categories id
+            SerializedProperty mainCategory = serializedObject.FindProperty("mainCategory");
+            int mainCategoryIndex = -1;
             SerializedProperty assignedCategoriesProperty = serializedObject.FindProperty("categories");
             List<string> assignedCategoriesGuid = new List<string>();
 
             for (int i = 0; i < assignedCategoriesProperty.arraySize; i++)
+            {
                 assignedCategoriesGuid.Add(assignedCategoriesProperty.GetArrayElementAtIndex(i).stringValue);
+            }
 
-
+            //Get assigned category names
+            List<string> assignedCategoriesNames = new List<string>();
 
             //Get assigned and unassigned categories
             List<LevelObjectCategory> assignedCategories = new List<LevelObjectCategory>();
             List<LevelObjectCategory> unassignedCategories = new List<LevelObjectCategory>();
+            int assignedIndex = 0;
             foreach(LevelObjectCategory cat in levelEditorSettings.levelObjectCategories)
             {
                 if (assignedCategoriesGuid.Contains(cat.guid))
                 {
+                    if(cat.guid == serializedObject.FindProperty("mainCategory").stringValue)
+                    {
+                        mainCategoryIndex = assignedIndex;
+                    }
                     assignedCategories.Add(cat);
+                    assignedCategoriesNames.Add(cat.item.name);
+                    assignedIndex++;
                 }
                 else
                 {
@@ -201,11 +213,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
             }
 
+
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(3f);
-
-            GUILayout.Label("Assigned Categories", headerMiddle);
+            GUILayout.Label("Main Category", EditorStyles.boldLabel);
             GUILayout.Space(1f);
+            if (assignedCategories.Count > 0)
+            {
+                int newMainCategoryIndex = EditorGUILayout.Popup(mainCategoryIndex, assignedCategoriesNames.ToArray(), EditorStyles.popup);
+                if (mainCategoryIndex < 0)
+                {
+                    mainCategory.stringValue = assignedCategoriesGuid[0];
+                }
+                else if(newMainCategoryIndex != mainCategoryIndex || mainCategory.stringValue.Length < 1)
+                {
+                    mainCategory.stringValue = assignedCategories[newMainCategoryIndex].guid;
+                }
+                //GUILayout.Label(mainCategory.stringValue);
+            }
+            else
+            {
+                if (mainCategory.stringValue != null || mainCategory.stringValue.Length < 1)
+                    mainCategory.stringValue = "";
+                EditorGUILayout.HelpBox("Assign categories before choosing the main category", MessageType.Info, true);
+            }
+            GUILayout.Space(10f);
+
+
+            GUILayout.Label("Assigned Categories", EditorStyles.boldLabel);
             if(assignedCategories.Count < 1)
                 GUILayout.Label("No categories assigned yet", textMiddle);
             else
@@ -213,7 +248,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             GUILayout.Space(10f);
 
-            GUILayout.Label("Unassigned Categories", headerMiddle);
+            GUILayout.Label("Unassigned Categories", EditorStyles.boldLabel);
             GUILayout.Space(1f);
             if(unassignedCategories.Count < 1)
                 GUILayout.Label("All available categories were assigned", textMiddle);
@@ -353,7 +388,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Space(3f);
 
-            GUILayout.Label("Assigned Layers", headerMiddle);
+            GUILayout.Label("Assigned Layers", EditorStyles.boldLabel);
             GUILayout.Space(1f);
             if (assignedLayers.Count < 1)
                 GUILayout.Label("No layers assigned yet", textMiddle);
@@ -362,7 +397,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             GUILayout.Space(10f);
 
-            GUILayout.Label("Unassigned Layers", headerMiddle);
+            GUILayout.Label("Unassigned Layers", EditorStyles.boldLabel);
             GUILayout.Space(1f);
             if (unassignedLayers.Count < 1)
                 GUILayout.Label("All layers were assigned", textMiddle);
