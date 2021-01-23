@@ -88,6 +88,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Window preferences
         private GUISkin guiSkin;
         private readonly float minWindowHeight = 550f;
+        private bool drawGUI;
+
+        //Responsive View
+        private float currentResponsiveWidth;
 
         //Messagebox preferences
         private Vector2 messageboxSize = new Vector2(400f, 140f);
@@ -193,8 +197,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void SetupVariables()
         {
+            drawGUI = false;
+
             //Main references
             levelObjectsController = LevelObjectsController.Instance;
+
+            //Responsive View
+            currentResponsiveWidth = 0f;
 
             //Animation
             tweener = new Tweener();
@@ -518,8 +527,18 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         else
                         {
 
+                            //Fix Layout <-> Draw bug
+                            if(Event.current.type == EventType.Layout)
+                            {
+                                drawGUI = true;
+                                currentResponsiveWidth = cameraBounds.width;
+                            }
+
                             //--- Draw GUI ---
-                            DrawGui(cameraBounds);
+                            if (drawGUI)
+                            {
+                                DrawGui(cameraBounds);
+                            }
                             /*
                             try
                             {
@@ -555,7 +574,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region General
 
-        public void DrawGui(Rect screenRect)
+        private void DrawGui(Rect screenRect)
         {
             //Compute Element Rectangles
             //- If objectPicker hidden set offset according to screen height
@@ -724,9 +743,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private int GetResponsiveAmount(Vector3Int amounts)
         {
-            if (sceneCam.pixelWidth < responsiveViewWidth.x)
+            if (currentResponsiveWidth < responsiveViewWidth.x)
             {
-                if (sceneCam.pixelWidth < responsiveViewWidth.y)
+                if (currentResponsiveWidth < responsiveViewWidth.y)
                     return amounts.z;
                 else
                     return amounts.y;
@@ -736,9 +755,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private float GetResponsiveAmount(Vector3 amounts)
         {
-            if (sceneCam.pixelWidth < responsiveViewWidth.x)
+            if (currentResponsiveWidth < responsiveViewWidth.x)
             {
-                if (sceneCam.pixelWidth < responsiveViewWidth.y)
+                if (currentResponsiveWidth < responsiveViewWidth.y)
                     return amounts.z;
                 else
                     return amounts.y;
