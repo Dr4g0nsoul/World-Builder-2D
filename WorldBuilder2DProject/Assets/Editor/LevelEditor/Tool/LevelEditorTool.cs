@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.EditorTools;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
+using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -41,6 +42,23 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region World Graph Singleton
+
+        private static readonly string s_WorldEditorGraphLocation = "WorldEditor";
+        private static readonly string s_WorldEditorGraphFileName = "WorldEditorGraph";
+        private static WorldEditorGraph s_WorldEditorGraph;
+
+        public static WorldEditorGraph GetWorldEditorGraph()
+        {
+            if (s_WorldEditorGraph == null)
+            {
+                s_WorldEditorGraph = Resources.Load<WorldEditorGraph>(s_WorldEditorGraphLocation + "/" + s_WorldEditorGraphFileName);
+            }
+            return s_WorldEditorGraph;
+        }
+
+        #endregion
+
 
         // Serialize this value to set a default value in the Inspector.
         [SerializeField]
@@ -52,6 +70,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private LevelObjectsController levelObjectsController;
         private Transform levelEditorRoot;
         private Transform levelRoot;
+        private WorldEditorGraph worldEditorGraph;
         private Camera sceneCam;
 
         //Timing
@@ -187,6 +206,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             LevelEditorStyles.RefreshStyles();
             levelEditorSettings = GetLevelEditorSettings();
+            worldEditorGraph = GetWorldEditorGraph();
 
             HoveringButton = false;
             blockMouse = false;
@@ -487,9 +507,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     DrawAddNewPrefabDialog(cameraBounds, currPrefabStage);
                 }
                 //--- Checks before drawing GUI ---
-                else if (levelEditorSettings == null)
+                else if (levelEditorSettings == null || worldEditorGraph == null)
                 {
-                    ShowButtonMessage(cameraBounds, "No Level Editor setting found!", "Please add one at Resources/LevelEditor with the name \"LevelEditorSettings\".\nOr just press the button below:", "Create Level Editor Settings", () => CreateLevelEditorSettings());
+                    ShowButtonMessage(cameraBounds, "Uninitialized Level Editor!", "Please press the button below to generate necessary editor assets", "Initialize Level Editor", () => CreateLevelEditorAssets());
                 }
                 else if (levelEditorSettings.levelEditorRootTag == null || levelEditorSettings.levelEditorRootTag.Length <= 0
                     || levelEditorSettings.levelEditorRootTag == "Untagged")
@@ -1236,8 +1256,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Initialization
 
-        private void CreateLevelEditorSettings()
+        private void CreateLevelEditorAssets()
         {
+
+            //Level Editor Settings
             levelEditorSettings = GetLevelEditorSettings();
 
             if (levelEditorSettings == null)
@@ -1253,6 +1275,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 AssetDatabase.CreateAsset(new LevelEditorSettings(), "Assets/Resources/LevelEditor/LevelEditorSettings.asset");
                 levelEditorSettings = GetLevelEditorSettings();
+            }
+
+            //World Editor Graph
+            worldEditorGraph = GetWorldEditorGraph();
+            
+            if(worldEditorGraph == null)
+            {
+                Util.EditorUtility.CreateAssetAndFolders("Assets/Resources/" + s_WorldEditorGraphLocation, s_WorldEditorGraphFileName, new WorldEditorGraph());
+                worldEditorGraph = GetWorldEditorGraph();
             }
         }
 

@@ -14,7 +14,7 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
         /// <summary>
         /// Creates an asset in a folder and creating also the folder specified in its path
         /// </summary>
-        /// <param name="absolutePath">Folder where the asset is located</param>
+        /// <param name="folder">Folder where the asset is located ending with '/', has to start with "Assets/"</param>
         /// <param name="assetName">Name of the asset</param>
         /// <param name="asset">The asset that has to be created</param>
         /// <returns></returns>
@@ -74,6 +74,61 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             else
             {
                 Debug.LogError($"EditorUtility::CreateAssetAndFolders: Foldername of {assetName}.asset has to start with \"Assets/\"");
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Creates a folder and creating also the parent folders specified in its path
+        /// </summary>
+        /// <param name="path">Folder where the asset is located ending with '/', has to start with "Assets/"</param>
+        /// <returns></returns>
+        public static bool CreateFolders(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Debug.LogError("EditorUtility::CreateFolders: Folder path is null or empty");
+                return false;
+            }
+            if (path.StartsWith("Assets/"))
+            {
+                if (!path.EndsWith("/"))
+                    path += "/";
+
+                //Create folders
+                int currIndex = 0;
+                string currParent = "";
+                string currFolderToCreate;
+                bool isFolder = true;
+                while (isFolder)
+                {
+                    currIndex = path.IndexOf('/', currIndex) + 1;
+                    currParent = path.Substring(0, currIndex);
+                    if (path.IndexOf('/', currIndex) > 0)
+                    {
+                        currFolderToCreate = path.Substring(currIndex, path.IndexOf('/', currIndex) - currIndex);
+                        if (!AssetDatabase.IsValidFolder(currParent + currFolderToCreate))
+                        {
+                            if (AssetDatabase.CreateFolder(currParent.TrimEnd('/'), currFolderToCreate) == null)
+                            {
+                                Debug.LogError($"EditorUtility::CreateFolders: Folder \"{currParent + currFolderToCreate}\" can not be created");
+                                return false;
+                            }
+                            Debug.Log($"Created Folder: {currFolderToCreate} with parent {currParent}");
+                        }
+                    }
+                    else
+                    {
+                        isFolder = false;
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                Debug.LogError($"EditorUtility::CreateFolders: Folderpath of {path} has to start with \"Assets/\"");
             }
             return false;
         }
