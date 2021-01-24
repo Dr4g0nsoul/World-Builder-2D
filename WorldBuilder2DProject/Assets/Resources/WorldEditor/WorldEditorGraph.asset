@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-1227407978479856192
+--- !u!114 &-8628300153976925781
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,13 +13,49 @@ MonoBehaviour:
   m_Name: Test Level 2
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 232, y: -232}
+  position: {x: 290.74063, y: -215.17372}
   ports:
     keys: []
     values: []
-  guid: f3c32a3b-54d8-436d-8f07-c4445cc8c03c
-  assignedScene:
-    m_Handle: -20254
+  guid: b0a33745-ee5a-46c7-b148-decb1d0b85cb
+  assignedSceneName: Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb
+  assignedScenePath: Assets/Scenes/Levels/Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb.unity
+  numberOfInputs: 0
+  numberOfOutputs: 0
+  levelBoundaries:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
+--- !u!114 &-4871792554773954699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: Test Level
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -99.25937, y: -213.17372}
+  ports:
+    keys: []
+    values: []
+  guid: 97e794f4-f0a2-41ee-96b4-80203ab387da
+  assignedSceneName: Level_97e794f4-f0a2-41ee-96b4-80203ab387da
+  assignedScenePath: Assets/Scenes/Levels/Level_97e794f4-f0a2-41ee-96b4-80203ab387da.unity
+  numberOfInputs: 0
+  numberOfOutputs: 0
+  levelBoundaries:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33,25 +69,5 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 6586168325484446556}
-  - {fileID: -1227407978479856192}
---- !u!114 &6586168325484446556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Test Level
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -248, y: -232}
-  ports:
-    keys: []
-    values: []
-  guid: cec625b7-ecbd-40d8-beb9-72cfdf1b7d2a
-  assignedScene:
-    m_Handle: -20218
+  - {fileID: -4871792554773954699}
+  - {fileID: -8628300153976925781}

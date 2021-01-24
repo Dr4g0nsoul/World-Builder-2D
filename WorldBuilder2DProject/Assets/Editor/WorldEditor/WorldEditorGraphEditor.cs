@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using XNode;
 using XNodeEditor;
 
@@ -15,7 +16,22 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
     {
 
         private static readonly string s_LevelScenePath = "Assets/Scenes/Levels";
+        private Texture2D gridTexture;
 
+
+        public override Color GetPortColor(NodePort port)
+        {
+            return Color.blue;
+        }
+
+        public override Texture2D GetGridTexture()
+        {
+            if(gridTexture == null)
+            {
+                gridTexture = new Texture2D(0, 0);
+            }
+            return gridTexture;
+        }
 
         public override Node CreateNode(Type type, Vector2 position)
         {
@@ -32,17 +48,15 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 LevelNode lNode = createdNode as LevelNode;
                 if (lNode != null)
                 {
-                    lNode.assignedScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-                    lNode.assignedScene.name = $"Level_{lNode.guid}";
+                    Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+                    lNode.assignedSceneName = $"Level_{lNode.guid}";
+                    lNode.assignedScenePath = $"{s_LevelScenePath}/{lNode.assignedSceneName}.unity";
+
                     Util.EditorUtility.CreateFolders(s_LevelScenePath);
-                    EditorSceneManager.SaveScene(lNode.assignedScene, $"{s_LevelScenePath}/{lNode.assignedScene.name}.unity");
-                    EditorSceneManager.CloseScene(lNode.assignedScene, true);
+                    EditorSceneManager.SaveScene(newScene, lNode.assignedScenePath);
+                    EditorSceneManager.CloseScene(newScene, true);
                 }
             }
-
-            
-
-            
 
             //Show rename popup
             RenamePopup.Show(createdNode);

@@ -6,6 +6,9 @@ using UnityEditor.EditorTools;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEngine;
 using dr4g0nsoul.WorldBuilder2D.WorldEditor;
+using UnityEditor.SceneManagement;
+using XNodeEditor;
+using UnityEngine.SceneManagement;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -68,10 +71,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // Level editor main references
         private LevelEditorSettings levelEditorSettings;
         private LevelObjectsController levelObjectsController;
-        private Transform levelEditorRoot;
-        private Transform levelRoot;
         private WorldEditorGraph worldEditorGraph;
         private Camera sceneCam;
+
+        //Initialization
+        private int levelCount;
+        private bool allLevelsInitialized;
+        private bool openWorldEditor;
 
         //Timing
         private double lastTimeSinceStartup = 0f;
@@ -207,6 +213,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             LevelEditorStyles.RefreshStyles();
             levelEditorSettings = GetLevelEditorSettings();
             worldEditorGraph = GetWorldEditorGraph();
+
+            //Initialization
+            levelCount = 0;
+            allLevelsInitialized = false;
+            openWorldEditor = false;
 
             HoveringButton = false;
             blockMouse = false;
@@ -462,6 +473,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 ProjectWindowUtil.ShowCreatedAsset(levelEditorSettings);
                 //EditorGUIUtility.PingObject(levelEditorSettings);
             }
+            //Clicked on Open World Editor Window
+            else if(openWorldEditor)
+            {
+                openWorldEditor = false;
+                EditorWindow.FocusWindowIfItsOpen<NodeEditorWindow>();
+            }
             //Lost Focus
             if (EditorWindow.focusedWindow != view)
             {
@@ -518,9 +535,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 else
                 {
-                    //--- Setup Level Editor Root ---
-                    if (levelEditorRoot == null)
+                    //--- Setup Levels ---
+                    if (GetLoadedLevelsCount() < 2)
                     {
+                        ShowButtonMessage(cameraBounds, "Open Level From World Editor!", "Right click on an empty space in the World Graph to create a level", "Open World Editor", () => OpenWorldEditor());
+                        /*
                         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(levelEditorSettings.levelEditorRootTag);
                         if (gameObjects.Length > 1)
                         {
@@ -534,6 +553,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         {
                             levelEditorRoot = gameObjects[0].transform;
                         }
+                        */
+                    }
+                    else if (!CheckLevelsInitialized())
+                    {
+                        ShowButtonMessage(cameraBounds, "Initialize Levels!", "Some levels appear to not be initialized. Use the button below to Initialize a level scene. (Contents of that scene will be wiped!)", "Initialize Level Scenes", () => InitializeLevelScenes());
                     }
                     else
                     {
@@ -1294,6 +1318,74 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             obj.tag = levelEditorSettings.levelEditorRootTag;
             Selection.activeTransform = obj.transform;
         }
+
+        private int GetLoadedLevelsCount()
+        {
+            if(Event.current.type == EventType.Layout)
+            {
+                levelCount = EditorSceneManager.loadedSceneCount;
+            }
+            return levelCount;
+        }
+
+        private bool CheckLevelsInitialized()
+        {
+            if(Event.current.type == EventType.Layout)
+            {
+                int countLoaded = SceneManager.sceneCount;
+
+                for (int i = 1; i < countLoaded; i++)
+                {
+                    GameObject[] objs = EditorSceneManager.GetSceneAt(i).GetRootGameObjects();
+                    if (objs.Length != 1)
+                    {
+                        allLevelsInitialized = false;
+                        return allLevelsInitialized;
+                    }
+                }
+
+                allLevelsInitialized = true;
+            }
+            return allLevelsInitialized;
+        }
+
+        private void InitializeLevelScenes()
+        {
+            //Get all loaded scenes
+            int countLoaded = SceneManager.sceneCount;
+            Scene[] loadedScenes = new Scene[countLoaded];
+
+            for (int i = 0; i < countLoaded; i++)
+            {
+                loadedScenes[i] = SceneManager.GetSceneAt(i);
+            }
+
+            //Initialize all loaded scenes
+            for (int i = 1; i < countLoaded; i++)
+            {
+                GameObject[] objs = loadedScenes[i].GetRootGameObjects();
+
+                //Incorrectly initialized - There is more than one gameobject
+                if(objs.Length != 1)
+                {
+                    //Initialize scene
+                    EditorSceneManager.SetActiveScene(loadedScenes[i]);
+                    for(int j = objs.Length - 1; j >= 0; j--)
+                    {
+                        DestroyImmediate(objs[j]);
+                    }
+                    GameObject levelRoot = new GameObject();
+                    levelRoot.name = "Level";
+                    EditorSceneManager.SaveOpenScenes();
+                }
+            }
+        }
+
+        private void OpenWorldEditor()
+        {
+            openWorldEditor = true;
+        }
+
 
         #endregion
 

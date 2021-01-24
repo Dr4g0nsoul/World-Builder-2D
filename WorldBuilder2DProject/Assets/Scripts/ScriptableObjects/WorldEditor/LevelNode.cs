@@ -1,6 +1,7 @@
 ﻿using dr4g0nsoul.WorldBuilder2D.Util;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using XNode;
 
 namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
 {
@@ -9,7 +10,12 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
     public class LevelNode : UniqueNode
     {
 
-        [HideInInspector] public Scene assignedScene;
+        public string assignedSceneName;
+        public string assignedScenePath;
+        public int numberOfInputs;
+        public int numberOfOutputs;
+
+        public Rect levelBoundaries;
     }
 
 }
