@@ -29,39 +29,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         }
         #endregion
 
-        #region Settings Singleton
-
-        private static readonly string s_prefLocation = "LevelEditor/LevelEditorSettings";
-        private static LevelEditorSettings s_levelEditorSettings;
-
-        public static LevelEditorSettings GetLevelEditorSettings()
-        {
-            if (s_levelEditorSettings == null)
-            {
-                s_levelEditorSettings = Resources.Load<LevelEditorSettings>(s_prefLocation);
-            }
-            return s_levelEditorSettings;
-        }
-
-        #endregion
-
-        #region World Graph Singleton
-
-        private static readonly string s_WorldEditorGraphLocation = "WorldEditor";
-        private static readonly string s_WorldEditorGraphFileName = "WorldEditorGraph";
-        private static WorldEditorGraph s_WorldEditorGraph;
-
-        public static WorldEditorGraph GetWorldEditorGraph()
-        {
-            if (s_WorldEditorGraph == null)
-            {
-                s_WorldEditorGraph = Resources.Load<WorldEditorGraph>(s_WorldEditorGraphLocation + "/" + s_WorldEditorGraphFileName);
-            }
-            return s_WorldEditorGraph;
-        }
-
-        #endregion
-
 
         // Serialize this value to set a default value in the Inspector.
         [SerializeField]
@@ -71,6 +38,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // Level editor main references
         private LevelEditorSettings levelEditorSettings;
         private LevelObjectsController levelObjectsController;
+        private LevelEditorSettingsController levelEditorSettingsController;
         private WorldEditorGraph worldEditorGraph;
         private Camera sceneCam;
 
@@ -211,8 +179,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
 
             LevelEditorStyles.RefreshStyles();
-            levelEditorSettings = GetLevelEditorSettings();
-            worldEditorGraph = GetWorldEditorGraph();
+            levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
+            worldEditorGraph = LevelController.Instance.GetWorldEditorGraph();
 
             //Initialization
             levelCount = 0;
@@ -1284,7 +1252,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
 
             //Level Editor Settings
-            levelEditorSettings = GetLevelEditorSettings();
+            levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
 
             if (levelEditorSettings == null)
             {
@@ -1298,19 +1266,20 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
 
                 AssetDatabase.CreateAsset(new LevelEditorSettings(), "Assets/Resources/LevelEditor/LevelEditorSettings.asset");
-                levelEditorSettings = GetLevelEditorSettings();
+                levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
             }
 
             //World Editor Graph
-            worldEditorGraph = GetWorldEditorGraph();
+            worldEditorGraph = LevelController.Instance.GetWorldEditorGraph();
             
             if(worldEditorGraph == null)
             {
-                Util.EditorUtility.CreateAssetAndFolders("Assets/Resources/" + s_WorldEditorGraphLocation, s_WorldEditorGraphFileName, new WorldEditorGraph());
-                worldEditorGraph = GetWorldEditorGraph();
+                Util.EditorUtility.CreateAssetAndFolders("Assets/Resources/" + LevelController.WORLD_EDITOR_GRAPH_LOCATION, LevelController.WORLD_EDITOR_GRAPH_FILE_NAME, new WorldEditorGraph());
+                worldEditorGraph = LevelController.Instance.GetWorldEditorGraph();
             }
         }
 
+        /* Not used anmyore because levels are split into multiple scenes
         private void InstantiateLevelEditor()
         {
             GameObject obj = new GameObject();
@@ -1318,6 +1287,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             obj.tag = levelEditorSettings.levelEditorRootTag;
             Selection.activeTransform = obj.transform;
         }
+        */
 
         private int GetLoadedLevelsCount()
         {
@@ -1333,18 +1303,20 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if(Event.current.type == EventType.Layout)
             {
                 int countLoaded = SceneManager.sceneCount;
-
-                for (int i = 1; i < countLoaded; i++)
+                if (countLoaded > 1)
                 {
-                    GameObject[] objs = EditorSceneManager.GetSceneAt(i).GetRootGameObjects();
-                    if (objs.Length != 1)
+                    for (int i = 1; i < countLoaded; i++)
                     {
-                        allLevelsInitialized = false;
-                        return allLevelsInitialized;
+                        GameObject[] objs = SceneManager.GetSceneAt(i).GetRootGameObjects();
+                        if (objs.Length < 1 || !LevelController.Instance.IsValidLevel(objs[0]))
+                        {
+                            allLevelsInitialized = false;
+                            return allLevelsInitialized;
+                        }
                     }
-                }
 
-                allLevelsInitialized = true;
+                    allLevelsInitialized = true;
+                }
             }
             return allLevelsInitialized;
         }
@@ -1365,17 +1337,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 GameObject[] objs = loadedScenes[i].GetRootGameObjects();
 
-                //Incorrectly initialized - There is more than one gameobject
-                if(objs.Length != 1)
+                //Incorrectly initialized - The first root object has to be a valid Level Root
+                if(objs.Length < 1 || !LevelController.Instance.IsValidLevel(objs[0]))
                 {
                     //Initialize scene
+                    /* Do not delete already present gameobjects */
                     EditorSceneManager.SetActiveScene(loadedScenes[i]);
-                    for(int j = objs.Length - 1; j >= 0; j--)
-                    {
-                        DestroyImmediate(objs[j]);
-                    }
                     GameObject levelRoot = new GameObject();
                     levelRoot.name = "Level";
+                    LevelInstance levelInstance = levelRoot.AddComponent<LevelInstance>();
+                    levelInstance.level = GetObjectGuid(loadedScenes[i].name);
+                    if(!LevelController.Instance.IsValidLevel(levelInstance.level))
+                    {
+                        Debug.LogError("LevelEditorTool::InitializeLevelScenes: Invalid level scene found");
+                    }
+                    levelRoot.transform.SetAsFirstSibling();
+
                     EditorSceneManager.SaveOpenScenes();
                 }
             }
@@ -1569,16 +1546,54 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Public Methods
 
-        #region General
+        #region Utility
 
-        public void OpenLevelObjectDrawer()
+        public string GetObjectGuid(string objectName)
         {
-            forgetNextSpacePress = true;
+            if(string.IsNullOrEmpty(objectName))
+            {
+                return null;
+            }
+
+            int guidBegin = objectName.LastIndexOf('_');
+            if(guidBegin < 0)
+            {
+                return null;
+            }
+            guidBegin = Mathf.Min(guidBegin + 1, objectName.Length);
+
+            if (Guid.TryParse(objectName.Substring(guidBegin, objectName.Length - guidBegin), out Guid result))
+                return result.ToString();
+
+            return null;
+        }
+
+        public string GetObjectGuid(GameObject gameObject)
+        {
+            if (gameObject != null)
+            {
+                return GetObjectGuid(gameObject.name);
+            }
+            return null;
+        }
+
+        public string GetObjectGuid(Transform transform)
+        {
+            if(transform != null)
+            {
+                return GetObjectGuid(transform.gameObject.name);
+            }
+            return null;
         }
 
         #endregion
 
         #region Level Object Drawer
+
+        public void OpenLevelObjectDrawer()
+        {
+            forgetNextSpacePress = true;
+        }
 
         public void DeselectCurrentlySelectedObject()
         {

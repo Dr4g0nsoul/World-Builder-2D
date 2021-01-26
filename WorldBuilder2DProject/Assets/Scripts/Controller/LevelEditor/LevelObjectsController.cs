@@ -83,7 +83,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public void ReloadSettingsCache()
         {
-            LevelEditorSettings settings = LevelEditorTool.GetLevelEditorSettings();
+            LevelEditorSettings settings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
             if(settings != null)
             {
 
@@ -163,9 +163,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public void AddToQuickSelectBar(string guid)
         {
-            if(guid != null && levelObjects.ContainsKey(guid) && LevelEditorTool.GetLevelEditorSettings() != null)
+            if(guid != null && levelObjects.ContainsKey(guid) && LevelEditorSettingsController.Instance.GetLevelEditorSettings() != null)
             {
-                if(quickSelectBar.Count < LevelEditorTool.GetLevelEditorSettings().quickSelectBarSize || quickSelectBar.Contains(guid))
+                if(quickSelectBar.Count < LevelEditorSettingsController.Instance.GetLevelEditorSettings().quickSelectBarSize || quickSelectBar.Contains(guid))
                 {
                     //If item already in quick select, move it to the front
                     if(quickSelectBar.Contains(guid))

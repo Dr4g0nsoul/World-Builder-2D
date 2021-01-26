@@ -42,7 +42,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void OnEnable()
         {
             styleInitialized = false;
-            levelEditorSettings = LevelEditorTool.GetLevelEditorSettings();
+            levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
             levelEditorSkin = Resources.Load<GUISkin>("LevelEditor/Skin/LESkin");
 
             toolbarOptionSelected = 0;
