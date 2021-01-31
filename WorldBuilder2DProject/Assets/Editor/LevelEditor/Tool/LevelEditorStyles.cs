@@ -53,6 +53,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _messageboxText;
         private static GUIStyle _messageboxButton;
 
+        //Horizontal line
+        private static GUIStyle horizontalLine;
+
         #region Style Setup
 
         #region Style Properties
@@ -460,6 +463,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _messageboxHeader = null;
             _messageboxText = null;
             _messageboxButton = null;
+
+            //Horizontal Line
+            horizontalLine = null;
         }
 
         #endregion
@@ -468,7 +474,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Utility
 
-        private static Texture2D GetBackgroundTexture(Color color)
+        public static Texture2D GetBackgroundTexture(Color color)
         {
 
             var result = new Texture2D(1, 1);
@@ -477,7 +483,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             return result;
         }
 
-        private static Texture2D TintTexture(Color color, Texture2D srcTexture)
+        public static Texture2D TintTexture(Color color, Texture2D srcTexture)
         {
             Texture2D destTexture = new Texture2D(srcTexture.width, srcTexture.height, srcTexture.format, false);
             Color[] pixels = srcTexture.GetPixels();
@@ -488,6 +494,25 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             destTexture.SetPixels(pixels);
             destTexture.Apply();
             return destTexture;
+        }
+
+        public static void DrawHorizontalLine(Color color, RectOffset margin = null)
+        {
+            if(horizontalLine == null)
+            {
+                horizontalLine = new GUIStyle();
+                horizontalLine.normal.background = EditorGUIUtility.whiteTexture;
+                horizontalLine.fixedHeight = 1;
+            }
+
+            horizontalLine.margin = margin ?? new RectOffset(0, 0, 4, 4);
+
+            var c = GUI.color;
+            GUI.color = color;
+            GUILayout.Box(GUIContent.none, horizontalLine);
+            GUI.color = c;
+
+            //horizontalLine.margin = new RectOffset(0, 0, 4, 4);
         }
 
         #endregion

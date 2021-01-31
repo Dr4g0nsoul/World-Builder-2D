@@ -9,6 +9,7 @@ using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 using UnityEditor.SceneManagement;
 using XNodeEditor;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -161,6 +162,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Events
             SceneView.beforeSceneGui += ToolInput;
             SceneView.beforeSceneGui += WindowFocus;
+            EditorSceneManager.sceneSaved += SceneSaved;
 
             //Setup Tool icon
             m_ToolIcon = Resources.Load<Texture2D>($"{LevelEditorStyles.ICON_ROOT}LevelEditorIcon");
@@ -324,6 +326,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Events
             SceneView.beforeSceneGui -= ToolInput;
             SceneView.beforeSceneGui -= WindowFocus;
+            EditorSceneManager.sceneSaved -= SceneSaved;
         }
 
         public override GUIContent toolbarIcon
@@ -451,6 +454,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (EditorWindow.focusedWindow != view)
             {
                 DeselectCurrentlySelectedObject();
+            }
+        }
+
+        private void SceneSaved(Scene scene)
+        {
+            if(GenerateThumbnail(scene))
+            {
+                Debug.Log("Saved: " + scene.path);
             }
         }
 
@@ -1486,6 +1497,112 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         #endregion
 
         #endregion
+
+        #endregion
+
+        #region Level Utility
+
+        private bool GenerateThumbnail(Scene levelScene)
+        {
+            Debug.Log("hi");
+            string guid = GetObjectGuid(levelScene.name);
+            if (LevelController.Instance.IsValidLevel(guid))
+            {
+                GameObject level = levelScene.GetRootGameObjects()[0];
+                if (level != null)
+                {
+                    //Set default scene as active scene
+                    EditorSceneManager.SetActiveScene(EditorSceneManager.GetSceneAt(0));
+
+                    //Setup camera
+                    GameObject cameraObject = new GameObject();
+                    Camera thumbnailCam = cameraObject.AddComponent<Camera>();
+                    thumbnailCam.enabled = false;
+
+                    //Load/Setup texture
+                    /*
+                    RenderTexture thumbnail = Resources.Load<RenderTexture>($"{LevelController.LEVEL_THUMBNAIL_RESOURCE_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}");
+                    
+                    if(thumbnail == null)
+                    {
+                        thumbnail = new RenderTexture(LevelController.LEVEL_THUMBNAIL_RESOLUTION, LevelController.LEVEL_THUMBNAIL_RESOLUTION, 32);
+                        Util.EditorUtility.CreateAssetAndFolders(LevelController.LEVEL_THUMBNAIL_LOCATION, $"{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}", thumbnail, ".renderTexture");
+                    }
+                    */
+
+                    
+
+                    //Disable all other levels
+                    //-Get all loaded scenes
+                    int countLoaded = SceneManager.sceneCount;
+                    Scene[] loadedScenes = new Scene[countLoaded];
+
+                    for (int i = 0; i < countLoaded; i++)
+                    {
+                        loadedScenes[i] = SceneManager.GetSceneAt(i);
+                    }
+
+                    //Disable all level scenes first object that are not the current level
+                    for (int i = 1; i < loadedScenes.Length; i++)
+                    {
+                        string otherGuid = GetObjectGuid(loadedScenes[i].name);
+                        //If other level is a valid level different from the current one which is saved
+                        if (otherGuid != null && otherGuid != guid && LevelController.Instance.IsValidLevel(otherGuid))
+                        {
+                            loadedScenes[i].GetRootGameObjects()[0].gameObject.SetActive(false);
+                        }
+                    }
+
+                    //Position camera
+                    Rect levelRect = LevelController.Instance.GetLevel(guid).levelBoundaries;
+                    thumbnailCam.orthographic = true;
+                    cameraObject.transform.position = new Vector3(levelRect.position.x, levelRect.position.y, -10f);
+
+                    //Resize camera to match rect size
+                    //- height = 2 * Camera.main.orthographicSize;
+                    thumbnailCam.orthographicSize = levelRect.height / 2f;
+                    //- width = height * Camera.main.aspect;
+                    thumbnailCam.aspect = levelRect.width / levelRect.height;
+
+                    //Setup camera render target
+                    thumbnailCam.targetTexture = RenderTexture.GetTemporary(thumbnailCam.pixelWidth, thumbnailCam.pixelHeight, 24, RenderTextureFormat.ARGB32);
+                    RenderTexture.active = thumbnailCam.targetTexture;
+
+                    //Render scene
+                    thumbnailCam.Render();
+
+                    Texture2D previewImage = new Texture2D(thumbnailCam.pixelWidth, thumbnailCam.pixelHeight, TextureFormat.RGB24, false);
+                    previewImage.ReadPixels(new Rect(0, 0, thumbnailCam.pixelWidth, thumbnailCam.pixelHeight), 0, 0);
+                    thumbnailCam.targetTexture = null;
+                    previewImage.Apply();
+
+                    byte[] bytes = previewImage.EncodeToPNG();
+                    File.WriteAllBytes($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png", bytes);
+
+                    AssetDatabase.ImportAsset($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png");
+
+                    //Reenable other levels
+                    for (int i = 1; i < loadedScenes.Length; i++)
+                    {
+                        string otherGuid = GetObjectGuid(loadedScenes[i].name);
+                        //If other level is a valid level different from the current one which is saved
+                        if (otherGuid != null && otherGuid != guid && LevelController.Instance.IsValidLevel(otherGuid))
+                        {
+                            loadedScenes[i].GetRootGameObjects()[0].gameObject.SetActive(true);
+                        }
+                    }
+
+                    DestroyImmediate(cameraObject);
+                    LevelController.Instance.EmptyLevelThumbnailsCache();
+
+                    //AssetDatabase.SaveAssets();
+
+                    return true;
+                }
+
+            }
+            return false;
+        }
 
         #endregion
 

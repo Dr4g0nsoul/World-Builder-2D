@@ -15,7 +15,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
     public class WorldEditorGraphEditor : NodeGraphEditor
     {
 
-        private static readonly string s_LevelScenePath = "Assets/Scenes/Levels";
+        private GUISkin skin;
         private Texture2D gridTexture;
 
 
@@ -50,9 +50,9 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 {
                     Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
                     lNode.assignedSceneName = $"Level_{lNode.guid}";
-                    lNode.assignedScenePath = $"{s_LevelScenePath}/{lNode.assignedSceneName}.unity";
+                    lNode.assignedScenePath = $"{LevelController.LEVEL_SCENE_LOCATION}/{lNode.assignedSceneName}.unity";
 
-                    Util.EditorUtility.CreateFolders(s_LevelScenePath);
+                    Util.EditorUtility.CreateFolders(LevelController.LEVEL_SCENE_LOCATION);
                     EditorSceneManager.SaveScene(newScene, lNode.assignedScenePath);
                     EditorSceneManager.CloseScene(newScene, true);
                 }
@@ -68,5 +68,18 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         {
             base.RemoveNode(node);
         }
+
+        public override void OnGUI()
+        {
+            GUI.skin = skin;
+        }
+
+        public override void OnOpen()
+        {
+            skin = Resources.Load<GUISkin>("WorldEditor/Skin/WESkin");
+            WorldEditorStyles.RefreshStyles();
+        }
+
+
     }
 }

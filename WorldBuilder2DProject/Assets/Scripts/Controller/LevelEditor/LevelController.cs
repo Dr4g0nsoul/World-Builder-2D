@@ -2,7 +2,9 @@
 using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using XNode;
 
 public class LevelController
@@ -31,11 +33,18 @@ public class LevelController
     public const string WORLD_EDITOR_GRAPH_LOCATION = "WorldEditor";
     public const string WORLD_EDITOR_GRAPH_FILE_NAME = "WorldEditorGraph";
 
+    //Level constants
+    public const string LEVEL_SCENE_LOCATION = "Assets/Scenes/Levels";
+    public const string LEVEL_THUMBNAIL_LOCATION = "Assets/Editor/Resources/Levels/Thumbnails";
+    public const string LEVEL_THUMBNAIL_RESOURCE_LOCATION = "Levels/Thumbnails";
+    public const string LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX = "Thumbnail";
+
     //World Graph variables
     private WorldEditorGraph worldEditorGraph;
 
     //Level variables
     private SortedDictionary<string, LevelNode> levels;
+    private SortedDictionary<string, Texture2D> thumbnailCache;
 
 
     #region Initialization
@@ -103,6 +112,45 @@ public class LevelController
         }
         return false;
     }
+
+    #region Thumbnail
+
+    public void EmptyLevelThumbnailsCache()
+    {
+        if(thumbnailCache == null)
+        {
+            thumbnailCache = new SortedDictionary<string, Texture2D>();
+        }
+        thumbnailCache.Clear();
+    }
+
+    public Texture2D GetLevelThumbnail(string guid)
+    {
+        if (thumbnailCache == null)
+        {
+            thumbnailCache = new SortedDictionary<string, Texture2D>();
+        }
+
+        if (IsValidLevel(guid))
+        {
+            if(thumbnailCache.ContainsKey(guid))
+            {
+                return thumbnailCache[guid];
+            }
+            else
+            {
+                Texture2D levelThumbnail = AssetDatabase.LoadAssetAtPath<Texture2D>($"{LEVEL_THUMBNAIL_LOCATION}/{LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png");
+                if(levelThumbnail != null)
+                {
+                    thumbnailCache.Add(guid, levelThumbnail);
+                    return levelThumbnail;
+                }
+            }
+        }
+        return null;
+    }
+
+    #endregion
 
     #endregion
 

@@ -37,6 +37,9 @@ namespace XNodeEditor {
                 nodeBody.normal.background = NodeEditorResources.nodeBody;
                 nodeBody.border = new RectOffset(32, 32, 32, 32);
                 nodeBody.padding = new RectOffset(16, 16, 4, 16);
+                nodeBody.padding = new RectOffset(5, 5, 0, 6);
+                //nodeBody.padding = new RectOffset(1, 1, 1, 1); //custom
+
 
                 nodeHighlight = new GUIStyle();
                 nodeHighlight.normal.background = NodeEditorResources.nodeHighlight;

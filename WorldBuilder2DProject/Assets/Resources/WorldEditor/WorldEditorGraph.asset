@@ -13,21 +13,23 @@ MonoBehaviour:
   m_Name: Test Level 2
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 290.74063, y: -215.17372}
+  position: {x: 189.98882, y: -1004.25555}
   ports:
     keys: []
     values: []
   guid: b0a33745-ee5a-46c7-b148-decb1d0b85cb
-  assignedSceneName: Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb
-  assignedScenePath: Assets/Scenes/Levels/Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb.unity
-  numberOfInputs: 0
-  numberOfOutputs: 0
+  levelName: 
+  levelDescription: 
   levelBoundaries:
     serializedVersion: 2
     x: 0
     y: 0
     width: 0
     height: 0
+  assignedSceneName: Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb
+  assignedScenePath: Assets/Scenes/Levels/Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb.unity
+  numberOfInputs: 0
+  numberOfOutputs: 0
 --- !u!114 &-4871792554773954699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41,21 +43,23 @@ MonoBehaviour:
   m_Name: Test Level
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -99.25937, y: -213.17372}
+  position: {x: -480.0327, y: -1105.2148}
   ports:
     keys: []
     values: []
   guid: 97e794f4-f0a2-41ee-96b4-80203ab387da
+  levelName: Test
+  levelDescription: Hallo
+  levelBoundaries:
+    serializedVersion: 2
+    x: -0.000009775162
+    y: 0
+    width: 22.346489
+    height: 12.619897
   assignedSceneName: Level_97e794f4-f0a2-41ee-96b4-80203ab387da
   assignedScenePath: Assets/Scenes/Levels/Level_97e794f4-f0a2-41ee-96b4-80203ab387da.unity
   numberOfInputs: 0
   numberOfOutputs: 0
-  levelBoundaries:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

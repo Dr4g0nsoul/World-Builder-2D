@@ -11,6 +11,9 @@ using XNodeEditor;
 [CustomNodeEditor(typeof(LevelNode))]
 public class LevelNodeEditor : NodeEditor
 {
+    private static readonly int sizeMultiplier = 30;
+    private static readonly int minWidth = 5;
+    
     public override void OnCreate()
     {
         base.OnCreate();
@@ -30,6 +33,7 @@ public class LevelNodeEditor : NodeEditor
         */
     }
 
+
     public override void AddContextMenuItems(GenericMenu menu)
     {
         // Add open level action
@@ -41,9 +45,42 @@ public class LevelNodeEditor : NodeEditor
         base.AddContextMenuItems(menu);
     }
 
+    public override void OnHeaderGUI()
+    {
+        LevelNode lNode = target as LevelNode;
+        if(lNode == null || string.IsNullOrEmpty(lNode.levelName))
+            GUILayout.Label(target.name, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+        else
+            GUILayout.Label(lNode.levelName, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+
+    }
+
     public override void OnBodyGUI()
     {
-        base.OnBodyGUI();
+        LevelNode lNode = target as LevelNode;
+        if (lNode != null) {
+            serializedObject.Update();
+
+            Texture2D thumbnail = LevelController.Instance.GetLevelThumbnail(lNode.guid);
+
+            if (thumbnail != null)
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(1f);
+                GUILayout.BeginVertical(WorldEditorStyles.GetThumbnailStyle(LevelController.Instance.GetLevelThumbnail(lNode.guid), lNode.levelBoundaries.height * sizeMultiplier));
+                GUILayout.Space(lNode.levelBoundaries.height * sizeMultiplier);
+                GUILayout.EndVertical();
+                GUILayout.Space(1f);
+                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                GUILayout.Space(10f);
+                GUILayout.Label("[No thumbnail found]", WorldEditorStyles.TextCentered);
+                GUILayout.Space(10f);
+            }
+        }
+        /*
         LevelNode lNode = target as LevelNode;
         Rect r = new Rect()
         {
@@ -56,6 +93,7 @@ public class LevelNodeEditor : NodeEditor
             break;
         }
         NodeEditorGUILayout.PortField(new Vector2(50f, 50f), port1);
+        */
     }
 
     public void OpenCurrentLevel()
@@ -65,6 +103,25 @@ public class LevelNodeEditor : NodeEditor
         {
             EditorSceneManager.OpenScene(lNode.assignedScenePath, OpenSceneMode.Additive);
             LevelEditorMenu.OpenLevelEditor();
+        }
+    }
+
+    public override int GetWidth()
+    {
+        LevelNode lNode = target as LevelNode;
+        if(lNode == null || lNode.levelBoundaries == null || lNode.levelBoundaries.size.x < minWidth)
+        {
+            return minWidth * sizeMultiplier;
+        }
+        return Mathf.RoundToInt(lNode.levelBoundaries.width * sizeMultiplier);
+    }
+
+    public override void OnRename()
+    {
+        LevelNode lNode = target as LevelNode;
+        if(lNode != null)
+        {
+            lNode.levelName = lNode.name;
         }
     }
 }
