@@ -57,13 +57,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
         public virtual void SpawnObject(GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
         {
-            Debug.Log($"Spawn {item.name} at {worldPos}");
+            Debug.Log($"Spawn {item.name} at {worldPos} with parent {parentTransform}");
             GameObject newObject = PrefabUtility.InstantiatePrefab(objectPrefab) as GameObject;
             if (newObject != null)
             {
                 newObject.transform.position = worldPos;
                 newObject.transform.rotation = Quaternion.identity;
-                Undo.RegisterCreatedObjectUndo(newObject, $"LevelEditor: Placed {item.name}");//
+                newObject.transform.parent = parentTransform;
+
+                Undo.RegisterCreatedObjectUndo(newObject, $"LevelEditor: Placed {item.name}");//Undo function
                 Selection.activeObject = newObject;
             }
         }

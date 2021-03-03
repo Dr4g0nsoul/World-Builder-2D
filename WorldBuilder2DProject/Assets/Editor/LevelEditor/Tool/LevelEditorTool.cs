@@ -152,6 +152,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private LevelObject objectToPlace;
         private GameObject temporaryObject;
         private bool canObjectBePlaced;
+        private Transform levelRootTransform;
 
         //Add Prefab Dialog
         //-->Margin from bottom right corner, size is absolute
@@ -249,6 +250,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Object placement
             objectToPlace = null;
             canObjectBePlaced = false;
+            levelRootTransform = null;
+            SetLevelRoot(true);
 
             //Start ressource reloader
             tweener.Timer(0f).OnComplete(() => RefreshVariables());
@@ -395,7 +398,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     {
                         if (inObjectPlacementMode && objectToPlace != null && canObjectBePlaced)
                         {
-                            objectToPlace.SpawnObject(temporaryObject, null, Util.EditorUtility.SceneViewToWorldPos(view), Event.current.mousePosition);
+                            objectToPlace.SpawnObject(temporaryObject, GetLevelObjectParentTransform(objectToPlace), Util.EditorUtility.SceneViewToWorldPos(view), Event.current.mousePosition);
                             
                             //Instantiate(objectToPlace.objectPrefab, Util.EditorUtility.SceneViewToWorldPos(view), Quaternion.identity);
                         }
@@ -547,7 +550,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     else
                     {
 
-                        //TODO: --- Level Select ---
+                        //Set level root
+                        SetLevelRoot();
 
                         if (cameraBounds.width < responsiveViewWidth.z || cameraBounds.height < minWindowHeight)
                         {
@@ -650,8 +654,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             Handles.EndGUI();
 
-            //Check wether Mouse is hovering over gui element or not
-            if (Util.EditorUtility.IsMouseInsideSceneView(SceneView.currentDrawingSceneView) && !mouseHoveringMenuBar && !objectPickerRect.Contains(Event.current.mousePosition))
+            //Check wether Mouse is hovering over gui element or not and if a layer was selected
+            if (!string.IsNullOrEmpty(selectedLayer) && Util.EditorUtility.IsMouseInsideSceneView(SceneView.currentDrawingSceneView) && !mouseHoveringMenuBar && !objectPickerRect.Contains(Event.current.mousePosition))
             {
                 canObjectBePlaced = true;
             }
@@ -1663,6 +1667,32 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             }
             return false;
+        }
+
+        private void SetLevelRoot(bool force = false)
+        {
+            if(levelRootTransform == null || force)
+            {
+                if(EditorSceneManager.sceneCount > 1)
+                {
+                    GameObject[] levelRootGameObjects = EditorSceneManager.GetSceneAt(1).GetRootGameObjects();
+                    if(levelRootGameObjects.Length > 0 && levelRootGameObjects[0].GetComponent<LevelInstance>() != null)
+                    {
+                        levelRootTransform = levelRootGameObjects[0].transform;
+                    }
+                }
+            }
+        }
+
+        private Transform GetLevelObjectParentTransform(LevelObject obj)
+        {
+            if(levelRootTransform != null)
+            {
+                LevelInstance levelInstance = levelRootTransform.GetComponent<LevelInstance>();
+                if(levelInstance != null)
+                    return levelInstance.FindParentTransform(obj, selectedLayer, LevelEditorSettingsController.Instance.GetLevelEditorSettings());
+            }
+            return null;
         }
 
         #endregion

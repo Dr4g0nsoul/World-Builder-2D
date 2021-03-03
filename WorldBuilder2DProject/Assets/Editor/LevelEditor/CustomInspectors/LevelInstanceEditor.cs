@@ -165,6 +165,8 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 levelSearializedObject.ApplyModifiedProperties();
                 
             }
+
+            DrawDefaultInspector();
         }
 
         private void OnSceneGUI(SceneView sceneView)
