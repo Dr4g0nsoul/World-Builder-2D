@@ -4,9 +4,11 @@ using System.Reflection;
 using UnityEngine;
 
 namespace XNode {
+
+    //WE2D-Custom add Both as input
     [Serializable]
     public class NodePort {
-        public enum IO { Input, Output }
+        public enum IO { Input, Output, Both }
 
         public int ConnectionCount { get { return connections.Count; } }
         /// <summary> Return the first non-null connection </summary>
@@ -36,6 +38,7 @@ namespace XNode {
         public bool IsConnected { get { return connections.Count != 0; } }
         public bool IsInput { get { return direction == IO.Input; } }
         public bool IsOutput { get { return direction == IO.Output; } }
+        public bool IsBoth { get { return direction == IO.Both; } }
 
         public string fieldName { get { return _fieldName; } }
         public Node node { get { return _node; } }
@@ -200,6 +203,7 @@ namespace XNode {
             return result;
         }
 
+        //WB2D-Custom: Add both check support
         /// <summary> Connect this <see cref="NodePort"/> to another </summary>
         /// <param name="port">The <see cref="NodePort"/> to connect to</param>
         public void Connect(NodePort port) {
@@ -207,7 +211,11 @@ namespace XNode {
             if (port == null) { Debug.LogWarning("Cannot connect to null port"); return; }
             if (port == this) { Debug.LogWarning("Cannot connect port to self."); return; }
             if (IsConnectedTo(port)) { Debug.LogWarning("Port already connected. "); return; }
-            if (direction == port.direction) { Debug.LogWarning("Cannot connect two " + (direction == IO.Input ? "input" : "output") + " connections"); return; }
+            //Only check if not both of them are direction IO.Both
+            if (direction != IO.Both || port.direction != IO.Both)
+            {
+                if (direction == port.direction) { Debug.LogWarning("Cannot connect two " + (direction == IO.Input ? "input" : "output") + " connections"); return; }
+            }
 #if UNITY_EDITOR
             UnityEditor.Undo.RecordObject(node, "Connect Port");
             UnityEditor.Undo.RecordObject(port.node, "Connect Port");
@@ -259,16 +267,28 @@ namespace XNode {
             return false;
         }
 
+        //WB2D-Custom: Add both check support
         /// <summary> Returns true if this port can connect to specified port </summary>
         public bool CanConnectTo(NodePort port) {
             // Figure out which is input and which is output
             NodePort input = null, output = null;
-            if (IsInput) input = this;
-            else output = this;
-            if (port.IsInput) input = port;
-            else output = port;
-            // If there isn't one of each, they can't connect
-            if (input == null || output == null) return false;
+            //Both support
+            if (IsBoth && port.IsBoth)
+            {
+                if (fieldName == port.fieldName) return false;
+                input = this;
+                output = port;
+            }
+            //Normal Input/Output
+            else
+            {
+                if (IsInput) input = this;
+                else output = this;
+                if (port.IsInput) input = port;
+                else output = port;
+                // If there isn't one of each, they can't connect
+                if (input == null || output == null) return false;
+            }
             // Check input type constraints
             if (input.typeConstraint == XNode.Node.TypeConstraint.Inherited && !input.ValueType.IsAssignableFrom(output.ValueType)) return false;
             if (input.typeConstraint == XNode.Node.TypeConstraint.Strict && input.ValueType != output.ValueType) return false;

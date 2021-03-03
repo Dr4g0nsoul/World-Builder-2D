@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XNode;
+using XNodeEditor;
 
 public class LevelController
 {
@@ -161,6 +162,26 @@ public class LevelController
         if(worldEditorGraph == null)
             worldEditorGraph = Resources.Load<WorldEditorGraph>(WORLD_EDITOR_GRAPH_LOCATION + "/" + WORLD_EDITOR_GRAPH_FILE_NAME);
         return worldEditorGraph;
+    }
+
+    public void OpenWorldEditor()
+    {
+        WorldEditorGraph worldEditor = LevelController.Instance.GetWorldEditorGraph();
+
+        if (EditorWindow.HasOpenInstances<NodeEditorWindow>())
+        {
+            EditorWindow.FocusWindowIfItsOpen<NodeEditorWindow>();
+        }
+        else
+        {
+            NodeEditorWindow.Open(worldEditor);
+        }
+
+        if (worldEditor.nodes != null && worldEditor.nodes.Count > 0)
+        {
+            ProjectWindowUtil.ShowCreatedAsset(worldEditor.nodes[0]);
+            NodeEditorWindow.current.Home();
+        }
     }
 
     #endregion

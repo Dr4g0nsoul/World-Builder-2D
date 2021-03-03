@@ -223,7 +223,7 @@ public class WorldEditorStyles
 
     public static GUIStyle GetThumbnailStyle(Texture2D texture, float height = 100)
     {
-        GUIStyle style = Thumbnail;
+        GUIStyle style = new GUIStyle(Thumbnail);
         if(style != null)
         {
             style.normal.background = texture;

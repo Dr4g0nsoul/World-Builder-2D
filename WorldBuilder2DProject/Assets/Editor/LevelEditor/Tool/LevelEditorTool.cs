@@ -24,10 +24,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 if (s_levelEditorTool != null)
                     return s_levelEditorTool;
-                Debug.LogWarning("LevelEditorToolInstance: Level Editor Tool not found!");
+                Debug.LogWarning("LevelEditorTool::LevelEditorToolInstance: Level Editor Tool not found!");
                 return null;
             }
         }
+
+        public static bool IsLevelEditorInitialized => s_levelEditorTool != null;
+
         #endregion
 
 
@@ -39,7 +42,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // Level editor main references
         private LevelEditorSettings levelEditorSettings;
         private LevelObjectsController levelObjectsController;
-        private LevelEditorSettingsController levelEditorSettingsController;
         private WorldEditorGraph worldEditorGraph;
         private Camera sceneCam;
 
@@ -143,6 +145,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float objectDrawerHeight;
         private bool objectDrawerHidden = true;
         private bool objectDrawerHiddenComplete = true;
+        private SortedDictionary<string, LevelObject> drawerLevelObjects;
 
         //Object placement
         private bool inObjectPlacementMode;
@@ -241,6 +244,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             objectDrawerHidden = true;
             objectDrawerHiddenComplete = true;
             objectDrawerHeight = 0f;
+            drawerLevelObjects = new SortedDictionary<string, LevelObject>();
 
             //Object placement
             objectToPlace = null;
@@ -254,6 +258,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             LevelEditorStyles.RefreshStyles();
             levelObjectsController.LoadLevelObjects();
+            ReloadFilters();
             tweener.Timer(timeUntilRefreshVariables).OnComplete(() => RefreshVariables());
 
             //Object Picker
@@ -448,7 +453,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             else if(openWorldEditor)
             {
                 openWorldEditor = false;
-                EditorWindow.FocusWindowIfItsOpen<NodeEditorWindow>();
+                LevelController.Instance.OpenWorldEditor();
+                
             }
             //Lost Focus
             if (EditorWindow.focusedWindow != view)
@@ -927,6 +933,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         GUILayout.BeginHorizontal();
                         if (GUILayout.Button("Clear Category Filter", LevelEditorStyles.MenuButtonSquare))
                             bottomClickAction.Invoke();
+                        EnableMouse();
                         GUILayout.EndHorizontal();
                     }
                     GUILayout.EndVertical();
@@ -1035,13 +1042,28 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             int objectsPerRow = Mathf.FloorToInt(containerWidth / 
                 (LevelEditorStyles.LevelObjectButton.fixedWidth + LevelEditorStyles.LevelObjectButton.margin.right + LevelEditorStyles.LevelObjectButton.margin.left) + 0.23f) - 1;
 
-            SortedDictionary<string, LevelObject> levelObjects = levelObjectsController.GetAllLevelObjects();
-            int objectCount = levelObjects.Values.Count;
+            //Load level objects for drawer
+            if (Event.current.type == EventType.Layout)
+            {
+                if (string.IsNullOrEmpty(selectedLayer) && selectedCategories.Count < 1)
+                {
+                    if(string.IsNullOrEmpty(searchString))
+                        drawerLevelObjects = levelObjectsController.GetAllLevelObjects();
+                    else
+                        drawerLevelObjects = levelObjectsController.GetFilteredLevelObjects(searchString, true);
+                }
+                else
+                {
+                    drawerLevelObjects = levelObjectsController.GetFilteredLevelObjects(searchString);
+                }
+            }
+
+            int objectCount = drawerLevelObjects.Values.Count;
             objectDrawerScrollPosition = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(objectDrawerScrollPosition, 0f)), false, false, GUILayout.Height(remainingHeight)).y;
 
             GUILayout.BeginVertical();
             int i = 0;
-            foreach (LevelObject obj in levelObjects.Values)
+            foreach (LevelObject obj in drawerLevelObjects.Values)
             {
                 if (i % objectsPerRow == 0)
                     GUILayout.BeginHorizontal();
@@ -1357,7 +1379,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     GameObject levelRoot = new GameObject();
                     levelRoot.name = "Level";
                     LevelInstance levelInstance = levelRoot.AddComponent<LevelInstance>();
-                    levelInstance.level = GetObjectGuid(loadedScenes[i].name);
+                    levelInstance.level = Util.LevelEditorUtility.GetObjectGuid(loadedScenes[i].name);
                     if(!LevelController.Instance.IsValidLevel(levelInstance.level))
                     {
                         Debug.LogError("LevelEditorTool::InitializeLevelScenes: Invalid level scene found");
@@ -1384,15 +1406,25 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void ToggleCategory(string guid)
         {
             if (selectedCategories.Contains(guid))
+            {
                 selectedCategories.Remove(guid);
+                ReloadFilters();
+            }
             else
+            {
                 selectedCategories.Add(guid);
+                if (selectedCategories.Count > 1)
+                    AddCategoryFilter(guid);
+                else
+                    ReloadFilters();
+            }
         }
 
         private void ClearCategoryFilter()
         {
             selectedCategories.Clear();
             ToggleCategoryMoreBox();
+            ReloadFilters();
         }
 
         private void ToggleCategoryMoreBox()
@@ -1430,6 +1462,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 selectedLayer = null;
             else
                 selectedLayer = guid;
+
+            ReloadFilters();
         }
 
         private void ToggleLayerMoreBox()
@@ -1500,12 +1534,39 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region Filter Utility
+
+        private void ReloadFilters()
+        {
+            //Reload both
+            if(selectedCategories.Count > 0 && !string.IsNullOrEmpty(selectedLayer))
+            {
+                levelObjectsController.ApplyFilters(selectedCategories, selectedLayer);
+            }
+            //Reload with Categories
+            else if(selectedCategories.Count > 0)
+            {
+                levelObjectsController.ApplyFilters(selectedCategories);
+            }
+            //Reload with Layer
+            else if(!string.IsNullOrEmpty(selectedLayer))
+            {
+                levelObjectsController.ApplyFilters(selectedLayer);
+            }
+        }
+
+        private void AddCategoryFilter(string guid)
+        {
+            levelObjectsController.AddCategoryFilter(guid);
+        }
+
+        #endregion
+
         #region Level Utility
 
         private bool GenerateThumbnail(Scene levelScene)
         {
-            Debug.Log("hi");
-            string guid = GetObjectGuid(levelScene.name);
+            string guid = Util.LevelEditorUtility.GetObjectGuid(levelScene.name);
             if (LevelController.Instance.IsValidLevel(guid))
             {
                 GameObject level = levelScene.GetRootGameObjects()[0];
@@ -1545,7 +1606,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     //Disable all level scenes first object that are not the current level
                     for (int i = 1; i < loadedScenes.Length; i++)
                     {
-                        string otherGuid = GetObjectGuid(loadedScenes[i].name);
+                        string otherGuid = Util.LevelEditorUtility.GetObjectGuid(loadedScenes[i].name);
                         //If other level is a valid level different from the current one which is saved
                         if (otherGuid != null && otherGuid != guid && LevelController.Instance.IsValidLevel(otherGuid))
                         {
@@ -1584,7 +1645,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     //Reenable other levels
                     for (int i = 1; i < loadedScenes.Length; i++)
                     {
-                        string otherGuid = GetObjectGuid(loadedScenes[i].name);
+                        string otherGuid = Util.LevelEditorUtility.GetObjectGuid(loadedScenes[i].name);
                         //If other level is a valid level different from the current one which is saved
                         if (otherGuid != null && otherGuid != guid && LevelController.Instance.IsValidLevel(otherGuid))
                         {
@@ -1662,48 +1723,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         #endregion
 
         #region Public Methods
-
-        #region Utility
-
-        public string GetObjectGuid(string objectName)
-        {
-            if(string.IsNullOrEmpty(objectName))
-            {
-                return null;
-            }
-
-            int guidBegin = objectName.LastIndexOf('_');
-            if(guidBegin < 0)
-            {
-                return null;
-            }
-            guidBegin = Mathf.Min(guidBegin + 1, objectName.Length);
-
-            if (Guid.TryParse(objectName.Substring(guidBegin, objectName.Length - guidBegin), out Guid result))
-                return result.ToString();
-
-            return null;
-        }
-
-        public string GetObjectGuid(GameObject gameObject)
-        {
-            if (gameObject != null)
-            {
-                return GetObjectGuid(gameObject.name);
-            }
-            return null;
-        }
-
-        public string GetObjectGuid(Transform transform)
-        {
-            if(transform != null)
-            {
-                return GetObjectGuid(transform.gameObject.name);
-            }
-            return null;
-        }
-
-        #endregion
 
         #region Level Object Drawer
 

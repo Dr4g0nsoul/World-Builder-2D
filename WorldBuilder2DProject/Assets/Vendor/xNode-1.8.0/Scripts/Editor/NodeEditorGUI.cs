@@ -25,9 +25,9 @@ namespace XNodeEditor {
             Controls();
 
             DrawGrid(position, zoom, panOffset);
+            DrawNodes();
             DrawConnections();
             DrawDraggedConnection();
-            DrawNodes();
             DrawSelectionBox();
             DrawTooltip();
             graphEditor.OnGUI();
@@ -373,6 +373,81 @@ namespace XNodeEditor {
                         }
                     }
                 }
+
+                //WB2D-Custom: Draw full connections for Both
+                List<string> drawnBothConnections = new List<string>();
+                foreach (XNode.NodePort both in node.Boths)
+                {
+
+                    //Needs cleanup. Null checks are ugly
+                    Rect fromRect;
+                    if (!_portConnectionPoints.TryGetValue(both, out fromRect)) continue;
+
+                    Color portColor = graphEditor.GetPortColor(both);
+                    for (int k = 0; k < both.ConnectionCount; k++)
+                    {
+                        XNode.NodePort bothTarget = both.GetConnection(k);
+
+                        //Skip already drawn targets
+                        if (!drawnBothConnections.Contains(bothTarget.fieldName))
+                        {
+
+                            Gradient noodleGradient = graphEditor.GetNoodleGradient(both, bothTarget);
+                            float noodleThickness = graphEditor.GetNoodleThickness(both, bothTarget);
+                            NoodlePath noodlePath = graphEditor.GetNoodlePath(both, bothTarget);
+                            NoodleStroke noodleStroke = graphEditor.GetNoodleStroke(both, bothTarget);
+
+                            // Error handling
+                            if (bothTarget == null) continue; //If a script has been updated and the port doesn't exist, it is removed and null is returned. If this happens, return.
+                            if (!bothTarget.IsConnectedTo(both)) bothTarget.Connect(both);
+                            Rect toRect;
+                            if (!_portConnectionPoints.TryGetValue(bothTarget, out toRect)) continue;
+
+                            List<Vector2> reroutePoints = both.GetReroutePoints(k);
+
+                            //WB2D-Custom: Routing in both directions
+                            if(fromRect.center.x > toRect.center.x)
+                            {
+                                Rect swap = toRect;
+                                toRect = fromRect;
+                                fromRect = swap;
+                            }
+
+                            gridPoints.Clear();
+                            gridPoints.Add(fromRect.center);
+                            gridPoints.AddRange(reroutePoints);
+                            gridPoints.Add(toRect.center);
+                            
+                            DrawNoodle(noodleGradient, noodlePath, noodleStroke, noodleThickness, gridPoints);
+
+
+                            // Loop through reroute points again and draw the points
+                            for (int i = 0; i < reroutePoints.Count; i++)
+                            {
+                                RerouteReference rerouteRef = new RerouteReference(both, k, i);
+                                // Draw reroute point at position
+                                Rect rect = new Rect(reroutePoints[i], new Vector2(12, 12));
+                                rect.position = new Vector2(rect.position.x - 6, rect.position.y - 6);
+                                rect = GridToWindowRect(rect);
+
+                                // Draw selected reroute points with an outline
+                                if (selectedReroutes.Contains(rerouteRef))
+                                {
+                                    GUI.color = NodeEditorPreferences.GetSettings().highlightColor;
+                                    GUI.DrawTexture(rect, NodeEditorResources.dotOuter);
+                                }
+
+                                GUI.color = portColor;
+                                GUI.DrawTexture(rect, NodeEditorResources.dot);
+                                if (rect.Overlaps(selectionBox)) selection.Add(rerouteRef);
+                                if (rect.Contains(mousePos)) hoveredReroute = rerouteRef;
+
+                            }
+                        }
+                    }
+
+                    drawnBothConnections.Add(both.fieldName);
+                }
             }
             GUI.color = col;
             if (Event.current.type != EventType.Layout && currentActivity == NodeActivity.DragGrid) selectedReroutes = selection;
@@ -427,7 +502,7 @@ namespace XNodeEditor {
                         culledNodes.Add(node);
                         continue;
                     }
-                } else if (culledNodes.Contains(node)) continue;
+                } else if (culledNodes != null && culledNodes.Contains(node)) continue;
 
                 if (e.type == EventType.Repaint) {
                     removeEntries.Clear();
@@ -522,6 +597,14 @@ namespace XNodeEditor {
                         if (!portConnectionPoints.ContainsKey(output)) continue;
                         Rect r = GridToWindowRectNoClipped(portConnectionPoints[output]);
                         if (r.Contains(mousePos)) hoveredPort = output;
+                    }
+                    //WB2D-Custom: IO.Both support
+                    foreach (XNode.NodePort both in node.DynamicPorts)
+                    {
+                        //Check if port rect is available
+                        if (!portConnectionPoints.ContainsKey(both)) continue;
+                        Rect r = GridToWindowRectNoClipped(portConnectionPoints[both]);
+                        if (r.Contains(mousePos)) hoveredPort = both;
                     }
                 }
 

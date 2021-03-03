@@ -80,6 +80,5 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             WorldEditorStyles.RefreshStyles();
         }
 
-
     }
 }

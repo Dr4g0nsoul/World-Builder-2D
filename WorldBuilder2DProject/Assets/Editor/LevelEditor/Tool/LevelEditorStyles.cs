@@ -503,13 +503,21 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 horizontalLine = new GUIStyle();
                 horizontalLine.normal.background = EditorGUIUtility.whiteTexture;
                 horizontalLine.fixedHeight = 1;
+                horizontalLine.margin = new RectOffset(0, 0, 4, 4);
             }
-
-            horizontalLine.margin = margin ?? new RectOffset(0, 0, 4, 4);
 
             var c = GUI.color;
             GUI.color = color;
-            GUILayout.Box(GUIContent.none, horizontalLine);
+            if (margin != null)
+            {
+                GUIStyle customHorizontalLine = new GUIStyle(horizontalLine);
+                customHorizontalLine.margin = margin;
+                GUILayout.Box(GUIContent.none, customHorizontalLine);
+            }
+            else
+            {
+                GUILayout.Box(GUIContent.none, horizontalLine);
+            }
             GUI.color = c;
 
             //horizontalLine.margin = new RectOffset(0, 0, 4, 4);

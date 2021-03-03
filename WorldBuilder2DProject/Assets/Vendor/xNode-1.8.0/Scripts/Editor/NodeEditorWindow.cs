@@ -115,7 +115,7 @@ namespace XNodeEditor {
         /// <summary> Create editor window </summary>
         public static NodeEditorWindow Init() {
             NodeEditorWindow w = CreateInstance<NodeEditorWindow>();
-            w.titleContent = new GUIContent("xNode");
+            w.titleContent = new GUIContent("World Editor");
             w.wantsMouseMove = true;
             w.Show();
             return w;
@@ -199,7 +199,7 @@ namespace XNodeEditor {
         public static NodeEditorWindow Open(XNode.NodeGraph graph) {
             if (!graph) return null;
 
-            NodeEditorWindow w = GetWindow(typeof(NodeEditorWindow), false, "xNode", true) as NodeEditorWindow;
+            NodeEditorWindow w = GetWindow(typeof(NodeEditorWindow), false, "World Editor", true) as NodeEditorWindow;
             w.wantsMouseMove = true;
             w.graph = graph;
             return w;

@@ -100,6 +100,8 @@ namespace XNode {
         public IEnumerable<NodePort> Outputs { get { foreach (NodePort port in Ports) { if (port.IsOutput) yield return port; } } }
         /// <summary> Iterate over all inputs on this node. </summary>
         public IEnumerable<NodePort> Inputs { get { foreach (NodePort port in Ports) { if (port.IsInput) yield return port; } } }
+        /// <summary> Iterate over all boths on this node. </summary>
+        public IEnumerable<NodePort> Boths { get { foreach (NodePort port in Ports) { if (port.IsBoth) yield return port; } } }
         /// <summary> Iterate over all dynamic ports on this node. </summary>
         public IEnumerable<NodePort> DynamicPorts { get { foreach (NodePort port in Ports) { if (port.IsDynamic) yield return port; } } }
         /// <summary> Iterate over all dynamic outputs on this node. </summary>
@@ -149,6 +151,12 @@ namespace XNode {
         /// <seealso cref="AddInstanceInput"/>
         public NodePort AddDynamicOutput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null) {
             return AddDynamicPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName);
+        }
+
+        /// <summary> Convenience function. </summary>
+        public NodePort AddDynamicBoth(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null)
+        {
+            return AddDynamicPort(type, NodePort.IO.Both, connectionType, typeConstraint, fieldName);
         }
 
         /// <summary> Add a dynamic, serialized port to this node. </summary>

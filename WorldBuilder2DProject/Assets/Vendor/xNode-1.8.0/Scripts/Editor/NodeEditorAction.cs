@@ -59,8 +59,9 @@ namespace XNodeEditor {
                 case EventType.MouseDrag:
                     if (e.button == 0) {
                         if (IsDraggingPort) {
+                            //WB2D-Custom: Also hover on IO.Both node and allow connection in the same node
                             // Set target even if we can't connect, so as to prevent auto-conn menu from opening erroneously
-                            if (IsHoveringPort && hoveredPort.IsInput && !draggedOutput.IsConnectedTo(hoveredPort)) {
+                            if (IsHoveringPort && ((hoveredPort.IsInput && !draggedOutput.IsConnectedTo(hoveredPort)) || (hoveredPort.IsBoth && hoveredPort != draggedOutputTarget))) {
                                 draggedOutputTarget = hoveredPort;
                             } else {
                                 draggedOutputTarget = null;
@@ -147,14 +148,20 @@ namespace XNodeEditor {
                     if (e.button == 0) {
                         draggedOutputReroutes.Clear();
 
-                        if (IsHoveringPort) {
-                            if (hoveredPort.IsOutput) {
+                        if (IsHoveringPort)
+                        {
+                            //WB2D-Custom: Also hover on IO.Both
+                            if (hoveredPort.IsOutput || hoveredPort.IsBoth)
+                            {
                                 draggedOutput = hoveredPort;
                                 autoConnectOutput = hoveredPort;
-                            } else {
+                            }
+                            else
+                            {
                                 hoveredPort.VerifyConnections();
                                 autoConnectOutput = null;
-                                if (hoveredPort.IsConnected) {
+                                if (hoveredPort.IsConnected)
+                                {
                                     XNode.Node node = hoveredPort.node;
                                     XNode.NodePort output = hoveredPort.Connection;
                                     int outputConnectionIndex = output.GetConnectionIndex(hoveredPort);
@@ -165,7 +172,8 @@ namespace XNodeEditor {
                                     if (NodeEditor.onUpdateNode != null) NodeEditor.onUpdateNode(node);
                                 }
                             }
-                        } else if (IsHoveringNode && IsHoveringTitle(hoveredNode)) {
+                        //WB2D-Custom: Also click on node to select (not only title)
+                        } else if (IsHoveringNode || IsHoveringTitle(hoveredNode)) {
                             // If mousedown on node header, select or deselect
                             if (!Selection.Contains(hoveredNode)) {
                                 SelectNode(hoveredNode, e.control || e.shift);
@@ -520,6 +528,9 @@ namespace XNodeEditor {
         }
 
         bool IsHoveringTitle(XNode.Node node) {
+            //WB2D-Custom: Check if node is null
+            if (node == null)
+                return false;
             Vector2 mousePos = Event.current.mousePosition;
             //Get node position
             Vector2 nodePos = GridToWindowPosition(node.position);

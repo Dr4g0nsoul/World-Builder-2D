@@ -30,7 +30,10 @@ namespace XNodeEditor {
             GUILayout.Space(EditorGUIUtility.singleLineHeight);
             GUILayout.Label("Raw data", "BoldLabel");
 
+            //WB2D-Custom: Disable GUI
+            GUI.enabled = false;
             DrawDefaultInspector();
+            GUI.enabled = true;
 
             serializedObject.ApplyModifiedProperties();
         }
@@ -60,11 +63,14 @@ namespace XNodeEditor {
                 w.Home(); // Focus selected node
             }
 
+            //WB2D-Custom: Disable Draw Defult Inspector
             GUILayout.Space(EditorGUIUtility.singleLineHeight);
             GUILayout.Label("Raw data", "BoldLabel");
 
             // Now draw the node itself.
+            GUI.enabled = false;
             DrawDefaultInspector();
+            GUI.enabled = true;
 
             serializedObject.ApplyModifiedProperties();
         }

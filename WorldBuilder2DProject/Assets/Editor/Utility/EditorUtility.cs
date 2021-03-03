@@ -190,7 +190,7 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             {
 
                 Handles.color = capCol;
-                newPosition = (Vector2)Handles.FreeMoveHandle(newPosition, Quaternion.identity, capSize, new Vector2(snap, snap), moveCap);
+                newPosition = Handles.FreeMoveHandle(newPosition, Quaternion.identity, capSize, new Vector2(snap, snap), moveCap);
 
                 Vector3[] handlePoints =
                 {
@@ -215,6 +215,22 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             }
 
             return new Rect(newPosition.x, newPosition.y, newSize.x, newSize.y);
+        }
+
+        public static void DrawRect(Rect rect, Color borderCol, Color fillCol)
+        {
+            Vector2 halfRectSize = new Vector2(rect.size.x * 0.5f, rect.size.y * 0.5f);
+
+            Vector3[] rectangleCorners =
+                {
+                new Vector3(rect.position.x - halfRectSize.x, rect.position.y - halfRectSize.y, 0),   // Bottom Left
+                new Vector3(rect.position.x + halfRectSize.x, rect.position.y - halfRectSize.y, 0),   // Bottom Right
+                new Vector3(rect.position.x + halfRectSize.x, rect.position.y + halfRectSize.y, 0),   // Top Right
+                new Vector3(rect.position.x - halfRectSize.x, rect.position.y + halfRectSize.y, 0)    // Top Left
+            };
+
+            Handles.color = fillCol;
+            Handles.DrawSolidRectangleWithOutline(rectangleCorners, new Color(fillCol.r, fillCol.g, fillCol.b, 0.25f), borderCol);
         }
 
         #endregion

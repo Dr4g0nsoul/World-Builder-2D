@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -37,9 +38,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private SortedDictionary<string, LevelObject> levelObjects = new SortedDictionary<string, LevelObject>();
 
+        //Filtering
+        private SortedDictionary<string, LevelObject> filteredLevelObjects = new SortedDictionary<string, LevelObject>();
+        private string lastSearch = "";
+        private bool lastSearchAll = false;
+        private SortedDictionary<string, LevelObject> searchFilteredLevelObjects = new SortedDictionary<string, LevelObject>();
+
         //Level Object data
         private List<string> quickSelectBar = new List<string>();
-        private SortedDictionary<string, List<string>> levelObjectsPerCategory = new SortedDictionary<string, List<string>>();
         private List<string> currentWorldFavorites = new List<string>();
         private List<string> currentLevelFavorites = new List<string>();
 
@@ -54,7 +60,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Reset lists
             levelObjects.Clear();
-            levelObjectsPerCategory.Clear();
             currentWorldFavorites.Clear();
             currentLevelFavorites.Clear();
 
@@ -155,6 +160,105 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
             }
             return result;
+        }
+
+        #endregion
+
+        #region Filtering level objects
+
+        public SortedDictionary<string, LevelObject> GetFilteredLevelObjects(string search = null, bool searchAll = false)
+        {
+            if (string.IsNullOrEmpty(search))
+            {
+                return filteredLevelObjects;
+            }
+            else
+            {
+                if (search != lastSearch || lastSearchAll != searchAll)
+                {
+                    Debug.Log("hi");
+                    ApplySearchFilter(search, searchAll);
+                }
+                lastSearch = search;
+                lastSearchAll = searchAll;
+
+                return searchFilteredLevelObjects;
+            }
+        }
+
+        public void ApplyFilters(List<string> categories)
+        {
+            filteredLevelObjects.Clear();
+            foreach (LevelObject obj in levelObjects.Values)
+            {
+                //Check if level object contains all categories
+                if (!categories.Except(obj.categories.ToList()).Any())
+                    filteredLevelObjects.Add(obj.guid, obj);
+            }
+            lastSearch = "";
+        }
+
+        public void ApplyFilters(string layer)
+        {
+            filteredLevelObjects.Clear();
+            foreach (LevelObject obj in levelObjects.Values)
+            {
+                //Check if level object contains layer
+                if (Array.Exists(obj.levelLayers, (val) => val == layer))
+                {
+                    filteredLevelObjects.Add(obj.guid, obj);
+                }
+            }
+            lastSearch = "";
+        }
+
+        public void ApplyFilters(List<string> categories, string layer)
+        {
+            filteredLevelObjects.Clear();
+            foreach(LevelObject obj in levelObjects.Values)
+            {
+                //Check if level object contains layer
+                if(Array.Exists(obj.levelLayers, (val) => val == layer))
+                {
+                    //Check if level object contains all categories
+                    if (!categories.Except(obj.categories.ToList()).Any())
+                        filteredLevelObjects.Add(obj.guid, obj);
+                }
+            }
+            lastSearch = "";
+        }
+
+        public void AddCategoryFilter(string category)
+        {
+            foreach (LevelObject obj in filteredLevelObjects.Values.ToList())
+            {
+                if(!Array.Exists(obj.categories, (val) => val == category))
+                    filteredLevelObjects.Remove(obj.guid);
+            }
+            lastSearch = "";
+        }
+
+        public void ClearFilters()
+        {
+            filteredLevelObjects.Clear();
+            lastSearch = "";
+        }
+
+        private void ApplySearchFilter(string search, bool searchAll = false)
+        {
+            searchFilteredLevelObjects.Clear();
+            var objectsToSearchThrough = filteredLevelObjects.Values;
+            if(searchAll)
+            {
+                objectsToSearchThrough = levelObjects.Values;
+            }
+            foreach(LevelObject obj in objectsToSearchThrough)
+            {
+                if(obj.item.name.ToLower().Contains(search.ToLower()))
+                {
+                    searchFilteredLevelObjects.Add(obj.guid, obj);
+                }
+            }
         }
 
         #endregion
