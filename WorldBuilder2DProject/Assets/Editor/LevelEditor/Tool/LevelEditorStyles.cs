@@ -53,6 +53,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _messageboxText;
         private static GUIStyle _messageboxButton;
 
+        //Hover box style
+        private static GUIStyle _hoverBox;
+        private static GUIStyle _hoverBoxText;
+
         //Horizontal line
         private static GUIStyle horizontalLine;
 
@@ -420,6 +424,41 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region Hover Box
+
+        
+        public static GUIStyle HoverBox
+        {
+            get
+            {
+                if (_hoverBox == null)
+                {
+                    _hoverBox = new GUIStyle(GUI.skin.customStyles[12]);
+                    _hoverBox.clipping = TextClipping.Overflow;
+                }
+                return _hoverBox;
+            }
+        }
+
+        public static GUIStyle HoverBoxText
+        {
+            get
+            {
+                if (_hoverBoxText == null)
+                {
+                    _hoverBoxText = new GUIStyle(GUI.skin.label);
+                    _hoverBoxText.alignment = TextAnchor.MiddleCenter;
+                    _hoverBoxText.wordWrap = false;
+                    _hoverBoxText.stretchWidth = true;
+                    _hoverBoxText.stretchHeight = true;
+                    _hoverBoxText.clipping = TextClipping.Overflow;
+                }
+                return _hoverBoxText;
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Setup Functions
@@ -463,6 +502,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _messageboxHeader = null;
             _messageboxText = null;
             _messageboxButton = null;
+
+            //Hover box
+            _hoverBox = null;
+            _hoverBoxText = null;
 
             //Horizontal Line
             horizontalLine = null;

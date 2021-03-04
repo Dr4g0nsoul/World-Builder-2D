@@ -298,6 +298,31 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region Level Object Layers
+
+        public List<LevelLayer> GetLevelObjectLayers(LevelObject obj)
+        {
+            LevelEditorSettings settings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
+            if(settings != null)
+            {
+                if (obj != null)
+                {
+                    List<LevelLayer> objectLayers = new List<LevelLayer>();
+                    foreach(LevelLayer layer in settings.levelLayers)
+                    {
+                        if (obj.levelLayers.Contains(layer.guid))
+                            objectLayers.Add(layer);
+                    }
+                    return objectLayers;
+                }
+
+                return settings.levelLayers.ToList();
+            }
+            return null;
+        }
+
+        #endregion
+
         #region Utility
 
         public Color GetAccentColor(string guid)

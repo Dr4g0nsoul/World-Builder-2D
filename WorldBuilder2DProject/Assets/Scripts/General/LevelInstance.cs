@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
@@ -37,7 +38,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }))
                 {
                     //Assign it to unkown layer
-                    return FindParentTransformCategory(obj.mainCategory, unknownLayer, settings);
+                    return FindParentTransformCategory(obj, unknownLayer, settings);
                 }
 
                 //Get layer
@@ -45,23 +46,23 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if(transformLayer.layerGuid == levelLayer)
                     {
-                        Transform a = FindParentTransformCategory(obj.mainCategory, transformLayer, settings);
-                        Debug.Log($"return2 {a}");
-                        return a;
+                        return FindParentTransformCategory(obj, transformLayer, settings);
                     }
                 }
 
                 //Create layer because not found and use that instead
-                return FindParentTransformCategory(obj.mainCategory, CreateLevelTransformLayer(levelLayerObject), settings);
+                return FindParentTransformCategory(obj, CreateLevelTransformLayer(levelLayerObject), settings);
                 
             }
 
             return null;
         }
 
-        private Transform FindParentTransformCategory(string targetCategory, LevelTransformLayer transformLayer, LevelEditorSettings settings)
+        private Transform FindParentTransformCategory(LevelObject obj, LevelTransformLayer transformLayer, LevelEditorSettings settings)
         {
-            if(!string.IsNullOrEmpty(targetCategory) && settings != null)
+            string targetCategory = obj.mainCategory;
+
+            if(obj != null && !string.IsNullOrEmpty(targetCategory) && settings != null)
             {
                 LevelObjectCategory categoryObject = null;
                 
@@ -77,28 +78,50 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }))
                 {
                     //Assign it to uncategorized
-                    return unknownLayer.uncategorized.categoryTransform;
+                    return FindLevelObjectTransform(obj, unknownLayer.uncategorized);
                 }
 
                 //Get category
                 foreach (LevelTransformCategory transformCategory in transformLayer.levelTransformCategories)
                 {
-                    Debug.Log($"{transformCategory.categoryGuid} == {targetCategory}");
                     if (transformCategory.categoryGuid == targetCategory)
                     {
-                        Debug.Log($"return {transformCategory.categoryTransform}");
-                        return transformCategory.categoryTransform;
+                        return FindLevelObjectTransform(obj, transformCategory);
                     }
                 }
 
                 //Create category transform because not found
-                Transform a = CreateLevelTransformCategory(categoryObject, transformLayer).categoryTransform;
-                Debug.Log(a);
-                return a;
+                return FindLevelObjectTransform(obj, CreateLevelTransformCategory(categoryObject, transformLayer));
 
             }
 
             return null;
+        }
+
+        private Transform FindLevelObjectTransform(LevelObject obj, LevelTransformCategory levelTransformCategory)
+        {
+            if(obj != null && !string.IsNullOrEmpty(obj.item.name) && levelTransformCategory.categoryTransform != null)
+            {
+                //Search for first transfrom with the level object name which is not a prefab
+                foreach(Transform potentialParent in levelTransformCategory.categoryTransform)
+                {
+                    if(potentialParent.parent == levelTransformCategory.categoryTransform //Is direct child
+                        && PrefabUtility.GetCorrespondingObjectFromSource(potentialParent) == null //Is not a prefab
+                        && potentialParent.GetComponents(typeof(Component)).Length < 2) //Has only transform component on it
+                    {
+                        return potentialParent;
+                    }
+                }
+            }
+
+            //If none is found create it
+            GameObject levelObjectContainer = new GameObject();
+            levelObjectContainer.name = obj.name;
+            levelObjectContainer.transform.position = Vector2.zero;
+            levelObjectContainer.transform.rotation = Quaternion.identity;
+            levelObjectContainer.transform.parent = levelTransformCategory.categoryTransform;
+
+            return levelObjectContainer.transform;
         }
 
         private LevelTransformLayer CreateLevelTransformLayer(LevelLayer layer)
