@@ -79,4 +79,4 @@ MonoBehaviour:
       description: 
       accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
     parallaxSpeed: 0
-  quickSelectBarSize: 20
+  quickSelectBarSize: 25

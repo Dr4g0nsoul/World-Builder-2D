@@ -1290,10 +1290,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 hbAnimation.CancelAndComplete();
             }
-            hbAnimation = tweener.Tween(this, null, hbFadeDuration, hbHideDelay)
-                .Ease(Ease.SineIn)
-                .OnUpdate(val => HideHoverBoxAnimation(val))
-                .OnComplete(() => HideHoverBoxAnimation(1f));
+            if (hbOpacity > 0)
+            {
+                hbAnimation = tweener.Tween(this, null, hbFadeDuration, hbHideDelay)
+                    .Ease(Ease.SineIn)
+                    .OnUpdate(val => HideHoverBoxAnimation(val))
+                    .OnComplete(() => HideHoverBoxAnimation(1f));
+            }
+            else
+            {
+                HideHoverBoxAnimation(1f);
+            }
         }
 
         private void ShowHoverBox()

@@ -176,7 +176,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 if (search != lastSearch || lastSearchAll != searchAll)
                 {
-                    Debug.Log("hi");
                     ApplySearchFilter(search, searchAll);
                 }
                 lastSearch = search;
