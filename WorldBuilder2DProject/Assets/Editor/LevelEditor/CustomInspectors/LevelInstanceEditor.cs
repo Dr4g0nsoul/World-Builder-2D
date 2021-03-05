@@ -49,7 +49,6 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
 
             editSizeMode = false;
             showDebugFields = new AnimBool(false);
-            showDebugFields.valueChanged.AddListener(Repaint);
 
             lastSelectedExit = -2;
 
@@ -165,8 +164,6 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 levelSearializedObject.ApplyModifiedProperties();
                 
             }
-
-            DrawDefaultInspector();
         }
 
         private void OnSceneGUI(SceneView sceneView)

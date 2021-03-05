@@ -2148,7 +2148,7 @@ MonoBehaviour:
     m_StretchHeight: 0
   - m_Name: Hover Box
     m_Normal:
-      m_Background: {fileID: 2800000, guid: a4c3cc1c68ca02e4389e0ba4d2aa778e, type: 3}
+      m_Background: {fileID: 2800000, guid: 073706dcfa157a64db03b5c4a3bbfb13, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Hover:

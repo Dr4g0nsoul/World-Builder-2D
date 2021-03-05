@@ -20,6 +20,9 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         public LevelExit[] levelExits;
         public bool levelExitsUpdated;
 
+        //Preferred Items
+        public PreferredItems preferredItems;
+
         //Debug
         [ReadOnly] public string assignedSceneName;
         [ReadOnly] public string assignedScenePath;
@@ -35,6 +38,13 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             Debug.LogError($"NodePort {port.fieldName} has no valid level exit!");
             return null;
         }
+    }
+
+    [System.Serializable]
+    public struct PreferredItems
+    {
+        public string[] categories;
+        public string[] levelObjects;
     }
 
 }

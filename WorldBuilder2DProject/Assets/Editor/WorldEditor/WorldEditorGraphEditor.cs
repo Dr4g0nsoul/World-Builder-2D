@@ -15,8 +15,15 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
     public class WorldEditorGraphEditor : NodeGraphEditor
     {
 
+        //General
         private GUISkin skin;
         private Texture2D gridTexture;
+
+        //Selection Inspector
+        public const float INSPECTOR_RECT_WIDTH = 360f;
+        private INodeEditorInspector nodeEditorWithInspector;
+        private readonly Vector2 inspectorRectMargin = new Vector2(10f, 20f);
+        private bool blockMouse = false;
 
 
         public override Color GetPortColor(NodePort port)
@@ -72,6 +79,52 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         public override void OnGUI()
         {
             GUI.skin = skin;
+            // Keep repainting the GUI of the active NodeEditorWindow
+            NodeEditorWindow.current.Repaint();
+
+            Vector2 windowSize = NodeEditorWindow.current.position.size;
+            Rect inspectorRect = new Rect();
+            inspectorRect.position = new Vector2(windowSize.x - inspectorRectMargin.x - INSPECTOR_RECT_WIDTH, inspectorRectMargin.y);
+            inspectorRect.size = new Vector2(INSPECTOR_RECT_WIDTH, windowSize.y - inspectorRectMargin.y * 2f);
+
+
+            if(Event.current.type == EventType.Layout)
+            {
+                nodeEditorWithInspector = null;
+                if (Selection.objects.Length < 2)
+                {
+                    Node node = Selection.activeObject as Node;
+                    if (node != null)
+                    {
+                        if (NodeEditor.GetEditor(node, NodeEditorWindow.current) is INodeEditorInspector nodeEditorWithInspector)
+                        {
+                            this.nodeEditorWithInspector = nodeEditorWithInspector;
+                        }
+                    }
+                }
+            }
+
+            if(nodeEditorWithInspector != null)
+            {
+                GUILayout.BeginArea(inspectorRect, NodeEditorResources.styles.propertyBox);
+                GUILayout.BeginVertical();
+                nodeEditorWithInspector.OnNodeInspectorGUI();
+                GUILayout.EndVertical();
+                GUILayout.EndArea();
+                if (Event.current.type == EventType.Repaint)
+                {
+                    NodeEditorWindow.current.enableInput = !inspectorRect.Contains(Event.current.mousePosition);
+                }
+
+                if(blockMouse && Event.current.type == EventType.MouseDown)
+                {
+                    Event.current.Use();
+                }
+            }
+            else
+            {
+                NodeEditorWindow.current.enableInput = true;
+            }
         }
 
         public override void OnOpen()

@@ -297,6 +297,20 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region Level Object Category
+
+        public LevelObjectCategory GetCategoryByGuid(string guid)
+        {
+            if (!string.IsNullOrEmpty(guid) && levelObjectCategoryCache.TryGetValue(guid, out LevelObjectCategory ret))
+            {
+                return ret;
+            }
+
+            return null;
+        }
+
+        #endregion
+
         #region Level Object Layers
 
         public List<LevelLayer> GetLevelObjectLayers(LevelObject obj)

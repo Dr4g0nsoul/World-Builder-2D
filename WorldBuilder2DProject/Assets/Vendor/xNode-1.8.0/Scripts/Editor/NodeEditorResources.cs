@@ -13,12 +13,19 @@ namespace XNodeEditor {
         public static Texture2D nodeHighlight { get { return _nodeHighlight != null ? _nodeHighlight : _nodeHighlight = Resources.Load<Texture2D>("xnode_node_highlight"); } }
         private static Texture2D _nodeHighlight;
 
+        //WB2D-Custom Textures
+        public static Texture2D propertyBoxBackground { get { return _propertyBoxBackground != null ? _propertyBoxBackground : _propertyBoxBackground = Resources.Load<Texture2D>("LevelEditor/Skin/GUIImages/bg_roundedSquareDark"); } }
+        private static Texture2D _propertyBoxBackground;
+        public static Texture2D propertyBoxBackgroundLight { get { return _propertyBoxBackgroundLight != null ? _propertyBoxBackgroundLight : _propertyBoxBackgroundLight = Resources.Load<Texture2D>("LevelEditor/Skin/GUIImages/bg_roundedSquareLight"); } }
+        private static Texture2D _propertyBoxBackgroundLight;
+
         // Styles
         public static Styles styles { get { return _styles != null ? _styles : _styles = new Styles(); } }
         public static Styles _styles = null;
         public static GUIStyle OutputPort { get { return new GUIStyle(EditorStyles.label) { alignment = TextAnchor.UpperRight }; } }
         public class Styles {
-            public GUIStyle inputPort, nodeHeader, nodeBody, tooltip, nodeHighlight;
+            public GUIStyle inputPort, nodeHeader, nodeBody, tooltip, nodeHighlight,
+                propertyBox;//WB2D-Custom styles
 
             public Styles() {
                 GUIStyle baseStyle = new GUIStyle("Label");
@@ -38,7 +45,7 @@ namespace XNodeEditor {
                 nodeBody.border = new RectOffset(32, 32, 32, 32);
                 nodeBody.padding = new RectOffset(16, 16, 4, 16);
                 nodeBody.padding = new RectOffset(5, 5, 0, 6);
-                //nodeBody.padding = new RectOffset(1, 1, 1, 1); //custom
+                //nodeBody.padding = new RectOffset(1, 1, 1, 1); //WB2D-Custom
 
 
                 nodeHighlight = new GUIStyle();
@@ -47,6 +54,16 @@ namespace XNodeEditor {
 
                 tooltip = new GUIStyle("helpBox");
                 tooltip.alignment = TextAnchor.MiddleCenter;
+
+                //WB2D-Custom additional styles
+                propertyBox = new GUIStyle(GUI.skin.box);
+                propertyBox.border = new RectOffset(10, 10, 10, 10);
+                propertyBox.padding = new RectOffset(10, 10, 20, 10);
+                propertyBox.margin = new RectOffset(0, 0, 0, 0);
+                if(EditorGUIUtility.isProSkin)
+                    propertyBox.normal.background = propertyBoxBackground;
+                else
+                    propertyBox.normal.background = propertyBoxBackgroundLight;
             }
         }
 

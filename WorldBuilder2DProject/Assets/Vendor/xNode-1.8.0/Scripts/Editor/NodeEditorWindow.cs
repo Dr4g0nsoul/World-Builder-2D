@@ -117,6 +117,8 @@ namespace XNodeEditor {
             NodeEditorWindow w = CreateInstance<NodeEditorWindow>();
             w.titleContent = new GUIContent("World Editor");
             w.wantsMouseMove = true;
+            //WB2D-Custom: Enable input when window opens
+            w.enableInput = true;
             w.Show();
             return w;
         }
