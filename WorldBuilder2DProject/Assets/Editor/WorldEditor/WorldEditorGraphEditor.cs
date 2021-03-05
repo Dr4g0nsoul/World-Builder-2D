@@ -24,6 +24,9 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         private INodeEditorInspector nodeEditorWithInspector;
         private readonly Vector2 inspectorRectMargin = new Vector2(10f, 20f);
         private bool blockMouse = false;
+        public bool IsMouseOverInspector { get => _isMouseOverInspector; }
+        private bool _isMouseOverInspector = false;
+        public bool resizingWorldBox = false;
 
 
         public override Color GetPortColor(NodePort port)
@@ -113,7 +116,8 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 GUILayout.EndArea();
                 if (Event.current.type == EventType.Repaint)
                 {
-                    NodeEditorWindow.current.enableInput = !inspectorRect.Contains(Event.current.mousePosition);
+                    _isMouseOverInspector = inspectorRect.Contains(Event.current.mousePosition);
+                    NodeEditorWindow.current.enableInput = !_isMouseOverInspector;
                 }
 
                 if(blockMouse && Event.current.type == EventType.MouseDown)
@@ -121,9 +125,10 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                     Event.current.Use();
                 }
             }
-            else
+            else if(!resizingWorldBox)
             {
                 NodeEditorWindow.current.enableInput = true;
+                _isMouseOverInspector = false;
             }
         }
 

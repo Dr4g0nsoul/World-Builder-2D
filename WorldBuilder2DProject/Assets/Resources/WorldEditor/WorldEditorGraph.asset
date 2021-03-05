@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Test Level 2
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 168, y: -1784}
+  position: {x: 168, y: -1816}
   ports:
     keys:
     - bb9dad0c-c956-4bd3-b2fa-3c97ee9655f3
@@ -81,6 +81,34 @@ MonoBehaviour:
     levelObjects: []
   assignedSceneName: Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb
   assignedScenePath: Assets/Scenes/Levels/Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb.unity
+--- !u!114 &-6103581282547874501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
+  m_Name: Forest
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1320, y: -2264}
+  ports:
+    keys: []
+    values: []
+  guid: 3cd7dedd-45b8-43d6-963b-df5fda54ef32
+  width: 400
+  height: 400
+  accentColor: {r: 0.04387683, g: 0.5471698, b: 0.055144545, a: 1}
+  worldName: Forest
+  worldDescription: 
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: 
+  assignedScenePath: 
 --- !u!114 &-4871792554773954699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -94,7 +122,7 @@ MonoBehaviour:
   m_Name: Test Level
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -696, y: -1912}
+  position: {x: -184, y: -2440}
   ports:
     keys:
     - 86329b80-7e6f-47d9-881e-6db22b85fb69
@@ -175,5 +203,6 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
+  - {fileID: -6103581282547874501}
   - {fileID: -4871792554773954699}
   - {fileID: -8628300153976925781}

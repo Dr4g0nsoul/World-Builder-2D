@@ -223,7 +223,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
     {
         LevelNode lNode = target as LevelNode;
         if (lNode) {
-            GUILayout.Label(lNode.levelName, GUILayout.ExpandHeight(false));
+            GUILayout.Label($"Level: {lNode.levelName}", GUILayout.ExpandHeight(false));
             LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(10, 10, 10, 10));
 
             serializedObject.Update();
