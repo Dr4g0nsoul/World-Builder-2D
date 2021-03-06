@@ -11,6 +11,7 @@ using XNode;
 using XNodeEditor;
 using UnityEditor.AnimatedValues;
 using System.Linq;
+using XNode.NodeGroups;
 
 [CustomNodeEditor(typeof(LevelNode))]
 public class LevelNodeEditor : NodeEditor, INodeEditorInspector
@@ -137,10 +138,20 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
     public override void OnHeaderGUI()
     {
         LevelNode lNode = target as LevelNode;
-        if(lNode == null || string.IsNullOrEmpty(lNode.levelName))
+        if (lNode == null || string.IsNullOrEmpty(lNode.levelName))
             GUILayout.Label(target.name, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
         else
-            GUILayout.Label(lNode.levelName, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+        {
+            NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+            if (world != null)
+            {
+                GUILayout.Label($"{world.worldName} - {lNode.levelName}", NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+            }
+            else
+            {
+                GUILayout.Label(lNode.levelName, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
+            }
+        }
 
     }
 

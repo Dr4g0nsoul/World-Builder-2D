@@ -114,15 +114,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     case 1:
                         //Categories
                         DrawCategoryPicker();
-                        EditorGUILayout.LabelField("Hover: " + categoryHoveringPos);
-                        EditorGUILayout.LabelField("Click: " + categoryClickedPos);
+                        //EditorGUILayout.LabelField("Hover: " + categoryHoveringPos);
+                        //EditorGUILayout.LabelField("Click: " + categoryClickedPos);
                         break;
 
                     case 2:
                         //Layers
                         DrawLayerPicker();
-                        EditorGUILayout.LabelField("Hover: " + layerHoveringPos);
-                        EditorGUILayout.LabelField("Click: " + layerClickedPos);
+                        //EditorGUILayout.LabelField("Hover: " + layerHoveringPos);
+                        //EditorGUILayout.LabelField("Click: " + layerClickedPos);
                         break;
 
                 }
