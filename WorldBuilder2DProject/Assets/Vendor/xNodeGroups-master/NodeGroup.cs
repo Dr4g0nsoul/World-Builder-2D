@@ -10,7 +10,6 @@ namespace XNode.NodeGroups {
 	public class NodeGroup : UniqueNode {
 		public int width = 400;
 		public int height = 400;
-		public Color accentColor = new Color(1f, 1f, 1f, 1f);
 
 		public override object GetValue(NodePort port) {
 			return null;
@@ -36,7 +35,9 @@ namespace XNode.NodeGroups {
 		///////////////////
 
 		public string worldName;
+		public Color accentColor = new Color(1f, 1f, 1f, 1f);
 		[TextArea(4, 10)] public string worldDescription;
+		public string[] levels;
 
 		//Preferred Items
 		public PreferredItems preferredItems;

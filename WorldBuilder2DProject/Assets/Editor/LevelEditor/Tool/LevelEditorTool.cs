@@ -106,6 +106,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private Tween showCategoryMoreBoxAnimation;
         private float showCategoryMoreBoxAnimationValue;
 
+        //Preferred items
+        private LevelObjectsController.PreferredItemsFilterMode preferredItemsFilterMode;
+
         //Layers
         private readonly Vector3Int menuBarLayersAmount = new Vector3Int(3, 3, 1);
         private string selectedLayer;
@@ -264,6 +267,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             categoriesMoreBoxScrollPos = 0f;
             showCategoryMoreBoxAnimationValue = 0f;
 
+            //Preferred Items
+            preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.None;
+
             //Layers
             selectedLayer = null;
             layersMoreBoxScrollPos = 0f;
@@ -377,7 +383,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Events
             SceneView.beforeSceneGui -= ToolInput;
             SceneView.beforeSceneGui -= WindowFocus;
-            EditorSceneManager.sceneSaved -= SceneSaved;
+            //EditorSceneManager.sceneSaved -= SceneSaved;
         }
 
         public override GUIContent toolbarIcon
@@ -431,6 +437,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if (blockMouse)
                     {
+                        DeselectCurrentlySelectedObject();
                         e.Use();
                     }
 
@@ -511,10 +518,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void SceneSaved(Scene scene)
         {
-            if(GenerateThumbnail(scene))
-            {
-                Debug.Log("Saved: " + scene.path);
-            }
+            DeselectCurrentlySelectedObject();
+            GenerateThumbnail(scene);
         }
 
         #endregion
@@ -898,8 +903,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void DrawMenuPreferredItems()
         {
-            DrawMenuBarButton(systemMenuBarItems[1], null);
-            DrawMenuBarButton(systemMenuBarItems[2], null);
+            DrawMenuBarButton(systemMenuBarItems[1], () => ToggleLevelPreferredItems(), preferredItemsFilterMode == LevelObjectsController.PreferredItemsFilterMode.Level);
+            DrawMenuBarButton(systemMenuBarItems[2], () => ToggleWorldPreferredItems(), preferredItemsFilterMode == LevelObjectsController.PreferredItemsFilterMode.World);
+        }
+
+        private void ToggleLevelPreferredItems()
+        {
+            if (preferredItemsFilterMode == LevelObjectsController.PreferredItemsFilterMode.Level)
+            {
+                preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.None;
+            }
+            else
+            {
+                preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.Level;
+            }
+            ReloadFilters();
+        }
+
+        private void ToggleWorldPreferredItems()
+        {
+            if (preferredItemsFilterMode == LevelObjectsController.PreferredItemsFilterMode.World)
+            {
+                preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.None;
+            }
+            else
+            {
+                preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.World;
+            }
+            ReloadFilters();
         }
 
         #endregion
@@ -1123,7 +1154,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Load level objects for drawer
             if (Event.current.type == EventType.Layout)
             {
-                if (string.IsNullOrEmpty(selectedLayer) && selectedCategories.Count < 1)
+                if (string.IsNullOrEmpty(selectedLayer) && selectedCategories.Count < 1 && preferredItemsFilterMode == LevelObjectsController.PreferredItemsFilterMode.None)
                 {
                     if(string.IsNullOrEmpty(searchString))
                         drawerLevelObjects = levelObjectsController.GetAllLevelObjects();
@@ -1187,6 +1218,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 inObjectPlacementMode = true;
                 objectToPlace = obj;
                 levelObjectsController.AddToQuickSelectBar(obj.guid);
+                List<LevelLayer> availableLayers = levelObjectsController.GetLevelObjectLayers(obj);
+                if(availableLayers != null && availableLayers.Count == 1)
+                {
+                    selectedLayer = availableLayers[0].guid;
+                }
 
                 //Temporary Object
                 if (temporaryObject != null)
@@ -1710,20 +1746,35 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void ReloadFilters()
         {
-            //Reload both
-            if(selectedCategories.Count > 0 && !string.IsNullOrEmpty(selectedLayer))
+            //Get level for preferred items
+            LevelInstance levelInstance = levelRootTransform.GetComponent<LevelInstance>();
+            string levelGuid = null;
+            if (levelInstance != null)
+                levelGuid = levelInstance.level;
+            else
             {
-                levelObjectsController.ApplyFilters(selectedCategories, selectedLayer);
+                Debug.LogError("asdasd");
+            }
+
+            //Reload both
+            if (selectedCategories.Count > 0 && !string.IsNullOrEmpty(selectedLayer))
+            {
+                levelObjectsController.ApplyFilters(selectedCategories, selectedLayer, preferredItemsFilterMode, levelGuid);
             }
             //Reload with Categories
-            else if(selectedCategories.Count > 0)
+            else if (selectedCategories.Count > 0)
             {
-                levelObjectsController.ApplyFilters(selectedCategories);
+                levelObjectsController.ApplyFilters(selectedCategories, preferredItemsFilterMode, levelGuid);
             }
             //Reload with Layer
-            else if(!string.IsNullOrEmpty(selectedLayer))
+            else if (!string.IsNullOrEmpty(selectedLayer))
             {
-                levelObjectsController.ApplyFilters(selectedLayer);
+                levelObjectsController.ApplyFilters(selectedLayer, preferredItemsFilterMode, levelGuid);
+            }
+            //Reload with only preferred items
+            else
+            {
+                levelObjectsController.ApplyFilters(preferredItemsFilterMode, levelGuid);
             }
         }
 

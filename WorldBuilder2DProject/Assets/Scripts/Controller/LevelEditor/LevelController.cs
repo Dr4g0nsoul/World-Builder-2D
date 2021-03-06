@@ -2,10 +2,12 @@
 using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XNode;
+using XNode.NodeGroups;
 using XNodeEditor;
 
 public class LevelController
@@ -47,12 +49,15 @@ public class LevelController
     private SortedDictionary<string, LevelNode> levels;
     private SortedDictionary<string, Texture2D> thumbnailCache;
 
+    //World variables
+    private SortedDictionary<string, NodeGroup> worlds;
 
     #region Initialization
 
     public LevelController()
     {
         LoadLevels();
+        LoadWorlds();
     }
 
     public void LoadLevels()
@@ -74,6 +79,30 @@ public class LevelController
                 {
                     LevelNode lNode = node as LevelNode;
                     levels.Add(lNode.guid, lNode);
+                }
+            }
+        }
+    }
+
+    public void LoadWorlds()
+    {
+        GetWorldEditorGraph();
+
+        //Clear data
+        if (worlds == null)
+            worlds = new SortedDictionary<string, NodeGroup>();
+        worlds.Clear();
+
+        if (worldEditorGraph != null)
+        {
+
+            //Get all worlds
+            foreach (Node node in worldEditorGraph.nodes)
+            {
+                if (node is NodeGroup)
+                {
+                    NodeGroup wNode = node as NodeGroup;
+                    worlds.Add(wNode.guid, wNode);
                 }
             }
         }
@@ -152,6 +181,61 @@ public class LevelController
     }
 
     #endregion
+
+    #endregion
+
+    #region World
+
+    public NodeGroup GetWorld(string guid)
+    {
+        if (string.IsNullOrEmpty(guid))
+            return null;
+
+        worlds.TryGetValue(guid, out NodeGroup wNode);
+        return wNode;
+    }
+
+    public bool IsValidWorld(string guid)
+    {
+        if (string.IsNullOrEmpty(guid))
+            return false;
+
+        return worlds.ContainsKey(guid);
+    }
+
+    public SortedDictionary<string, LevelNode> GetLevelsByWorld(string worldGuid)
+    {
+        SortedDictionary<string, LevelNode> worldLevels = new SortedDictionary<string, LevelNode>();
+        NodeGroup world = GetWorld(worldGuid);
+        if (world != null)
+        {
+            foreach(string levelGuid in world.levels)
+            {
+                LevelNode lNode = GetLevel(levelGuid);
+                if(lNode != null)
+                {
+                    worldLevels.Add(lNode.guid, lNode);
+                }
+            }
+        }
+
+        return worldLevels;
+    }
+
+    public NodeGroup GetWorldByLevel(string levelGuid)
+    {
+        if(IsValidLevel(levelGuid))
+        {
+            foreach(NodeGroup world in worlds.Values)
+            {
+                if(world.levels.Contains(levelGuid))
+                {
+                    return world;
+                }
+            }
+        }
+        return null;
+    }
 
     #endregion
 

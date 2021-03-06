@@ -223,7 +223,15 @@ namespace XNodeEditor {
         }
 
         /// <summary> Return color based on type </summary>
-        public static Color GetTypeColor(System.Type type) {
+        public static Color GetTypeColor(System.Type type = null) {
+            /*
+            //WB2D-Custom: Only black or white
+            if(settings.ContainsKey(lastKey))
+            {
+                settings.Remove(lastKey);
+            }
+            return Color.white;
+            */
             VerifyLoaded();
             if (type == null) return Color.gray;
             Color col;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
+using UnityEditorInternal;
 using UnityEngine;
 using XNode;
 using XNode.NodeGroups;
@@ -25,12 +26,16 @@ namespace XNodeEditor.NodeGroups
 		//Node inspector
 		private LevelEditorSettings levelEditorSettings;
 		private LevelObjectsController levelObjectsController;
+		private LevelController levelController;
 		//Tabs
 		private int menuSelection;
 		private readonly string[] menuLabels = new string[] { "Overview", "World Favorites" };
 
-		//Preferred items
-		private readonly float optionLabelWidth = 150f;
+        //Levels
+        private ReorderableList levels;
+
+        //Preferred items
+        private readonly float optionLabelWidth = 150f;
 		private GUIStyle optionLabel;
 		private GUIStyle optionLabelActive;
 		private GUIStyle imageMini;
@@ -59,10 +64,28 @@ namespace XNodeEditor.NodeGroups
 
             levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
             levelObjectsController = LevelObjectsController.Instance;
+            levelController = LevelController.Instance;
 
             //Inspector initialization
             menuSelection = 0;
             showDebugFields = new AnimBool(false);
+
+            //Levels
+            levels = new ReorderableList(serializedObject, serializedObject.FindProperty("levels"), false, true, false, false);
+            levels.drawHeaderCallback = rect =>
+            {
+                EditorGUI.LabelField(rect, "Levels");
+            };
+            levels.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                string levelGuid = serializedObject.FindProperty("levels").GetArrayElementAtIndex(index).stringValue;
+                LevelNode lNode = levelController.GetLevel(levelGuid);
+                string levelName = "Unknown";
+                if (lNode != null)
+                    levelName = lNode.levelName;
+
+                EditorGUI.LabelField(rect, levelName);
+            };
 
             //Preferred Items
             categoryHoveringPos = -1;
@@ -163,6 +186,12 @@ namespace XNodeEditor.NodeGroups
 					}
 					break;
 				case EventType.MouseUp:
+                    if (Selection.Contains(target))
+                    {
+                        Selection.objects = new Object[1] { group };
+                    }
+                    if (isDragging)
+                        Selection.activeObject = group;
 					isDragging = false;
 					// Select nodes inside the group
 					if (Selection.Contains(target))
@@ -193,7 +222,27 @@ namespace XNodeEditor.NodeGroups
 								}
 							}
 						}
-						Selection.objects = selection.Distinct().ToArray();
+
+                        Object[] selectedObjects = selection.Distinct().ToArray();
+						Selection.objects = selectedObjects;
+
+                        //Add levels to the world
+                        serializedObject.Update();
+                        SerializedProperty levels = serializedObject.FindProperty("levels");
+                        levels.ClearArray();
+                        for(int i = 0; i<selectedObjects.Length; i++)
+                        {
+                            LevelNode lNode = selectedObjects[i] as LevelNode;
+                            if(lNode != null)
+                            {
+                                levels.arraySize += 1;
+                                levels.GetArrayElementAtIndex(levels.arraySize - 1).stringValue = lNode.guid;
+                            }
+                        }
+                        serializedObject.ApplyModifiedProperties();
+
+                        //Open Inspector for this object
+                        nodeGrpahEditor.worldInspector = this;
 					}
 					break;
 				case EventType.Repaint:
@@ -287,11 +336,28 @@ namespace XNodeEditor.NodeGroups
         {
             //General information
             EditorGUILayout.PropertyField(serializedObject.FindProperty("worldName"));
+            if(group.worldName != group.name)
+            {
+                group.name = group.worldName;
+            }
             GUISkin prevSkin = GUI.skin;
             GUI.skin = null;
             EditorGUILayout.PropertyField(serializedObject.FindProperty("accentColor"));
             GUI.skin = prevSkin;
             EditorGUILayout.PropertyField(serializedObject.FindProperty("worldDescription"));
+
+            //Levels
+            GUI.skin = null;
+            levels.DoLayoutList();
+            GUI.skin = prevSkin;
+            if(levels.index >= 0 && GUILayout.Button("Open level inspector"))
+            {
+                LevelNode lNode = levelController.GetLevel(group.levels[levels.index]);
+                if(lNode != null)
+                {
+                    Selection.activeObject = lNode;
+                }
+            }
 
             //Debug information
             EditorGUILayout.Space(20f);

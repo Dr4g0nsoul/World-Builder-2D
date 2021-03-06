@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XNode;
+using XNode.NodeGroups;
 using XNodeEditor;
 
 namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
@@ -20,18 +21,37 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         private Texture2D gridTexture;
 
         //Selection Inspector
-        public const float INSPECTOR_RECT_WIDTH = 360f;
+        public const float INSPECTOR_RECT_WIDTH = 370f;
         private INodeEditorInspector nodeEditorWithInspector;
+        public INodeEditorInspector worldInspector = null;
         private readonly Vector2 inspectorRectMargin = new Vector2(10f, 20f);
+        private float inspectorScrollPos = 0f;
         private bool blockMouse = false;
         public bool IsMouseOverInspector { get => _isMouseOverInspector; }
         private bool _isMouseOverInspector = false;
         public bool resizingWorldBox = false;
+        private bool mouseUp = false;
 
 
         public override Color GetPortColor(NodePort port)
         {
-            return Color.blue;
+            Color col = NodeEditorPreferences.GetTypeColor();
+
+            //Check wheter it is a level node
+            LevelNode lNode = port.node as LevelNode;
+            if(lNode != null)
+            {
+                NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+                if (world != null)
+                    return new Color(world.accentColor.r, world.accentColor.g, world.accentColor.b);
+            }
+
+            return col;
+        }
+
+        public override Color GetTypeColor(Type type)
+        {
+            return Color.white;
         }
 
         public override Texture2D GetGridTexture()
@@ -74,9 +94,12 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             return createdNode;
         }
 
+        /// <summary>
+        /// Disables remove
+        /// </summary>
+        /// <param name="node">Doesn't matter</param>
         public override void RemoveNode(Node node)
         {
-            base.RemoveNode(node);
         }
 
         public override void OnGUI()
@@ -90,19 +113,39 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             inspectorRect.position = new Vector2(windowSize.x - inspectorRectMargin.x - INSPECTOR_RECT_WIDTH, inspectorRectMargin.y);
             inspectorRect.size = new Vector2(INSPECTOR_RECT_WIDTH, windowSize.y - inspectorRectMargin.y * 2f);
 
+            //Mouse up and down
+            if (Event.current.type == EventType.MouseUp)
+            {
+                mouseUp = true;
+            }
+            else if (Event.current.type == EventType.Used || Event.current.type == EventType.MouseDown)
+            {
+                if (!inspectorRect.Contains(Event.current.mousePosition))
+                {
+                    worldInspector = null;
+                    mouseUp = false;
+                }
+            }
 
             if(Event.current.type == EventType.Layout)
             {
                 nodeEditorWithInspector = null;
-                if (Selection.objects.Length < 2)
+                if (mouseUp)
                 {
-                    Node node = Selection.activeObject as Node;
-                    if (node != null)
+                    if (Selection.objects.Length < 2)
                     {
-                        if (NodeEditor.GetEditor(node, NodeEditorWindow.current) is INodeEditorInspector nodeEditorWithInspector)
+                        Node node = Selection.activeObject as Node;
+                        if (node != null)
                         {
-                            this.nodeEditorWithInspector = nodeEditorWithInspector;
+                            if (NodeEditor.GetEditor(node, NodeEditorWindow.current) is INodeEditorInspector nodeEditorWithInspector)
+                            {
+                                this.nodeEditorWithInspector = nodeEditorWithInspector;
+                            }
                         }
+                    }
+                    else if (worldInspector != null)
+                    {
+                        nodeEditorWithInspector = worldInspector;
                     }
                 }
             }
@@ -110,9 +153,11 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             if(nodeEditorWithInspector != null)
             {
                 GUILayout.BeginArea(inspectorRect, NodeEditorResources.styles.propertyBox);
+                inspectorScrollPos = GUILayout.BeginScrollView(new Vector2(0f, inspectorScrollPos), false, false).y;
                 GUILayout.BeginVertical();
                 nodeEditorWithInspector.OnNodeInspectorGUI();
                 GUILayout.EndVertical();
+                GUILayout.EndScrollView();
                 GUILayout.EndArea();
                 if (Event.current.type == EventType.Repaint)
                 {
@@ -129,6 +174,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             {
                 NodeEditorWindow.current.enableInput = true;
                 _isMouseOverInspector = false;
+                inspectorScrollPos = 0f;
             }
         }
 

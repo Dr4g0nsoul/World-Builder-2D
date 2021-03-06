@@ -1,9 +1,10 @@
-﻿using System;
+﻿using dr4g0nsoul.WorldBuilder2D.WorldEditor;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using XNode.NodeGroups;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -43,6 +44,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private string lastSearch = "";
         private bool lastSearchAll = false;
         private SortedDictionary<string, LevelObject> searchFilteredLevelObjects = new SortedDictionary<string, LevelObject>();
+        public enum PreferredItemsFilterMode { None, Level, World }
 
         //Level Object data
         private List<string> quickSelectBar = new List<string>();
@@ -185,10 +187,80 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 
-        public void ApplyFilters(List<string> categories)
+        public SortedDictionary<string, LevelObject> GetPreferredLevelObjects(PreferredItemsFilterMode preferredItemsFilterMode, string levelGuid)
+        {
+            SortedDictionary<string, LevelObject> preferredLevelObjects = new SortedDictionary<string, LevelObject>();
+
+            LevelNode lNode = LevelController.Instance.GetLevel(levelGuid);
+
+            if (preferredItemsFilterMode == PreferredItemsFilterMode.None || lNode == null)
+            {
+                preferredLevelObjects = new SortedDictionary<string, LevelObject>(levelObjects);
+            }
+            else
+            {
+                //Get Preferred items
+                bool prefItemsFound = false;
+                PreferredItems prefItems = new PreferredItems();
+                if (preferredItemsFilterMode == PreferredItemsFilterMode.Level)
+                {
+                    prefItems = lNode.preferredItems;
+                    prefItemsFound = true;
+                }
+                else if (preferredItemsFilterMode == PreferredItemsFilterMode.World)
+                {
+                    NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+                    if (world != null)
+                    {
+                        prefItems = world.preferredItems;
+                        prefItemsFound = true;
+                    }
+                }
+
+                //Filter by preferred items
+                if (prefItemsFound)
+                {
+                    foreach (LevelObject obj in levelObjects.Values)
+                    {
+                        //Check if level object id in level favorite objects
+                        if (prefItems.levelObjects.Contains(obj.guid))
+                        {
+                            preferredLevelObjects.Add(obj.guid, obj);
+                        }
+                        //Check if any level category contained in level favorite categories
+                        else
+                        {
+                            foreach (string category in obj.categories)
+                            {
+                                if (prefItems.categories.Contains(category))
+                                {
+                                    preferredLevelObjects.Add(obj.guid, obj);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return preferredLevelObjects;
+        }
+
+        public void ApplyFilters(PreferredItemsFilterMode preferredItemsFilterMode, string levelGuid)
         {
             filteredLevelObjects.Clear();
-            foreach (LevelObject obj in levelObjects.Values)
+
+            filteredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+
+        }
+
+        public void ApplyFilters(List<string> categories, PreferredItemsFilterMode preferredItemsFilterMode = PreferredItemsFilterMode.None, string levelGuid = null)
+        {
+            filteredLevelObjects.Clear();
+
+            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+
+            foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains all categories
                 if (!categories.Except(obj.categories.ToList()).Any())
@@ -197,10 +269,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             lastSearch = "";
         }
 
-        public void ApplyFilters(string layer)
+        public void ApplyFilters(string layer, PreferredItemsFilterMode preferredItemsFilterMode = PreferredItemsFilterMode.None, string levelGuid = null)
         {
             filteredLevelObjects.Clear();
-            foreach (LevelObject obj in levelObjects.Values)
+
+            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+
+            foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains layer
                 if (Array.Exists(obj.levelLayers, (val) => val == layer))
@@ -211,10 +286,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             lastSearch = "";
         }
 
-        public void ApplyFilters(List<string> categories, string layer)
+        public void ApplyFilters(List<string> categories, string layer, PreferredItemsFilterMode preferredItemsFilterMode = PreferredItemsFilterMode.None, string levelGuid = null)
         {
             filteredLevelObjects.Clear();
-            foreach(LevelObject obj in levelObjects.Values)
+
+            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+
+            //Category and layer filters
+            foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains layer
                 if(Array.Exists(obj.levelLayers, (val) => val == layer))

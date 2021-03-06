@@ -16,7 +16,7 @@ using System.Linq;
 public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 {
     //Node display
-    private static readonly int sizeMultiplier = 30;
+    private static readonly int sizeMultiplier = 15;
     private static readonly int minWidth = 5;
 
     private Rect thumbnailRect;
