@@ -8,7 +8,7 @@ using UnityEngine;
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
 
-    [CustomEditor(typeof(LevelObject))]
+    [CustomEditor(typeof(LevelObject), true)]
     public class LevelObjectEditor : Editor
     {
 

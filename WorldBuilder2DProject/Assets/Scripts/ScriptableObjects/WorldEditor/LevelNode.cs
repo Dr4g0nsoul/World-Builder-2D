@@ -14,10 +14,10 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         public string levelName;
         [TextArea(4, 10)] public string levelDescription;
 
-        public Rect levelBoundaries;
+        public Rect levelBoundaries = new Rect(0, 0, 20, 12);
 
         //Level Entries and Exits
-        public LevelExit[] levelExits;
+        public LevelExit[] levelExits = new LevelExit[0];
         public bool levelExitsUpdated;
 
         //Preferred Items

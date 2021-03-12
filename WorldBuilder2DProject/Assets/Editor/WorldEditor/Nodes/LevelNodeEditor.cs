@@ -11,7 +11,6 @@ using XNode;
 using XNodeEditor;
 using UnityEditor.AnimatedValues;
 using System.Linq;
-using XNode.NodeGroups;
 
 [CustomNodeEditor(typeof(LevelNode))]
 public class LevelNodeEditor : NodeEditor, INodeEditorInspector
@@ -112,10 +111,9 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
         }
     }
 
-
     public override void AddContextMenuItems(GenericMenu menu)
     {
-        bool canRemove = false;
+        bool canRemove = true;
         // Actions if only one node is selected
         if (Selection.objects.Length == 1 && Selection.activeObject is LevelNode)
         {
@@ -129,6 +127,9 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 
             canRemove = NodeGraphEditor.GetEditor(node.graph, NodeEditorWindow.current).CanRemove(node);
         }
+
+        if (canRemove) menu.AddItem(new GUIContent("Remove"), false, NodeEditorWindow.current.RemoveSelectedNodes);
+        else menu.AddItem(new GUIContent("Remove"), false, null);
     }
 
     #endregion
@@ -142,7 +143,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
             GUILayout.Label(target.name, NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
         else
         {
-            NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+            WorldNode world = LevelController.Instance.GetWorldByLevel(lNode.guid);
             if (world != null)
             {
                 GUILayout.Label($"{world.worldName} - {lNode.levelName}", NodeEditorResources.styles.nodeHeader, GUILayout.Height(30));
@@ -272,6 +273,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
     {
         //General information
         EditorGUILayout.PropertyField(serializedObject.FindProperty("levelName"));
+        target.name = serializedObject.FindProperty("levelName").stringValue;
         EditorGUILayout.PropertyField(serializedObject.FindProperty("levelDescription"));
 
         //World boundaries
@@ -727,7 +729,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
                     EditorSceneManager.CloseScene(currScene, true);
             }
              
-            EditorSceneManager.OpenScene(lNode.assignedScenePath, OpenSceneMode.Additive);
+            Scene openedLevel = EditorSceneManager.OpenScene(lNode.assignedScenePath, OpenSceneMode.Additive);
             LevelEditorMenu.OpenLevelEditor();
         }
     }
@@ -739,6 +741,40 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
         {
             lNode.levelName = lNode.name;
         }
+    }
+
+    public override bool OnRemove()
+    {
+        LevelNode lNode = target as LevelNode;
+        if(lNode != null)
+        {
+            //Remove Thumbnail
+            string thumbnailPath = AssetDatabase.GetAssetPath(LevelController.Instance.GetLevelThumbnail(lNode.guid));
+            if (!string.IsNullOrEmpty(thumbnailPath))
+            {
+                FileUtil.DeleteFileOrDirectory(thumbnailPath);
+                FileUtil.DeleteFileOrDirectory($"{thumbnailPath}.meta");
+            }
+
+            if (!string.IsNullOrEmpty(lNode.assignedSceneName) && !string.IsNullOrEmpty(lNode.assignedScenePath))
+            {
+                //Close scene
+                for (int i = 0; i < EditorSceneManager.sceneCount; i++)
+                {
+                    Scene scene = EditorSceneManager.GetSceneAt(i);
+                    if (scene.name == lNode.assignedSceneName)
+                    {
+                        EditorSceneManager.CloseScene(scene, true);
+                    }
+                }
+
+                //Remove scene file
+                FileUtil.DeleteFileOrDirectory(lNode.assignedScenePath);
+                FileUtil.DeleteFileOrDirectory($"{lNode.assignedScenePath}.meta");
+            }
+            return true;
+        }
+        return false;
     }
 
     #endregion

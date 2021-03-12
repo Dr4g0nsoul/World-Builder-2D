@@ -389,6 +389,7 @@ namespace XNodeEditor {
                         XNode.NodePort bothTarget = both.GetConnection(k);
 
                         //Skip already drawn targets
+                        if (drawnBothConnections == null || bothTarget == null) continue;
                         if (!drawnBothConnections.Contains(bothTarget.fieldName))
                         {
 

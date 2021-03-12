@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using XNode.NodeGroups;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 {
@@ -209,7 +208,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 else if (preferredItemsFilterMode == PreferredItemsFilterMode.World)
                 {
-                    NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+                    WorldNode world = LevelController.Instance.GetWorldByLevel(lNode.guid);
                     if (world != null)
                     {
                         prefItems = world.preferredItems;
@@ -432,7 +431,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (cat != null && cat.item.accentColor.a > 0)
                     return cat.item.accentColor;
             }
-            else if (obj.categories.Length > 0)
+            else if (obj.categories != null && obj.categories.Length > 0)
             {
                 string firstCategory = obj.categories[0];
                 if (firstCategory != null && firstCategory.Length > 0 && levelObjectCategoryCache.TryGetValue(firstCategory, out LevelObjectCategory cat2))

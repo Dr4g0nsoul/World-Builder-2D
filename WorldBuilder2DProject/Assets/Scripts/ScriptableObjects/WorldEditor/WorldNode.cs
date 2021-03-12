@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using XNode;
 
-namespace XNode.NodeGroups {
+namespace dr4g0nsoul.WorldBuilder2D.WorldEditor {
 	[CreateNodeMenu("Levels/Create World")]
-	public class NodeGroup : UniqueNode {
+	public class WorldNode : UniqueNode {
 		public int width = 400;
 		public int height = 400;
 

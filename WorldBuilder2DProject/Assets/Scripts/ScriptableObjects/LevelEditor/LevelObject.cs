@@ -27,6 +27,18 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         ///////////////////////////////////////
         // Extendable Properties and Methods //
         ///////////////////////////////////////
+
+        // Level Object creation Methods //
+
+        /// <summary>
+        /// Called when the Level Object scriptable object is initially created to initialize the Prefab
+        /// </summary>
+        /// <param name="currentPrefab">The current prefab</param>
+        /// <param name="prefabPath">The current prefab folder location</param>
+        /// <returns>The altered Prefab or null if no alteration to the Prefab needs to be made</returns>
+        public virtual GameObject OnLevelObjectCreate(GameObject currentPrefab, string prefabPath) => null;
+
+        // Object Placement Methods //
         
         /// <summary>
         /// Set to true if you want to turn the mouse into the currently selected GameObject in SceneView,
@@ -69,6 +81,32 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 Selection.activeObject = newObject;
             }
         }
+
+        // Level Inspector Methods //
+
+        /// <summary>
+        /// Override to change wheter or not to display a level editor tool inpector window on Level Object selection
+        /// </summary>
+        /// <returns>Wheter or not a level editor tool inpector window is shown on Level Object selection</returns>
+        public virtual bool UseLevelEditorToolInspector() => false;
+
+        /// <summary>
+        /// Override this method to draw an Inspector Window when this level object is selected
+        /// </summary>
+        public virtual void OnLevelEditorToolInspectorGUI() { }
+
+        // Custom Inspector Tab //
+
+        /// <summary>
+        /// Set name of the additional custom inspector tab of the Level Object
+        /// </summary>
+        /// <returns>The name of the tab or null/empty string if no additional tab is implemented or should be shown</returns>
+        public virtual string CustomInspectorTabName() => null;
+
+        /// <summary>
+        /// Custom Inspector Tab GUI
+        /// </summary>
+        public virtual void OnCustomInspectorTabGUI() { }
     }
 
 }

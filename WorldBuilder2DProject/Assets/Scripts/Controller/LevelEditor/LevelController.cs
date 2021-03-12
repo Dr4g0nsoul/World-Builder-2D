@@ -7,7 +7,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XNode;
-using XNode.NodeGroups;
 using XNodeEditor;
 
 public class LevelController
@@ -50,7 +49,7 @@ public class LevelController
     private SortedDictionary<string, Texture2D> thumbnailCache;
 
     //World variables
-    private SortedDictionary<string, NodeGroup> worlds;
+    private SortedDictionary<string, WorldNode> worlds;
 
     #region Initialization
 
@@ -90,7 +89,7 @@ public class LevelController
 
         //Clear data
         if (worlds == null)
-            worlds = new SortedDictionary<string, NodeGroup>();
+            worlds = new SortedDictionary<string, WorldNode>();
         worlds.Clear();
 
         if (worldEditorGraph != null)
@@ -99,9 +98,9 @@ public class LevelController
             //Get all worlds
             foreach (Node node in worldEditorGraph.nodes)
             {
-                if (node is NodeGroup)
+                if (node is WorldNode)
                 {
-                    NodeGroup wNode = node as NodeGroup;
+                    WorldNode wNode = node as WorldNode;
                     worlds.Add(wNode.guid, wNode);
                 }
             }
@@ -186,12 +185,12 @@ public class LevelController
 
     #region World
 
-    public NodeGroup GetWorld(string guid)
+    public WorldNode GetWorld(string guid)
     {
         if (string.IsNullOrEmpty(guid))
             return null;
 
-        worlds.TryGetValue(guid, out NodeGroup wNode);
+        worlds.TryGetValue(guid, out WorldNode wNode);
         return wNode;
     }
 
@@ -206,7 +205,7 @@ public class LevelController
     public SortedDictionary<string, LevelNode> GetLevelsByWorld(string worldGuid)
     {
         SortedDictionary<string, LevelNode> worldLevels = new SortedDictionary<string, LevelNode>();
-        NodeGroup world = GetWorld(worldGuid);
+        WorldNode world = GetWorld(worldGuid);
         if (world != null)
         {
             foreach(string levelGuid in world.levels)
@@ -222,11 +221,11 @@ public class LevelController
         return worldLevels;
     }
 
-    public NodeGroup GetWorldByLevel(string levelGuid)
+    public WorldNode GetWorldByLevel(string levelGuid)
     {
         if(IsValidLevel(levelGuid))
         {
-            foreach(NodeGroup world in worlds.Values)
+            foreach(WorldNode world in worlds.Values)
             {
                 if(world.levels.Contains(levelGuid))
                 {

@@ -17,6 +17,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private static GUIStyle _headerLeft;
         private static GUIStyle _headerCentered;
         private static GUIStyle _headerCenteredBig;
+        private static readonly int smallFontSize = 12;
         private static readonly int bigFontSize = 28;
 
         //Editor Window
@@ -74,6 +75,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (_textLeft == null)
                 {
                     _textLeft = new GUIStyle(GUI.skin.label);
+                    _textLeft.alignment = TextAnchor.UpperLeft;
+                    _textLeft.fontSize = smallFontSize;
                 }
                 return _textLeft;
             }

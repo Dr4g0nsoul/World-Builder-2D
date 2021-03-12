@@ -1,118 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-8628300153976925781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Test Level 2
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -616, y: -2200}
-  ports:
-    keys:
-    - bb9dad0c-c956-4bd3-b2fa-3c97ee9655f3
-    - 677790ff-4cf0-4b4b-804a-c191687c0380
-    values:
-    - _fieldName: bb9dad0c-c956-4bd3-b2fa-3c97ee9655f3
-      _node: {fileID: -8628300153976925781}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 86329b80-7e6f-47d9-881e-6db22b85fb69
-        node: {fileID: -4871792554773954699}
-        reroutePoints: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-    - _fieldName: 677790ff-4cf0-4b4b-804a-c191687c0380
-      _node: {fileID: -8628300153976925781}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
-        node: {fileID: -4871792554773954699}
-        reroutePoints: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-  guid: b0a33745-ee5a-46c7-b148-decb1d0b85cb
-  levelName: Another Level
-  levelDescription: 
-  levelBoundaries:
-    serializedVersion: 2
-    x: -0.061653852
-    y: 0.020555496
-    width: 28.00868
-    height: 10.002888
-  levelExits:
-  - guid: bb9dad0c-c956-4bd3-b2fa-3c97ee9655f3
-    name: Exit 1
-    active: 0
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: -0.0025417805
-      y: 4.455862
-      width: 17.698442
-      height: 1.1346655
-    entryPoint: {x: -0.04166909, y: 4.3880043}
-  - guid: 677790ff-4cf0-4b4b-804a-c191687c0380
-    name: Exit 2
-    active: 0
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: -0.0025417805
-      y: -4.4656878
-      width: 17.698444
-      height: 1
-    entryPoint: {x: -0.0025418587, y: -4.4320207}
-  levelExitsUpdated: 0
-  preferredItems:
-    categories: []
-    levelObjects: []
-  assignedSceneName: Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb
-  assignedScenePath: Assets/Scenes/Levels/Level_b0a33745-ee5a-46c7-b148-decb1d0b85cb.unity
---- !u!114 &-6103581282547874501
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
-  m_Name: Forest
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -1304, y: -2440}
-  ports:
-    keys: []
-    values: []
-  guid: 3cd7dedd-45b8-43d6-963b-df5fda54ef32
-  width: 1268
-  height: 604
-  worldName: Forest
-  accentColor: {r: 0.04387683, g: 0.5471698, b: 0.055144545, a: 0.50980395}
-  worldDescription: 
-  levels:
-  - 97e794f4-f0a2-41ee-96b4-80203ab387da
-  - b0a33745-ee5a-46c7-b148-decb1d0b85cb
-  preferredItems:
-    categories:
-    - 09271e61-9543-4944-8024-557227e73140
-    levelObjects: []
-  assignedSceneName: 
-  assignedScenePath: 
 --- !u!114 &-4871792554773954699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Test Level
+  m_Name: Test
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1224, y: -2216}
+  position: {x: -744, y: -2616}
   ports:
     keys:
     - 86329b80-7e6f-47d9-881e-6db22b85fb69
@@ -136,10 +23,7 @@ MonoBehaviour:
       _node: {fileID: -4871792554773954699}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: bb9dad0c-c956-4bd3-b2fa-3c97ee9655f3
-        node: {fileID: -8628300153976925781}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -148,10 +32,7 @@ MonoBehaviour:
       _node: {fileID: -4871792554773954699}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 677790ff-4cf0-4b4b-804a-c191687c0380
-        node: {fileID: -8628300153976925781}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -208,6 +89,38 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -6103581282547874501}
   - {fileID: -4871792554773954699}
-  - {fileID: -8628300153976925781}
+  - {fileID: 1942946656207895702}
+--- !u!114 &1942946656207895702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: ahhhhhh
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: 204.51637, y: -2630.0032}
+  ports:
+    keys: []
+    values: []
+  guid: c57d1332-670a-4423-bc2d-5de5accbe33a
+  levelName: ahhhhhh
+  levelDescription: 
+  levelBoundaries:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 20
+    height: 12
+  levelExits: []
+  levelExitsUpdated: 0
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: Level_c57d1332-670a-4423-bc2d-5de5accbe33a
+  assignedScenePath: Assets/Scenes/Levels/Level_c57d1332-670a-4423-bc2d-5de5accbe33a.unity

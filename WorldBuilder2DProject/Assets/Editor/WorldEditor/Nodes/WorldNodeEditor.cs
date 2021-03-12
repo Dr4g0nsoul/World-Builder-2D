@@ -8,15 +8,14 @@ using UnityEditor.AnimatedValues;
 using UnityEditorInternal;
 using UnityEngine;
 using XNode;
-using XNode.NodeGroups;
 
 namespace XNodeEditor.NodeGroups
 {
-	[CustomNodeEditor(typeof(NodeGroup))]
-	public class NodeGroupEditor : NodeEditor, INodeEditorInspector
+	[CustomNodeEditor(typeof(WorldNode))]
+	public class WorldNodeEditor : NodeEditor, INodeEditorInspector
 	{
-		private NodeGroup group { get { return _group != null ? _group : _group = target as NodeGroup; } }
-		private NodeGroup _group;
+		private WorldNode world { get { return _world != null ? _world : _world = target as WorldNode; } }
+		private WorldNode _world;
 		public static Texture2D corner { get { return _corner != null ? _corner : _corner = Resources.Load<Texture2D>("xnode_corner"); } }
 		private static Texture2D _corner;
 		private bool isDragging;
@@ -171,8 +170,8 @@ namespace XNodeEditor.NodeGroups
 				case EventType.MouseDrag:
 					if (isDragging)
 					{
-						group.width = Mathf.Max(200, (int)e.mousePosition.x + 16);
-						group.height = Mathf.Max(100, (int)e.mousePosition.y - 34);
+						world.width = Mathf.Max(200, (int)e.mousePosition.x + 16);
+                        world.height = Mathf.Max(100, (int)e.mousePosition.y - 34);
 						NodeEditorWindow.current.Repaint();
 					}
 					break;
@@ -188,17 +187,17 @@ namespace XNodeEditor.NodeGroups
 				case EventType.MouseUp:
                     if (Selection.Contains(target))
                     {
-                        Selection.objects = new Object[1] { group };
+                        Selection.objects = new Object[1] { world };
                     }
                     if (isDragging)
-                        Selection.activeObject = group;
+                        Selection.activeObject = world;
 					isDragging = false;
 					// Select nodes inside the group
 					if (Selection.Contains(target))
 					{
 						List<Object> selection = Selection.objects.ToList();
 						// Select Nodes
-						selection.AddRange(group.GetNodes());
+						selection.AddRange(world.GetNodes());
 						// Select Reroutes
 						foreach (Node node in target.graph.nodes)
 						{
@@ -210,10 +209,10 @@ namespace XNodeEditor.NodeGroups
 									for (int k = 0; k < reroutes.Count; k++)
 									{
 										Vector2 p = reroutes[k];
-										if (p.x < group.position.x) continue;
-										if (p.y < group.position.y) continue;
-										if (p.x > group.position.x + group.width) continue;
-										if (p.y > group.position.y + group.height + 30) continue;
+										if (p.x < world.position.x) continue;
+										if (p.y < world.position.y) continue;
+										if (p.x > world.position.x + world.width) continue;
+										if (p.y > world.position.y + world.height + 30) continue;
 										if (NodeEditorWindow.current.selectedReroutes.Any(x => x.port == port && x.connectionIndex == i && x.pointIndex == k)) continue;
 										NodeEditorWindow.current.selectedReroutes.Add(
 											new Internal.RerouteReference(port, i, k)
@@ -265,26 +264,46 @@ namespace XNodeEditor.NodeGroups
 			}
 
 			// Control height of node
-			GUILayout.Space(group.height);
+			GUILayout.Space(world.height);
 
-			GUI.DrawTexture(new Rect(group.width - 34, group.height + 16, 24, 24), corner);
+			GUI.DrawTexture(new Rect(world.width - 34, world.height + 16, 24, 24), corner);
 		}
 
 		public override int GetWidth()
 		{
-			return group.width;
+			return world.width;
 		}
 
 		public override Color GetTint()
 		{
-			return group.accentColor;
+			return world.accentColor;
 		}
 
-		public override void OnRename()
+        public override void AddContextMenuItems(GenericMenu menu)
+        {
+            bool canRemove = true;
+            // Actions if only one node is selected
+            if (Selection.objects.Length == 1 && Selection.activeObject is LevelNode)
+            {
+                XNode.Node node = Selection.activeObject as XNode.Node;
+                // Add Rename
+                menu.AddItem(new GUIContent("Rename"), false, NodeEditorWindow.current.RenameSelectedNode);
+                // Add Move to Top
+                menu.AddItem(new GUIContent("Move To Top"), false, () => NodeEditorWindow.current.MoveNodeToTop(node));
+
+                canRemove = NodeGraphEditor.GetEditor(node.graph, NodeEditorWindow.current).CanRemove(node);
+            }
+
+            //Add remove
+            if (canRemove) menu.AddItem(new GUIContent("Remove"), false, NodeEditorWindow.current.RemoveSelectedNodes);
+            else menu.AddItem(new GUIContent("Remove"), false, null);
+        }
+
+        public override void OnRename()
 		{
-			if (group != null)
+			if (world != null)
 			{
-				group.worldName = group.name;
+                world.worldName = world.name;
 			}
 		}
 
@@ -297,9 +316,9 @@ namespace XNodeEditor.NodeGroups
 
         public void OnNodeInspectorGUI()
         {
-            if (group)
+            if (world)
             {
-                GUILayout.Label($"World: {group.worldName}", GUILayout.ExpandHeight(false));
+                GUILayout.Label($"World: {world.worldName}", GUILayout.ExpandHeight(false));
                 LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(10, 10, 10, 10));
 
                 serializedObject.Update();
@@ -336,9 +355,9 @@ namespace XNodeEditor.NodeGroups
         {
             //General information
             EditorGUILayout.PropertyField(serializedObject.FindProperty("worldName"));
-            if(group.worldName != group.name)
+            if(world.worldName != world.name)
             {
-                group.name = group.worldName;
+                world.name = world.worldName;
             }
             GUISkin prevSkin = GUI.skin;
             GUI.skin = null;
@@ -352,7 +371,7 @@ namespace XNodeEditor.NodeGroups
             GUI.skin = prevSkin;
             if(levels.index >= 0 && GUILayout.Button("Open level inspector"))
             {
-                LevelNode lNode = levelController.GetLevel(group.levels[levels.index]);
+                LevelNode lNode = levelController.GetLevel(world.levels[levels.index]);
                 if(lNode != null)
                 {
                     Selection.activeObject = lNode;

@@ -2,12 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using XNode;
-using XNode.NodeGroups;
 using XNodeEditor;
 
 namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
@@ -41,7 +41,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             LevelNode lNode = port.node as LevelNode;
             if(lNode != null)
             {
-                NodeGroup world = LevelController.Instance.GetWorldByLevel(lNode.guid);
+                WorldNode world = LevelController.Instance.GetWorldByLevel(lNode.guid);
                 if (world != null)
                     return new Color(world.accentColor.r, world.accentColor.g, world.accentColor.b);
             }
@@ -100,6 +100,27 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
         /// <param name="node">Doesn't matter</param>
         public override void RemoveNode(Node node)
         {
+            List<Node> nodesToDelete = new List<Node>();
+            UnityEngine.Object[] selection = Selection.objects;
+            foreach(UnityEngine.Object obj in selection)
+            {
+                Node selectedNode = obj as Node;
+                if(selectedNode != null)
+                {
+                    nodesToDelete.Add(selectedNode);
+                }
+            }
+            if(!nodesToDelete.Contains(node))
+            {
+                nodesToDelete.Add(node);
+            }
+
+            WorldEditorDeletePopup.Show(nodesToDelete.ToArray());
+        }
+
+        public override bool CanRemove(Node node)
+        {
+            return true;
         }
 
         public override void OnGUI()

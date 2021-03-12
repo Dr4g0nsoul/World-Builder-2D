@@ -141,6 +141,13 @@ namespace XNodeEditor {
         /// <summary> Called after this node's name has changed. </summary>
         public virtual void OnRename() { }
 
+        //WB2D-Custom
+        /// <summary> Called when this node is removed. </summary>
+        /// <returns>True if node is removed, false to prevent it</returns>
+        public virtual bool OnRemove() {
+            return true;
+        }
+
         [AttributeUsage(AttributeTargets.Class)]
         public class CustomNodeEditorAttribute : Attribute,
         XNodeEditor.Internal.NodeEditorBase<NodeEditor, NodeEditor.CustomNodeEditorAttribute, XNode.Node>.INodeEditorAttrib {

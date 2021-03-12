@@ -199,6 +199,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Add Prefab Dialog
         //-->Margin from bottom right corner, size is absolute
         private readonly Vector4 prefabDialogBounds = new Vector4(15f, 10f, 300f, 120f);
+        private readonly Vector4 prefabDialogSelectBounds = new Vector4(15f, 10f, 300f, 150f);
+        private Type[] levelObjectTypes;
+        private string[] levelObjectTypeNames;
+        private int levelObjectTypeSelection;
 
         #region Initialization / DeInitialization
         void OnEnable()
@@ -302,6 +306,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             _hbText = "";
             hbShowing = false;
 
+            //Add Prefab Dialog
+            levelObjectTypes = LevelEditorReflection.GetLevelObjectTypes();
+            levelObjectTypeNames = LevelEditorReflection.GetFormattedTypeNames(levelObjectTypes);
+            levelObjectTypeSelection = 0;
+
             //Start ressource reloader
             tweener.Timer(0f).OnComplete(() => RefreshVariables());
         }
@@ -310,7 +319,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             LevelEditorStyles.RefreshStyles();
             levelObjectsController.LoadLevelObjects();
-            ReloadFilters();
+            if (levelRootTransform != null)
+            {
+                ReloadFilters();
+            }
             tweener.Timer(timeUntilRefreshVariables).OnComplete(() => RefreshVariables());
 
             //Object Picker
@@ -1446,6 +1458,30 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             Handles.EndGUI();
         }
 
+        private void DrawAddLevelObjectMessage(Rect messageRect, string header, string text, string dropdownLabel, string buttonText, Action<Type> callback)
+        {
+            Type selectedType = typeof(LevelObject);
+
+
+            Handles.BeginGUI();
+            GUILayout.BeginArea(messageRect);
+            GUILayout.BeginVertical(LevelEditorStyles.Messagebox);
+            GUILayout.Label(header, LevelEditorStyles.MessageboxHeader);
+            GUILayout.Label(text, LevelEditorStyles.MessageboxText);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(dropdownLabel, LevelEditorStyles.TextLeft);
+            levelObjectTypeSelection = EditorGUILayout.Popup(levelObjectTypeSelection, levelObjectTypeNames);
+            GUILayout.EndHorizontal();
+            if (GUILayout.Button(buttonText, LevelEditorStyles.MessageboxButton) && callback != null)
+            {
+                callback.Invoke(levelObjectTypes[levelObjectTypeSelection]);
+            }
+            EnableMouse();
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+            Handles.EndGUI();
+        }
+
         #endregion
 
         #region Mouse and Buttons
@@ -1564,6 +1600,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void InitializeLevelScenes()
         {
+            LevelController.Instance.LoadLevels();
+            LevelController.Instance.LoadWorlds();
+
             //Get all loaded scenes
             int countLoaded = SceneManager.sceneCount;
             Scene[] loadedScenes = new Scene[countLoaded];
@@ -1596,6 +1635,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     EditorSceneManager.SaveOpenScenes();
                 }
+            }
+
+            if(loadedScenes.Length > 1)
+            {
+                GenerateThumbnail(loadedScenes[1]);
             }
         }
 
@@ -1924,12 +1968,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             Vector2 bottomRight = new Vector2(windowRect.position.x + windowRect.width,
                 windowRect.position.y + windowRect.height);
-            Rect dialogRect = new Rect
-            {
-                position = new Vector2(bottomRight.x - prefabDialogBounds.z - prefabDialogBounds.x,
-                    bottomRight.y - prefabDialogBounds.w - prefabDialogBounds.y),
-                size = new Vector2(prefabDialogBounds.z, prefabDialogBounds.w)
-            };
 
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(currPrefabStage.prefabAssetPath);
             if (prefab != null)
@@ -1937,11 +1975,26 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 LevelObject currObject = levelObjectsController.GetLevelObjectByPrefab(prefab);
                 if(currObject != null)
                 {
+                    Rect dialogRect = new Rect
+                    {
+                        position = new Vector2(bottomRight.x - prefabDialogBounds.z - prefabDialogBounds.x,
+                            bottomRight.y - prefabDialogBounds.w - prefabDialogBounds.y),
+                        size = new Vector2(prefabDialogBounds.z, prefabDialogBounds.w)
+                    };
+
                     DrawButtonMessage(dialogRect, "Level Object Found", "Press the button below to access its properties!", "Open Level Object Properties", () => ProjectWindowUtil.ShowCreatedAsset(currObject));
                 }
                 else
                 {
-                    DrawButtonMessage(dialogRect, "Add Prefab", "Add this prefab to the Level Editor!", "Create Level Object", () => CreateNewLevelObject(prefab));
+                    Rect dialogRect = new Rect
+                    {
+                        position = new Vector2(bottomRight.x - prefabDialogSelectBounds.z - prefabDialogSelectBounds.x,
+                            bottomRight.y - prefabDialogSelectBounds.w - prefabDialogSelectBounds.y),
+                        size = new Vector2(prefabDialogSelectBounds.z, prefabDialogSelectBounds.w)
+                    };
+
+                    DrawAddLevelObjectMessage(dialogRect, "Add Prefab", "Add this prefab to the Level Editor!", "Object Type:", 
+                        "Create Level Object", (type) => CreateNewLevelObject(prefab, type));
                 }
             }
             else
@@ -1951,20 +2004,36 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         }
 
-        private void CreateNewLevelObject(GameObject currPrefab)
+        private void CreateNewLevelObject(GameObject currPrefab, Type levelObjectType)
         {
-            LevelObject lvlObj = CreateInstance<LevelObject>();
-            lvlObj.objectPrefab = currPrefab;
-            lvlObj.GenerateGUID();
-            lvlObj.name = lvlObj.objectPrefab.name;
-            lvlObj.item = new LevelEditorItem();
-            lvlObj.item.name = lvlObj.name;
-            lvlObj.item.accentColor = Color.white;
-            lvlObj.item.thumbnail = AssetPreview.GetAssetPreview(lvlObj.objectPrefab);
+            LevelObject lvlObj = CreateInstance(levelObjectType) as LevelObject;
+            if (lvlObj != null)
+            {
+                lvlObj.objectPrefab = currPrefab;
+                lvlObj.GenerateGUID();
+                lvlObj.name = lvlObj.objectPrefab.name;
+                lvlObj.item = new LevelEditorItem();
+                lvlObj.item.name = lvlObj.name;
+                lvlObj.item.accentColor = Color.white;
+                lvlObj.item.thumbnail = AssetPreview.GetAssetPreview(lvlObj.objectPrefab);
+                
+                string rootPath = "Assets/Resources/" + LevelObjectsController.LEVEL_OBJECTS_PATH;
+                Util.EditorUtility.CreateAssetAndFolders(rootPath, lvlObj.name, lvlObj);
 
-            string rootPath = "Assets/Resources/"+LevelObjectsController.LEVEL_OBJECTS_PATH;
-            Util.EditorUtility.CreateAssetAndFolders(rootPath, lvlObj.name, lvlObj);
-            levelObjectsController.LoadLevelObjects();
+                GameObject prefabToChange = Instantiate(currPrefab);
+
+                GameObject changedPrefab = lvlObj.OnLevelObjectCreate(prefabToChange, rootPath);
+
+                if(changedPrefab != null)
+                {
+                    PrefabUtility.SaveAsPrefabAssetAndConnect(changedPrefab, PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(currPrefab), InteractionMode.AutomatedAction);
+                }
+
+                DestroyImmediate(prefabToChange);
+
+                levelObjectsController.LoadLevelObjects();
+                levelObjectTypeSelection = 0;
+            }
             
         }
 
