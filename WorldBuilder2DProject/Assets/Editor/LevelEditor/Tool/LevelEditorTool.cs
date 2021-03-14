@@ -191,7 +191,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Object placement
         private bool inObjectPlacementMode;
-        private LevelObject objectToPlace;
+        private ObjectToPlace objectToPlace;
         private GameObject temporaryObject;
         private bool canObjectBePlaced;
         private Transform levelRootTransform;
@@ -297,7 +297,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             drawerLevelObjects = new SortedDictionary<string, LevelObject>();
 
             //Object placement
-            objectToPlace = null;
+            objectToPlace.Unset();
             canObjectBePlaced = false;
             levelRootTransform = null;
             SetLevelRoot(true);
@@ -458,9 +458,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if (e.button == 0)
                     {
-                        if (inObjectPlacementMode && objectToPlace != null && canObjectBePlaced)
+                        if (inObjectPlacementMode && objectToPlace.IsValid() && canObjectBePlaced)
                         {
-                            objectToPlace.SpawnObject(temporaryObject, GetLevelObjectParentTransform(objectToPlace), Util.EditorUtility.SceneViewToWorldPos(view), Event.current.mousePosition);
+                            objectToPlace.levelObjectEditor.SpawnObject(temporaryObject, GetLevelObjectParentTransform(objectToPlace.levelObject), Util.EditorUtility.SceneViewToWorldPos(view), Event.current.mousePosition);
                             
                             //Instantiate(objectToPlace.objectPrefab, Util.EditorUtility.SceneViewToWorldPos(view), Quaternion.identity);
                         }
@@ -745,12 +745,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (canObjectBePlaced)
             {
                 //Temporary gameobject spawn
-                if (objectToPlace != null && objectToPlace.UseTemporaryIndicator)
+                if (objectToPlace.IsValid() && objectToPlace.levelObjectEditor.UseTemporaryIndicator)
                 {
                     if (temporaryObject == null)
                     {
-                        temporaryObject = Instantiate(objectToPlace.objectPrefab);
-                        temporaryObject.name = $"temp [{objectToPlace.guid}]";
+                        temporaryObject = Instantiate(objectToPlace.levelObject.objectPrefab);
+                        temporaryObject.name = $"temp [{objectToPlace.levelObject.guid}]";
                     }
                     temporaryObject.transform.position = Util.EditorUtility.SceneViewToWorldPos(SceneView.currentDrawingSceneView);
                 }
@@ -777,7 +777,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public void DrawMenuBar(Rect menuBarRect)
         {
             //Get Level layers based on selected object
-            List<LevelLayer> levelLayers = levelObjectsController.GetLevelObjectLayers(objectToPlace);
+            List<LevelLayer> levelLayers = levelObjectsController.GetLevelObjectLayers(objectToPlace.levelObject);
 
             GUILayout.BeginArea(menuBarRect, LevelEditorStyles.MenuBar);
             GUILayout.BeginHorizontal();
@@ -1222,13 +1222,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 EnableMouse();
                 hbGUIText = obj.name;
             }
-            GUIStyle buttonActive = (objectToPlace == null || obj.guid != objectToPlace.guid) ? LevelEditorStyles.LevelObjectButton : LevelEditorStyles.LevelObjectButtonActive;
+            GUIStyle buttonActive = (!objectToPlace.IsValid() || obj.guid != objectToPlace.levelObject.guid) ? LevelEditorStyles.LevelObjectButton : LevelEditorStyles.LevelObjectButtonActive;
             if(GUI.Button(buttonRect, "", buttonActive))
             {
                 if(!objectDrawerHidden)
                     ToggleObjectDrawer();
                 inObjectPlacementMode = true;
-                objectToPlace = obj;
+                objectToPlace.Unset();
+                objectToPlace.levelObject = obj;
+                objectToPlace.levelObjectEditor = LevelObjectEditorExtension.GetBaseLevelObjectEditorExtension(obj);
                 levelObjectsController.AddToQuickSelectBar(obj.guid);
                 List<LevelLayer> availableLayers = levelObjectsController.GetLevelObjectLayers(obj);
                 if(availableLayers != null && availableLayers.Count == 1)
@@ -2020,16 +2022,21 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 string rootPath = "Assets/Resources/" + LevelObjectsController.LEVEL_OBJECTS_PATH;
                 Util.EditorUtility.CreateAssetAndFolders(rootPath, lvlObj.name, lvlObj);
 
-                GameObject prefabToChange = Instantiate(currPrefab);
+                LevelObjectEditorExtension lvlObjEditor = LevelObjectEditorExtension.GetBaseLevelObjectEditorExtension(lvlObj);
 
-                GameObject changedPrefab = lvlObj.OnLevelObjectCreate(prefabToChange, rootPath);
-
-                if(changedPrefab != null)
+                if (lvlObjEditor != null)
                 {
-                    PrefabUtility.SaveAsPrefabAssetAndConnect(changedPrefab, PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(currPrefab), InteractionMode.AutomatedAction);
-                }
+                    GameObject prefabToChange = Instantiate(currPrefab);
 
-                DestroyImmediate(prefabToChange);
+                    GameObject changedPrefab = lvlObjEditor.OnLevelObjectCreate(prefabToChange, rootPath);
+
+                    if (changedPrefab != null)
+                    {
+                        PrefabUtility.SaveAsPrefabAssetAndConnect(changedPrefab, PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(currPrefab), InteractionMode.AutomatedAction);
+                    }
+
+                    DestroyImmediate(prefabToChange);
+                }
 
                 levelObjectsController.LoadLevelObjects();
                 levelObjectTypeSelection = 0;
@@ -2052,7 +2059,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public void DeselectCurrentlySelectedObject()
         {
             inObjectPlacementMode = false;
-            objectToPlace = null;
+            objectToPlace.Unset();
             if(temporaryObject != null)
             {
                 DestroyImmediate(temporaryObject);
@@ -2063,6 +2070,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         #endregion
 
         #endregion
+
+        #region Structures
+        private struct ObjectToPlace
+        {
+            public LevelObject levelObject;
+            public LevelObjectEditorExtension levelObjectEditor;
+
+            public bool IsValid() => levelObject != null && levelObjectEditor != null;
+
+            public void Unset()
+            {
+                levelObject = null;
+                levelObjectEditor = null;
+            }
+        }
+
+        #endregion
     }
+
 
 }

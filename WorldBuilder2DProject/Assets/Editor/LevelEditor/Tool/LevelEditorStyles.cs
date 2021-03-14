@@ -37,6 +37,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
         public static readonly Vector2 levelObjectPreviewImageOffset = new Vector2(8f, 8f);
         private static GUIStyle _button;
+        private static GUIStyle _buttonActive;
         private static GUIStyle _levelObjectImage;
         private static GUIStyle _levelObjectPreviewImage;
         private static GUIStyle _levelObjectPreviewMiniImage;
@@ -263,6 +264,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     _button.active.background = TintTexture(buttonHoverColor, GUI.skin.button.active.background);
                 }
                 return _button;
+            }
+        }
+
+        public static GUIStyle ButtonActive
+        {
+            get
+            {
+                if (_buttonActive == null)
+                {
+                    _buttonActive = new GUIStyle(GUI.skin.button);
+                    _buttonActive.normal.textColor = buttonHoverColor;
+                    _buttonActive.normal.background = TintTexture(buttonHoverColor, GUI.skin.button.active.background);
+                    _buttonActive.hover.textColor = buttonHoverColor;
+                    _buttonActive.hover.background = _buttonActive.normal.background;
+                    _buttonActive.active.textColor = buttonHoverColor;
+                    _buttonActive.active.background = _buttonActive.normal.background;
+                }
+                return _buttonActive;
             }
         }
 
@@ -510,6 +529,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Buttons style
             _button = null;
+            _buttonActive = null;
             _levelObjectImage = null;
             _levelObjectPreviewImage = null;
             _levelObjectPreviewMiniImage = null;
@@ -552,15 +572,19 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public static Texture2D TintTexture(Color color, Texture2D srcTexture)
         {
-            Texture2D destTexture = new Texture2D(srcTexture.width, srcTexture.height, srcTexture.format, false);
-            Color[] pixels = srcTexture.GetPixels();
-            for (int i = 0; i < pixels.Length; i++)
+            if (srcTexture != null)
             {
-                pixels[i] *= color;
+                Texture2D destTexture = new Texture2D(srcTexture.width, srcTexture.height, srcTexture.format, false);
+                Color[] pixels = srcTexture.GetPixels();
+                for (int i = 0; i < pixels.Length; i++)
+                {
+                    pixels[i] *= color;
+                }
+                destTexture.SetPixels(pixels);
+                destTexture.Apply();
+                return destTexture;
             }
-            destTexture.SetPixels(pixels);
-            destTexture.Apply();
-            return destTexture;
+            return null;
         }
 
         public static void DrawHorizontalLine(Color color, RectOffset margin = null)
@@ -630,6 +654,67 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             tex.SetPixels32(data2);
             tex.Apply(true);
             return tex;
+        }
+
+        /*
+        public static Texture2D CropTexture(Texture2D tex, Rect crop)
+        {
+            if (tex != null)
+            {
+                //Get readable copy of texture
+                RenderTexture tmp = RenderTexture.GetTemporary(tex.width, tex.height);
+                Graphics.Blit(tex, tmp);
+                RenderTexture previous = RenderTexture.active;
+                RenderTexture.active = tmp;
+                Texture2D tmpTex = new Texture2D(tex.width, tex.height);
+                tmpTex.ReadPixels(crop, 0, 0);
+                tmpTex.Apply();
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(tmp);
+
+
+
+                Color[] pixels = tmpTex.GetPixels();
+                Texture2D croppedTexture = new Texture2D((int)crop.width, (int)crop.height);
+                croppedTexture.SetPixels(pixels);
+                croppedTexture.Apply();
+                return croppedTexture;
+            }
+            return null;
+        }
+        */
+
+        public static Texture2D TextureFromSprite(Sprite sprite)
+        {
+            if (sprite.rect.width != sprite.texture.width)
+            {
+                Texture2D newText = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
+                //Get readable copy of texture
+                RenderTexture tmp = RenderTexture.GetTemporary(sprite.texture.width, sprite.texture.height, 0,
+                    RenderTextureFormat.Default,
+                    RenderTextureReadWrite.Linear);
+                tmp.filterMode = sprite.texture.filterMode;
+
+                Graphics.Blit(sprite.texture, tmp);
+                RenderTexture previous = RenderTexture.active;
+                RenderTexture.active = tmp;
+                Texture2D tmpTex = new Texture2D(sprite.texture.width, sprite.texture.height);
+                tmpTex.ReadPixels(new Rect(0, 0, sprite.texture.width, sprite.texture.height), 0, 0);
+                tmpTex.Apply();
+                RenderTexture.active = previous;
+                RenderTexture.ReleaseTemporary(tmp);
+
+                Color[] newColors = tmpTex.GetPixels((int)sprite.textureRect.x,
+                                                             (int)sprite.textureRect.y,
+                                                             (int)sprite.textureRect.width,
+                                                             (int)sprite.textureRect.height);
+                newText.SetPixels(newColors);
+                newText.filterMode = sprite.texture.filterMode;
+                newText.Apply();
+                return newText;
+            }
+            else
+                return sprite.texture;
         }
 
         #endregion

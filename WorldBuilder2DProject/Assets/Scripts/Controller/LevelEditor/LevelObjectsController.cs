@@ -63,6 +63,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             levelObjects.Clear();
             currentWorldFavorites.Clear();
             currentLevelFavorites.Clear();
+            filteredLevelObjects.Clear();
+            searchFilteredLevelObjects.Clear();
 
 
             //Load level objects

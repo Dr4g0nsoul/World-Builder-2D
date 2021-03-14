@@ -87,11 +87,11 @@ MonoBehaviour:
       m_ScaledBackgrounds: []
       m_TextColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
     m_Hover:
-      m_Background: {fileID: 2800000, guid: cde7518a4eb481b48810a9c144e6be2a, type: 3}
+      m_Background: {fileID: 2800000, guid: 1854cded1e8c6784b9d8795891fcf347, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Active:
-      m_Background: {fileID: 2800000, guid: 1854cded1e8c6784b9d8795891fcf347, type: 3}
+      m_Background: {fileID: 2800000, guid: bce8abebd67ef924c9fee5dd9e5031c5, type: 3}
       m_ScaledBackgrounds: []
       m_TextColor: {r: 1, g: 1, b: 1, a: 1}
     m_Focused:

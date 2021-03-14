@@ -1,4 +1,5 @@
-﻿using System;
+﻿using dr4g0nsoul.WorldBuilder2D.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
     public class LevelEditorReflection
     {
+
+        #region Level Objects
 
         public static Type[] GetLevelObjectTypes()
         {
@@ -34,6 +37,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 types.Insert(0, baseType);
             return types.ToArray();
         }
+
+        #endregion
+
+        #region Utility
 
         public static string[] GetFormattedTypeNames(Type[] types)
         {
@@ -60,6 +67,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 "$1 $2"
             );
         }
+
+        #endregion
     }
 
 }

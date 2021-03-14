@@ -1,4 +1,5 @@
 ﻿using dr4g0nsoul.WorldBuilder2D.LevelEditor;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelObjectEditor : Editor
     {
 
+        private LevelObjectEditorExtension objectEditor;
         private LevelEditorSettings levelEditorSettings;
         private GUISkin levelEditorSkin;
 
@@ -42,6 +44,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void OnEnable()
         {
             styleInitialized = false;
+
             levelEditorSettings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
             levelEditorSkin = Resources.Load<GUISkin>("LevelEditor/Skin/LESkin");
 
@@ -52,12 +55,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             layerHoveringPos = -1;
             layerClickedPos = -1;
+
+
+            objectEditor = LevelObjectEditorExtension.GetBaseLevelObjectEditorExtension(target as LevelObject);
+            string customTabName = objectEditor.CustomInspectorTabName();
+            if (!string.IsNullOrEmpty(customTabName))
+            {
+                Array.Resize(ref toolbarOptions, 4);
+                toolbarOptions[3] = customTabName;
+                objectEditor.OnCustomInspectorEnable();
+            }
         }
 
         public override void OnInspectorGUI()
         {
 
-            if (levelEditorSettings != null)
+            if (levelEditorSettings != null && objectEditor != null)
             {
                 if (!styleInitialized)
                 {
@@ -124,10 +137,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         //EditorGUILayout.LabelField("Hover: " + layerHoveringPos);
                         //EditorGUILayout.LabelField("Click: " + layerClickedPos);
                         break;
-
                 }
 
                 serializedObject.ApplyModifiedProperties();
+
+                if(toolbarOptionSelected == 3)
+                {
+                    objectEditor.OnCustomInspectorTabGUI(this, serializedObject);
+                }
 
 
                 EditorGUILayout.EndVertical();
@@ -151,7 +168,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField("Thumbnail");
-                Object texToDisplay;
+                UnityEngine.Object texToDisplay;
                 
                 if(property.FindPropertyRelative("thumbnail").objectReferenceValue == null)
                 {
