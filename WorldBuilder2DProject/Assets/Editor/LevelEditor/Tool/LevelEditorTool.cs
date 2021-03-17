@@ -85,6 +85,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private GUISkin guiSkin;
         private readonly float minWindowHeight = 550f;
         private bool drawGUI;
+        private LevelEditorItem[] otherSystemItems;
 
         //Responsive View
         private float currentResponsiveWidth;
@@ -150,8 +151,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private bool objectDrawerHiddenComplete = true;
         private SortedDictionary<string, LevelObject> drawerLevelObjects;
 
+
         //Hover Box
-        private readonly Vector2 hbOffsetFromMouse = new Vector2(0, 0);
+        private Vector2 hbOffsetFromMouse;
         private string _hbText;
         private string hbGUIText;
         private string HoverText
@@ -171,7 +173,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 }
                 else
                 {
-                    if(!hbShowing)
+                    if (_hbText != value)
+                    {
+                        hbOffsetFromMouse = Vector2.zero;
+                    }
+                    if (!hbShowing)
                     {
                         hbShowing = true;
                         ShowHoverBox();
@@ -195,6 +201,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private GameObject temporaryObject;
         private bool canObjectBePlaced;
         private Transform levelRootTransform;
+
+        //Object inspector
+        private Rect objectInspectorRect;
+        private Rect objectInspectorContentRect;
+        private readonly Vector2 objectInspectorMinSize = new Vector2(360f, 140f);
+        private readonly int objectInspectorMargin = 10;
+        private float objectInspectorScrollPos = 0f;
+        private Tween showInspectorWindowAnimation;
+        private float showInspectorWindowAnimationValue;
+        private readonly float showInspectorWindowAnimationDuration = 0.5f;
+        private bool canShowInspectorWindow;
 
         //Add Prefab Dialog
         //-->Margin from bottom right corner, size is absolute
@@ -265,6 +282,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Menu Bar
             menuBarHeight = 50f;
             SetupMenuBarIcons();
+            SetupOtherSystemIcons();
 
             //Categories
             selectedCategories = new List<string>();
@@ -305,6 +323,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Hover Box
             _hbText = "";
             hbShowing = false;
+            hbOffsetFromMouse = Vector2.zero;
+
+            //Object inspector
+            objectInspectorScrollPos = 0f;
+            showInspectorWindowAnimationValue = 0f;
+            canShowInspectorWindow = false;
 
             //Add Prefab Dialog
             levelObjectTypes = LevelEditorReflection.GetLevelObjectTypes();
@@ -387,6 +411,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             };
         }
 
+        private void SetupOtherSystemIcons()
+        {
+            otherSystemItems = new LevelEditorItem[2];
+            otherSystemItems[0] = new LevelEditorItem
+            {
+                name = "Open Inspector",
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/info-no-border"),
+                accentColor = LevelEditorStyles.buttonHoverColor
+            };
+        }
+
 
         private void OnDisable()
         {
@@ -449,7 +484,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if (blockMouse)
                     {
-                        DeselectCurrentlySelectedObject();
+                        if (!objectInspectorRect.Contains(e.mousePosition))
+                        {
+                            DeselectCurrentlySelectedObject();
+                        }
                         e.Use();
                     }
 
@@ -632,17 +670,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                             {
                                 DrawGui(cameraBounds);
                             }
-                            /*
-                            try
-                            {
-                            }
-                            catch (ArgumentException ex)
-                            {
-                                //Remove harmless error Message
-                                if (!ex.Message.Contains("Getting control 1's position in a group with only 1 controls when doing repaint"))
-                                    Debug.LogError(ex.Message);
-                            }
-                            */
                         }
                     }
                 }
@@ -699,6 +726,21 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 size = new Vector2(objectPickerRect.size.x, menuBarHeight)
             };
 
+            //-Get objectInspector rect
+            if (canShowInspectorWindow)
+            {
+                objectInspectorRect = new Rect()
+                {
+                    position = new Vector2(screenRect.width - (objectInspectorMinSize.x + objectInspectorMargin) * showInspectorWindowAnimationValue + Mathf.Ceil(1 - showInspectorWindowAnimationValue) * 10f, objectInspectorMargin),
+                    size = new Vector2(objectInspectorMinSize.x, Mathf.Clamp(objectInspectorContentRect.height + 30, objectInspectorMinSize.y, menuBarRect.position.y
+                            - objectInspectorMargin * 2))
+                };
+            }
+            else
+            {
+                objectInspectorRect = new Rect();
+            }
+
             //-Reset Menu bar hovering
             if(Event.current.type == EventType.Repaint)
                 mouseHoveringMenuBar = false;
@@ -717,6 +759,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             DrawMenuBar(menuBarRect);
             DrawObjectPicker(objectPickerRect);
 
+            if(Event.current.type == EventType.Layout)
+            {
+                canShowInspectorWindow = objectToPlace.IsValid() && !string.IsNullOrEmpty(selectedLayer) && objectDrawerHidden && showCategoryMoreBoxAnimationValue <= 0f && showLayerMoreBoxAnimationValue <= 0f;
+            }
+            if (canShowInspectorWindow && objectToPlace.IsValid())
+            {
+                DrawObjectInspector(objectInspectorRect);
+                DrawMenuButton(new Vector2(screenRect.width - 55f, 15f), otherSystemItems[0], () => ToggleInspectorWindow(), Mathf.Round(showInspectorWindowAnimationValue) > 0f, new Vector2(100f, -25f));
+            }
             
 
             HoverText = hbGUIText;
@@ -733,7 +784,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void ObjectPlacement(Rect objectPickerRect)
         {
             //Check wether Mouse is hovering over gui element or not and if a layer was selected
-            if (!string.IsNullOrEmpty(selectedLayer) && Util.EditorUtility.IsMouseInsideSceneView(SceneView.currentDrawingSceneView) && !mouseHoveringMenuBar && !objectPickerRect.Contains(Event.current.mousePosition))
+            if (!string.IsNullOrEmpty(selectedLayer) && Util.EditorUtility.IsMouseInsideSceneView(SceneView.currentDrawingSceneView) && !mouseHoveringMenuBar && !objectPickerRect.Contains(Event.current.mousePosition) && !objectInspectorRect.Contains(Event.current.mousePosition))
             {
                 canObjectBePlaced = true;
             }
@@ -811,6 +862,47 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             layersMoreBoxScrollPos = DrawMoreBox(new Vector2(menuBarRect.position.x + GetResponsiveAmount(layerMoreBoxXPos), menuBarRect.position.y - LevelEditorStyles.MoreBox.margin.bottom),
                 (index) => DrawLayerButton(levelLayers[index + GetResponsiveAmount(menuBarLayersAmount)]), levelLayers.Count - GetResponsiveAmount(menuBarLayersAmount), layersMoreBoxScrollPos, showLayerMoreBoxAnimationValue);
 
+        }
+
+        private void DrawMenuButton(Vector2 position, LevelEditorItem item, Action action, bool selected = false, Vector2 toolboxHoverPosition = default)
+        {
+            Rect buttonRect = new Rect()
+            {
+                position = position,
+                size = new Vector2(LevelEditorStyles.MenuButtonCircle.fixedWidth, LevelEditorStyles.MenuButtonCircle.fixedHeight)
+            };
+
+            //Hover tinting
+            if (buttonRect.Contains(Event.current.mousePosition) || selected)
+            {
+                if (buttonRect.Contains(Event.current.mousePosition))
+                {
+                    HoveringButton = true;
+                    mouseHoveringMenuBar = true;
+                    hbGUIText = item.name;
+                    hbOffsetFromMouse = toolboxHoverPosition;
+                }
+
+                if (item.accentColor.a > 0)
+                {
+                    GUI.color = item.accentColor;
+                }
+                else
+                {
+                    GUI.color = LevelEditorStyles.buttonHoverColor;
+                }
+
+            }
+
+            GUIStyle btnStyle = selected ? LevelEditorStyles.MenuButtonCircleActive : LevelEditorStyles.MenuButtonCircle;
+
+
+            if (GUI.Button(buttonRect, item.thumbnail, btnStyle) && action != null)
+            {
+                action.Invoke();
+            }
+
+            GUI.color = Color.white;
         }
 
         private void DrawMenuBarButton(LevelEditorItem item, Action action, bool selected = false)
@@ -1264,8 +1356,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
             else
             {
-                GUI.Label(buttonRect,
-                    thumbnail, LevelEditorStyles.LevelObjectImage);
+                buttonRect.position += new Vector2(LevelEditorStyles.LevelObjectImage.padding.left, LevelEditorStyles.LevelObjectImage.padding.top);
+                buttonRect.size -= new Vector2(LevelEditorStyles.LevelObjectImage.padding.left + LevelEditorStyles.LevelObjectImage.padding.right,
+                    LevelEditorStyles.LevelObjectImage.padding.top + LevelEditorStyles.LevelObjectImage.padding.bottom);
+                GUI.DrawTexture(buttonRect, thumbnail);
+                //GUI.Label(buttonRect, thumbnail, LevelEditorStyles.LevelObjectImage);
             }
         }
 
@@ -1305,9 +1400,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     size = Vector2.zero
                 };
 
-                //Rect newHbTextRect = GUILayoutUtility.GetRect(new GUIContent(hbText), LevelEditorStyles.TextCentered);
-                //if (newHbTextRect.size != Vector2.one)
-                //    hbTextRect = newHbTextRect;
                 if (LevelEditorStyles.HoverBoxText != null)
                     hbTextRect.size = LevelEditorStyles.HoverBoxText.CalcSize(new GUIContent(HoverText));
 
@@ -1324,10 +1416,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     HoverText = "";
                 }
+
             }
 
-
-            //Debug.Log(hbRect.size);
 
             GUI.color = new Color(1f, 1f, 1f, hbOpacity);
             GUI.Box(hbRect, HoverText, LevelEditorStyles.HoverBox);
@@ -1367,6 +1458,32 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     .OnComplete(() => ShowHoverBoxAnimation(1f));
             }
         }
+
+        #endregion
+
+        #region Object Inspector
+
+        #region General
+
+        private void DrawObjectInspector(Rect objectInspectorRect)
+        {
+            GUILayout.BeginArea(objectInspectorRect);
+            objectInspectorScrollPos = GUILayout.BeginScrollView(new Vector2(0f, objectInspectorScrollPos), false, false, 
+                GUI.skin.horizontalScrollbar, GUI.skin.verticalScrollbar, LevelEditorStyles.EditorContainer, GUILayout.ExpandHeight(true)).y;
+            GUILayout.BeginVertical();
+            GUILayout.Label(objectToPlace.levelObject.item.name, LevelEditorStyles.HeaderCenteredBig);
+            LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(30, 30, 0, 10));
+            GUILayout.EndVertical();
+            if(Event.current.type == EventType.Repaint)
+            {
+                objectInspectorContentRect = GUILayoutUtility.GetLastRect();
+            }
+            GUILayout.EndScrollView();
+            BlockMouseInArea(objectInspectorContentRect);
+            GUILayout.EndArea();
+        }
+
+        #endregion
 
         #endregion
 
@@ -1786,6 +1903,35 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
+        #region Inspector Window
+
+        private void ToggleInspectorWindow()
+        {
+            if (showInspectorWindowAnimation == null || showInspectorWindowAnimation.Paused)
+            {
+                if (showInspectorWindowAnimationValue < 0.5f)
+                {
+                    showInspectorWindowAnimation = tweener.Tween(this, null, showInspectorWindowAnimationDuration).Ease(Ease.SineIn).OnUpdate((val) => showInspectorWindowAnimationValue = val)
+                        .OnComplete(() =>
+                        {
+                            showInspectorWindowAnimationValue = Mathf.Round(showInspectorWindowAnimationValue);
+                            showInspectorWindowAnimation = null;
+                        });
+                }
+                else
+                {
+                    showInspectorWindowAnimation = tweener.Tween(this, null, showInspectorWindowAnimationDuration).Ease(Ease.SineIn).OnUpdate((val) => showInspectorWindowAnimationValue = 1f - val)
+                        .OnComplete(() =>
+                        {
+                            showInspectorWindowAnimationValue = Mathf.Round(showInspectorWindowAnimationValue);
+                            showInspectorWindowAnimation = null;
+                        });
+                }
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Filter Utility
@@ -1797,10 +1943,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             string levelGuid = null;
             if (levelInstance != null)
                 levelGuid = levelInstance.level;
-            else
-            {
-                Debug.LogError("asdasd");
-            }
 
             //Reload both
             if (selectedCategories.Count > 0 && !string.IsNullOrEmpty(selectedLayer))

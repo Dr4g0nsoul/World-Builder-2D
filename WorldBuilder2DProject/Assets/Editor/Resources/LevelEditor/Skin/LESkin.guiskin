@@ -280,7 +280,7 @@ MonoBehaviour:
     m_FixedWidth: 0
     m_FixedHeight: 0
     m_StretchWidth: 1
-    m_StretchHeight: 1
+    m_StretchHeight: 0
   m_textField:
     m_Name: textfield
     m_Normal:
