@@ -9,6 +9,10 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
 
     public class ReadOnlyAttribute : PropertyAttribute { }
 
+    public class SortingLayerAttribute : PropertyAttribute { }
+
+    public class PhysicsLayerAttribute : PropertyAttribute { }
+
     [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public class CreateLevelObjectEditorExtensionAttribute : Attribute {
 

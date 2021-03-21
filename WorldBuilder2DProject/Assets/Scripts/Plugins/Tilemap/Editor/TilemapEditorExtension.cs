@@ -1,5 +1,6 @@
 ﻿using dr4g0nsoul.WorldBuilder2D.LevelEditor;
 using dr4g0nsoul.WorldBuilder2D.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -43,14 +44,24 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private bool clearAutoTile;
 		private GUISkin levelEditorSkin;
 		private GUISkin prevSkin;
-        //For custom inspector - end
+		//For custom inspector - end
 
-        //For Level Editor Tool - start
-        //For Level Editor Tool - end
+		//For Level Editor Tool - start
+		private Tilemap t_currentTilemap;
+		private int t_menu;
+		private readonly string[] t_menuItems = new string[] { "Tiles", "Auto Tiles" };
+		private Rect t_scrollRect;
+		private int t_selectedTile;
+		private float t_tilesScrollpos;
+		private int t_selectedAutoTileGroup;
+		private List<Texture2D> t_tileTextures;
+		private float t_autoTilesScrollpos;
+		private bool t_inDeletionMode;
+		//For Level Editor Tool - end
 
-        #region Level Object Create
+		#region Level Object Create
 
-        public override GameObject OnLevelObjectCreate(GameObject currentPrefab, string prefabPath)
+		public override GameObject OnLevelObjectCreate(GameObject currentPrefab, string prefabPath)
         {
             currentPrefab.transform.position = Vector3.zero;
             currentPrefab.transform.rotation = Quaternion.identity;
@@ -66,11 +77,11 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
                 if (tmr != null)
                 {
-                    Object.DestroyImmediate(tmr);
+                    UnityEngine.Object.DestroyImmediate(tmr);
                 }
                 if (tm != null)
                 {
-                    Object.DestroyImmediate(tm);
+					UnityEngine.Object.DestroyImmediate(tm);
                     if (child.parent == currentPrefab.transform)
                     {
                         previousTilemap = child;
@@ -159,8 +170,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 						TextureImporter textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
 						if (textureImporter != null && textureImporter.textureType == TextureImporterType.Sprite)
 						{
-							Object[] spriteObjects = AssetDatabase.LoadAllAssetsAtPath(pathToTexture);
-							foreach (Object spriteObject in spriteObjects)
+							UnityEngine.Object[] spriteObjects = AssetDatabase.LoadAllAssetsAtPath(pathToTexture);
+							foreach (UnityEngine.Object spriteObject in spriteObjects)
 							{
 								Sprite sprite = spriteObject as Sprite;
 								AddTile(sprite, tilemap, serializedObject);
@@ -395,6 +406,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
                 {
 					newAutoTileGroup.FindPropertyRelative("autoTiles").GetArrayElementAtIndex(i).intValue = -1;
 				}
+				EditorGUI.FocusTextInControl(null);
 				newGroupName = "";
 			}
 			GUI.enabled = true;
@@ -559,8 +571,409 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			GUI.skin = levelEditorSkin;
 			GUILayout.EndVertical();
 		}
-	}
 
-    #endregion
+        #endregion
+
+        #region Custom Tool
+
+        public override bool UseTemporaryIndicator => false;
+
+        public override GameObject SpawnObject(LevelObject obj, GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
+        {
+			if (t_currentTilemap == null)
+			{
+				//Check if Tilemap already spawned
+				GameObject tilemap = null;
+				foreach (Transform child in parentTransform)
+				{
+					if (PrefabUtility.IsAnyPrefabInstanceRoot(child.gameObject) && child.gameObject.name == obj.objectPrefab.name)
+					{
+						tilemap = child.gameObject;
+						break;
+					}
+				}
+
+				if (tilemap == null)
+				{
+					tilemap = base.SpawnObject(obj, temporaryObject, parentTransform, worldPos, mousePos);
+				}
+
+				tilemap.transform.position = Vector2.zero;
+
+				Selection.activeTransform = tilemap.transform;
+				if (Event.current.button == 0)
+				{
+					Event.current.Use();
+				}
+
+				return tilemap;
+			}
+
+			//Spawn tile
+			SpawnTile(obj, worldPos, mousePos);
+			Selection.activeTransform = t_currentTilemap.transform.parent.transform;
+			if (Event.current.button == 0)
+			{
+				Event.current.Use();
+			}
+
+			return t_currentTilemap.transform.parent.gameObject;
+
+        }
+
+        public override void OnLevelObjectSelected(LevelObject obj)
+        {
+			t_currentTilemap = null;
+        }
+
+		public override void OnLevelObjectDeSelected(LevelObject obj)
+		{
+			if(t_currentTilemap != null)
+            {
+				t_currentTilemap.ClearAllEditorPreviewTiles();
+            }
+			t_currentTilemap = null;
+		}
+
+		public override void HoverObject(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
+        {
+			if(t_currentTilemap != null && obj is TilemapLevelObject tilemapSettings)
+            {
+				t_currentTilemap.ClearAllEditorPreviewTiles();
+				Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
+				if (selectedTile != null) {
+
+					//Draw active cell box
+					Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
+
+					DrawTileBorder(cell);
+
+					t_currentTilemap.SetEditorPreviewTile(cell, selectedTile);
+				}
+            }
+        }
+
+		private void DrawTileBorder(Vector3Int cell)
+		{
+			if(t_inDeletionMode)
+            {
+				if(t_currentTilemap.GetTile(cell) != null)
+                {
+					DrawTileBorder(cell, LevelEditorStyles.buttonDangerColor);
+                }
+				else
+                {
+					DrawTileBorder(cell, Color.white);
+				}
+            }
+			else if(t_currentTilemap.GetTile(cell) != null)
+            {
+				DrawTileBorder(cell, LevelEditorStyles.buttonHoverColor);
+			}
+			else
+            {
+				DrawTileBorder(cell, Color.white);
+			}
+		}
+
+		private void DrawTileBorder(Vector3Int cell, Color color)
+        {
+			Bounds cellBounds = t_currentTilemap.GetBoundsLocal(cell);
+			Vector2 cellCenter = t_currentTilemap.GetCellCenterWorld(cell);
+			Vector2 cellCenterLeft = new Vector2(cellCenter.x - cellBounds.extents.x, cellCenter.y);
+			Vector2 cellCenterRight = new Vector2(cellCenter.x + cellBounds.extents.x, cellCenter.y);
+			Vector2 cellCenterLeftScreen = Util.EditorUtility.WorldToSceneViewPos(cellCenterLeft);
+			Vector2 cellCenterRightScreen = Util.EditorUtility.WorldToSceneViewPos(cellCenterRight);
+			float cellScreenSize = cellCenterRightScreen.x - cellCenterLeftScreen.x;
+
+
+			Rect drawRect = new Rect()
+			{
+				position = new Vector2(cellCenterLeftScreen.x, cellCenterLeftScreen.y - cellScreenSize / 2f),
+				size = new Vector2(cellScreenSize, cellScreenSize)
+			};
+
+			GUI.color = color;
+			GUI.Box(drawRect, " ");
+			GUI.color = Color.white;
+		}
+
+		private void SpawnTile(LevelObject obj, Vector2 worldPos, Vector2 mousePos)
+		{
+			if (t_currentTilemap != null && obj is TilemapLevelObject tilemapSettings)
+			{
+				Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
+				if (t_inDeletionMode)
+				{
+					t_currentTilemap.SetTile(cell, null);
+				}
+				else
+				{
+					Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
+					if (selectedTile != null)
+					{
+						t_currentTilemap.SetTile(cell, selectedTile);
+					}
+				}
+			}
+		}
+
+		public override bool UseLevelEditorToolInspector()
+        {
+			return true;
+        }
+
+        #region Level Editor Tool Inspector
+
+        public override void OnLevelEditorToolInspectorGUI(LevelObject obj)
+        {
+			if(Selection.activeTransform != null 
+				&& PrefabUtility.IsAnyPrefabInstanceRoot(Selection.activeTransform.gameObject) 
+				&& Selection.activeTransform.gameObject.name == obj.objectPrefab.name)
+            {
+				if(t_currentTilemap == null)
+                {
+					if (obj is TilemapLevelObject tilemapSettings)
+					{
+						InitializeTilemapTool(tilemapSettings);
+					}
+                }
+
+				if(t_inDeletionMode && GUILayout.Button("Exit Deletion Mode", LevelEditorStyles.ButtonDangerActive)) {
+					t_inDeletionMode = false;
+                }
+				else if (!t_inDeletionMode && GUILayout.Button("Enter Deletion Mode", LevelEditorStyles.Button)){
+					t_inDeletionMode = true;
+                }
+
+				GUISkin prevSkin = GUI.skin;
+				GUI.skin = null;
+				t_menu = GUILayout.Toolbar(t_menu, t_menuItems);
+				GUI.skin = prevSkin;
+
+				switch(t_menu)
+                {
+					case 0:
+						ToolTileGUI(obj);
+						break;
+					case 1:
+						ToolAutoTileGUI(obj);
+						break;
+                }
+
+            }
+			else
+            {
+				GUILayout.Label("Click on the Scene to spawn/select tilemap");
+				base.OnLevelEditorToolInspectorGUI(obj);
+            }
+        }
+
+		private void ToolTileGUI(LevelObject obj)
+        {
+			if (obj is TilemapLevelObject tilemapSettings)
+			{
+				ToolDrawTilePicker(tilemapSettings);
+			}
+		}
+
+		private void ToolAutoTileGUI(LevelObject obj)
+        {
+			if (obj is TilemapLevelObject tilemapSettings)
+			{
+				ToolDrawAutoGroupPicker(tilemapSettings);
+			}
+		}
+
+		private void InitializeTilemapTool(TilemapLevelObject obj)
+        {
+			
+			foreach (Transform child in Selection.activeTransform)
+			{
+				t_currentTilemap = child.GetComponent<Tilemap>();
+				if (t_currentTilemap != null)
+				{
+					break;
+				}
+			}
+
+			t_menu = 0;
+			t_selectedTile = -1;
+			t_tilesScrollpos = 0f;
+			t_selectedAutoTileGroup = -1;
+			t_autoTilesScrollpos = 0f;
+			t_inDeletionMode = false;
+
+			GenerateTileTextures(obj);
+        }
+
+		private void GenerateTileTextures(TilemapLevelObject obj)
+        {
+			t_tileTextures = new List<Texture2D>();
+
+			foreach(Tile tile in obj.tiles)
+            {
+				t_tileTextures.Add(LevelEditorStyles.TextureFromSprite(tile.sprite));
+			}
+        }
+
+		#region Tile Picker
+
+		private void ToolDrawTilePicker(TilemapLevelObject tilemapSettings)
+        {
+			GUILayout.Label("All Tiles", LevelEditorStyles.HeaderCentered);
+			GUILayout.Space(5f);
+
+			int objectsPerRow = Mathf.FloorToInt(LevelEditorTool.ObjectInspectorWidth / tileSize - 2f);
+			int objectCount = tilemapSettings.tiles.Length;
+			float containerHeight = Mathf.CeilToInt((float)objectCount / objectsPerRow) * (tileSize + 15f);
+			containerHeight = Mathf.Min(containerHeight, 250f);
+
+			GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(containerHeight));
+
+			t_tilesScrollpos = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(t_tilesScrollpos, 0f)), false, false, GUILayout.MaxHeight(300f)).y;
+
+			GUILayout.BeginVertical();
+			for (int i = 0; i < objectCount; i++)
+			{
+				if (i % objectsPerRow == 0)
+					GUILayout.BeginHorizontal();
+
+				ToolDrawTile(i, tilemapSettings.tiles[i], t_selectedTile == i, (selected) => {
+					t_selectedTile = selected ? -1 : i;
+					t_selectedAutoTileGroup = -1;
+				});
+
+				if ((i + 1) % objectsPerRow == 0 || i == objectCount - 1)
+				{
+					GUILayout.EndHorizontal();
+					if (i < objectCount - 1)
+						GUILayout.Space(Mathf.Max(LevelEditorStyles.LevelObjectButton.margin.right, LevelEditorStyles.LevelObjectButton.margin.left));
+				}
+			}
+			GUILayout.EndVertical();
+			GUILayout.EndScrollView();
+			if(Event.current.type == EventType.Repaint)
+            {
+				t_scrollRect = GUILayoutUtility.GetLastRect();
+				t_scrollRect.position += LevelEditorTool.GetInspectorRect().position;
+            }
+			if (t_scrollRect.Contains(Event.current.mousePosition))
+			{
+				t_tilesScrollpos += LevelEditorTool.GetScroll();
+			}
+
+			GUILayout.EndVertical();
+		}
+
+		#endregion
+
+		#region Auto Tile Picker
+
+		private void ToolDrawAutoGroupPicker(TilemapLevelObject tilemapSettings)
+		{
+
+			GUILayout.Label("Auto Tiles", LevelEditorStyles.HeaderCentered);
+			GUILayout.Space(5f);
+			
+			int objectsPerRow = Mathf.FloorToInt(LevelEditorTool.ObjectInspectorWidth / tileSize - 2f);
+			int objectCount = tilemapSettings.autoTileGroups.Length;
+			float containerHeight = Mathf.CeilToInt((float)objectCount / objectsPerRow) * (tileSize + 15f);
+			containerHeight = Mathf.Min(containerHeight, 250f);
+
+			GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(containerHeight));
+
+			t_autoTilesScrollpos = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(t_autoTilesScrollpos, 0f)), false, false, GUILayout.MaxHeight(300f)).y;
+
+			GUILayout.BeginVertical();
+			for (int i = 0; i < objectCount; i++)
+			{
+				if (i % objectsPerRow == 0)
+					GUILayout.BeginHorizontal();
+
+				ToolDrawAutoTileGroup(tilemapSettings, i, tilemapSettings.autoTileGroups[i]);
+
+				if ((i + 1) % objectsPerRow == 0 || i == objectCount - 1)
+				{
+					GUILayout.EndHorizontal();
+					if (i < objectCount - 1)
+						GUILayout.Space(Mathf.Max(LevelEditorStyles.LevelObjectButton.margin.right, LevelEditorStyles.LevelObjectButton.margin.left));
+				}
+			}
+			GUILayout.EndVertical();
+			GUILayout.EndScrollView();
+			if (Event.current.type == EventType.Repaint)
+			{
+				t_scrollRect = GUILayoutUtility.GetLastRect();
+				t_scrollRect.position += LevelEditorTool.GetInspectorRect().position;
+			}
+			if (t_scrollRect.Contains(Event.current.mousePosition))
+			{
+				t_tilesScrollpos += LevelEditorTool.GetScroll();
+			}
+
+			GUILayout.EndVertical();
+		}
+
+		private void ToolDrawAutoTileGroup(TilemapLevelObject tilemapSettings, int index, AutoTileGroup group)
+        {
+			Tile currentTile = tilemapSettings.GetTile(group.autoTiles[12]);
+			if (currentTile == null)
+			{
+				currentTile = tilemapSettings.GetTile(group.fallbackTile);
+				if (currentTile == null)
+				{
+					currentTile = tilemapSettings.GetTile(group.autoTiles.First((tile) =>
+					{
+						return tile >= 0;
+					}));
+				}
+			}
+
+			int currentTileIndex = tilemapSettings.GetTileIndex(currentTile);
+
+			ToolDrawTile(currentTileIndex, currentTile, index == t_selectedAutoTileGroup, (selected) =>
+			{
+				t_selectedAutoTileGroup = selected ? -1 : index;
+				t_selectedTile = -1;
+			}, group.autoTileGroupName);
+		}
+
+		#endregion
+
+		#region Util
+
+		private void ToolDrawTile(int index, Tile tile, bool selected, Action<bool> clickAction, string hovertext = "")
+		{
+			GUIStyle buttonStyle = selected ? LevelEditorStyles.ButtonActive : LevelEditorStyles.Button;
+			if (GUILayout.Button(GUIContent.none, buttonStyle, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
+			{
+				clickAction.Invoke(selected);
+			}
+			Rect r = GUILayoutUtility.GetLastRect();
+			r.position = new Vector2(r.position.x + 5, r.position.y + 5);
+			r.size = new Vector2(r.width - 10, r.height - 10);
+
+			LevelEditorTool.DrawHoverText(r, hovertext, new Vector2(50f, -25f));
+
+			if (tile != null && index < t_tileTextures.Count && t_tileTextures[index] != null)
+			{
+				GUI.DrawTexture(r, t_tileTextures[index], ScaleMode.ScaleAndCrop, true, 0, Color.white, 0f, 5f);
+			}
+			else
+			{
+				GUIStyle xStyle = new GUIStyle(LevelEditorStyles.HeaderCenteredBig);
+				xStyle.alignment = TextAnchor.MiddleCenter;
+				GUI.Label(r, "X", xStyle);
+			}
+		}
+
+		#endregion
+
+		#endregion
+
+		#endregion
+
+	}
 
 }

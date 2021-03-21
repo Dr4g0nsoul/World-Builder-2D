@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,10 +22,47 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Hierarchy Management
 
+        private void CheckTransforms()
+        {
+            for(int i = levelTransforms.Length - 1; i >= 0; i--)
+            {
+                if(levelTransforms[i].layerTransform == null)
+                {
+                    List<LevelTransformLayer> levelTransformsList = levelTransforms.ToList();
+                    levelTransformsList.RemoveAt(i);
+                    levelTransforms = levelTransformsList.ToArray();
+                }
+                else
+                {
+
+                    for(int j = levelTransforms[i].levelTransformCategories.Length - 1; j >= 0; j--)
+                    {
+                        if (levelTransforms[i].levelTransformCategories[j].categoryTransform == null)
+                        {
+                            List<LevelTransformCategory> levelTransformCategoriesList = levelTransforms[i].levelTransformCategories.ToList();
+                            levelTransformCategoriesList.RemoveAt(j);
+                            levelTransforms[i].levelTransformCategories = levelTransformCategoriesList.ToArray();
+                        }
+                    }
+
+                    if(levelTransforms[i].uncategorized.categoryTransform == null)
+                    {
+                        levelTransforms[i].uncategorized = CreateLevelTransformUncategorized(levelTransforms[i]);
+                    }
+                }
+            }
+            if(unknownLayer.layerTransform == null)
+            {
+                unknownLayer = CreateUnknownLevelTransformLayer();
+            }
+        }
+
         public Transform FindParentTransform(LevelObject obj, string levelLayer, LevelEditorSettings settings)
         {
             if(obj != null && !string.IsNullOrEmpty(levelLayer) && settings != null)
             {
+                CheckTransforms();
+
                 LevelLayer levelLayerObject = null;
                 //Check if layer exists
                 if (!Array.Exists(settings.levelLayers, (val) => 
@@ -49,6 +87,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         return FindParentTransformCategory(obj, transformLayer, settings);
                     }
                 }
+
+                Debug.Log("asdasd");
 
                 //Create layer because not found and use that instead
                 return FindParentTransformCategory(obj, CreateLevelTransformLayer(levelLayerObject), settings);
@@ -107,7 +147,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if(potentialParent.parent == levelTransformCategory.categoryTransform //Is direct child
                         && PrefabUtility.GetCorrespondingObjectFromSource(potentialParent) == null //Is not a prefab
-                        && potentialParent.GetComponents(typeof(Component)).Length < 2) //Has only transform component on it
+                        //&& potentialParent.GetComponents(typeof(Component)).Length < 2 //Has only transform component on it
+                        && potentialParent.name == obj.item.name) //Has the same name
                     {
                         return potentialParent;
                     }
@@ -163,6 +204,61 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
 
             return newLevelTransformLayer;
+        }
+
+        private LevelTransformLayer CreateUnknownLevelTransformLayer()
+        {
+            LevelTransformLayer newLevelTransformLayer = new LevelTransformLayer();
+            //Create Layer container
+            GameObject containerObject = new GameObject();
+            containerObject.transform.position = Vector2.zero;
+            containerObject.transform.rotation = Quaternion.identity;
+            containerObject.name = NO_LAYER;
+            containerObject.transform.parent = transform;
+
+            //Create Layer transform container
+            newLevelTransformLayer.layerGuid = Guid.Empty.ToString();
+            newLevelTransformLayer.layerTransform = containerObject.transform;
+            newLevelTransformLayer.levelTransformCategories = new LevelTransformCategory[0];
+
+            //Create unknown category
+            GameObject unknownCategory = new GameObject();
+            unknownCategory.transform.position = Vector2.zero;
+            unknownCategory.transform.rotation = Quaternion.identity;
+            unknownCategory.name = UNCATEGORIZED;
+            unknownCategory.transform.parent = newLevelTransformLayer.layerTransform;
+
+            //Create unknown category transform container
+            LevelTransformCategory unknownCategoryTransformContainer = new LevelTransformCategory()
+            {
+                categoryGuid = Guid.Empty.ToString(),
+                categoryTransform = unknownCategory.transform
+            };
+            newLevelTransformLayer.uncategorized = unknownCategoryTransformContainer;
+
+            //Resize array and add layer
+            Array.Resize(ref levelTransforms, levelTransforms.Length + 1);
+            levelTransforms[levelTransforms.Length - 1] = newLevelTransformLayer;
+
+            return newLevelTransformLayer;
+        }
+
+        private LevelTransformCategory CreateLevelTransformUncategorized(LevelTransformLayer parentTransformLayer)
+        {
+            LevelTransformCategory newLevelTransformCategory = new LevelTransformCategory();
+            if (parentTransformLayer.layerTransform != null)
+            {
+                GameObject containerObject = new GameObject();
+                containerObject.transform.position = Vector2.zero;
+                containerObject.transform.rotation = Quaternion.identity;
+                containerObject.name = UNCATEGORIZED;
+                containerObject.transform.parent = parentTransformLayer.layerTransform;
+
+                newLevelTransformCategory.categoryGuid = Guid.Empty.ToString();
+                newLevelTransformCategory.categoryTransform = containerObject.transform;
+            }
+
+            return newLevelTransformCategory;
         }
 
         private LevelTransformCategory CreateLevelTransformCategory(LevelObjectCategory category, LevelTransformLayer parentTransformLayer)

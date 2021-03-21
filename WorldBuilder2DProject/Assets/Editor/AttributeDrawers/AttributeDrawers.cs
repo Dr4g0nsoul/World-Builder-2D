@@ -32,4 +32,48 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
         }
     }
 
+    [CustomPropertyDrawer(typeof(SortingLayerAttribute))]
+    public class SortingLayerAttributeDrawer : PropertyDrawer 
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            if(property.propertyType == SerializedPropertyType.String)
+            {
+                EditorGUI.BeginProperty(position, label, property);
+                SortingLayer[] sortingLayers = SortingLayer.layers;
+                string[] sortingLayerNames = new string[sortingLayers.Length];
+                int selectedIndex = 0;
+                for(int i = 0; i<sortingLayers.Length; i++)
+                {
+                    if(sortingLayers[i].name == property.stringValue)
+                    {
+                        selectedIndex = i;
+                    }
+                    sortingLayerNames[i] = sortingLayers[i].name;
+                }
+                property.stringValue = sortingLayerNames[EditorGUI.Popup(position, label.text, selectedIndex, sortingLayerNames)];
+                EditorGUI.EndProperty();
+            }
+            else
+            {
+                EditorGUI.PropertyField(position, property, label);
+            }
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(PhysicsLayerAttribute))]
+    public class PhysicsLayerAttributeDrawer : PropertyDrawer 
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            if (property.propertyType == SerializedPropertyType.Integer)
+            {
+                property.intValue = EditorGUI.LayerField(position, label, property.intValue);
+            }
+            else
+            {
+                EditorGUI.PropertyField(position, property, label);
+            }
+        }
+    }
 }

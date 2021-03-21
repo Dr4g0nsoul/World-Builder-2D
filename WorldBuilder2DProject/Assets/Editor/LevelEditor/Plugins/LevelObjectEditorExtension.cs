@@ -53,6 +53,18 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         // Object Placement Methods //
 
         /// <summary>
+        /// Called when level object is selected in the level editor tool
+        /// </summary>
+        /// <param name="obj">The currently selected level object</param>
+        public virtual void OnLevelObjectSelected(LevelObject obj) { }
+
+        /// <summary>
+        /// Called when level object is de-selected or another Level Object is selected in the level editor tool
+        /// </summary>
+        /// <param name="obj">The previously selected level object</param>
+        public virtual void OnLevelObjectDeSelected(LevelObject obj) { }
+
+        /// <summary>
         /// Set to true if you want to turn the mouse into the currently selected GameObject in SceneView,
         /// false otherwise
         /// </summary>
@@ -61,17 +73,16 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <summary>
         /// Called on each SceneView GUI call if the mouse is in a valid position inside the SceneView Window
         /// </summary>
+        /// <param name="obj">The currently selected level object</param>
         /// <param name="temporaryObject">The gameobject used for the temporary indicator, null if UseTemporaryIndicator is false</param>
         /// <param name="worldPos">Position of the mouse in world coordinates</param>
         /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
-        public virtual void HoverObject(GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
-        {
-            Debug.Log($"Hovering {Target.item.name}");
-        }
+        public virtual void HoverObject(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos) { }
 
         /// <summary>
         /// Called whenever the user wants to spawn this object
         /// </summary>
+        /// <param name="obj">The currently selected level object</param>
         /// <param name="temporaryObject">The gameobject used for the temporary indicator, null if UseTemporaryIndicator is false</param>
         /// <param name="parentTransform">
         ///     The transform of the Level Object container.
@@ -79,19 +90,47 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// </param>
         /// <param name="worldPos">Position of the mouse in world coordinates</param>
         /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
-        public virtual void SpawnObject(GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
+        /// <returns>Spawned GameObject</returns>
+        public virtual GameObject SpawnObject(LevelObject obj, GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
         {
-            Debug.Log($"Spawn {Target.item.name} at {worldPos} with parent {parentTransform}");
-            GameObject newObject = PrefabUtility.InstantiatePrefab(Target.objectPrefab) as GameObject;
+            Debug.Log($"Spawn {obj.item.name} at {worldPos} with parent {parentTransform}");
+            GameObject newObject = PrefabUtility.InstantiatePrefab(obj.objectPrefab) as GameObject;
             if (newObject != null)
             {
                 newObject.transform.position = worldPos;
                 newObject.transform.rotation = Quaternion.identity;
                 newObject.transform.parent = parentTransform;
 
-                Undo.RegisterCreatedObjectUndo(newObject, $"LevelEditor: Placed {Target.item.name}");//Undo function
+                Undo.RegisterCreatedObjectUndo(newObject, $"LevelEditor: Placed {obj.item.name}");//Undo function
                 Selection.activeObject = newObject;
+                return newObject;
             }
+            return null;
+        }
+
+        /// <summary>
+        /// Called when sorting layer options are being applied
+        /// </summary>
+        /// <param name="obj">The currently selected level object</param>
+        /// <param name="spawningObject">The game object being spawned</param>
+        /// <param name="sortingLayerName">The target sorting layer</param>
+        /// <param name="baseOrderInLayerIndex">The smallest order index of the current sorting layer (Not implemented yet)</param>
+        public virtual void OnApplySortingLayers(LevelObject obj, GameObject spawningObject, string sortingLayerName)
+        {
+            Debug.Log($"OnApplySortingLayers {obj.item.name}, {spawningObject.name}, {sortingLayerName}");
+        }
+
+        /// <summary>
+        /// Called when physics layer options are applied
+        /// </summary>
+        /// <param name="obj">The currently selected level object</param>
+        /// <param name="spawningObject">The game object being spawned</param>
+        /// <param name="targetLayer">The target physics layer</param>
+        /// <param name="onlyRootObject">If only the root object should be affected</param>
+        /// <param name="layersNotToOverride">The layers which should not be overridden</param>
+        public virtual void OnApplyPhysicsLayers(LevelObject obj, GameObject spawningObject, int targetLayer, bool onlyRootObject, LayerMask layersNotToOverride)
+        {
+            Debug.Log($"OnApplyPhysicsLayers {obj.item.name}, {spawningObject.name}, {targetLayer}, {onlyRootObject}, {layersNotToOverride}");
         }
 
         // Level Inspector Methods //
@@ -100,12 +139,34 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// Override to change wheter or not to display a level editor tool inpector window on Level Object selection
         /// </summary>
         /// <returns>Wheter or not a level editor tool inpector window is shown on Level Object selection</returns>
-        public virtual bool UseLevelEditorToolInspector() => false;
+        public virtual bool UseLevelEditorToolInspector() => true;
 
         /// <summary>
         /// Override this method to draw an Inspector Window when this level object is selected
         /// </summary>
-        public virtual void OnLevelEditorToolInspectorGUI() { }
+        public virtual void OnLevelEditorToolInspectorGUI(LevelObject obj) 
+        {
+            GUILayout.Space(15f);
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button("Open Prefab"))
+            {
+                LevelEditorTool.SetBeforeGUIAction(() =>
+                {
+                    UnityEditor.EditorUtility.FocusProjectWindow();
+                    ProjectWindowUtil.ShowCreatedAsset(obj.objectPrefab);
+                    AssetDatabase.OpenAsset(obj.objectPrefab);
+                }, EventType.Repaint);
+            }
+            if(GUILayout.Button("Open Level Object"))
+            {
+                LevelEditorTool.SetBeforeGUIAction(() =>
+                {
+                    UnityEditor.EditorUtility.FocusProjectWindow();
+                    ProjectWindowUtil.ShowCreatedAsset(obj);
+                }, EventType.Repaint);
+            }
+            GUILayout.EndHorizontal();
+        }
 
         // Custom Inspector Tab //
 

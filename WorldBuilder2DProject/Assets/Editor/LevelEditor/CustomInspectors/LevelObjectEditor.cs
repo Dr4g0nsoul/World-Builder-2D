@@ -127,6 +127,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     case 1:
                         //Categories
                         DrawCategoryPicker();
+                        Repaint();
                         //EditorGUILayout.LabelField("Hover: " + categoryHoveringPos);
                         //EditorGUILayout.LabelField("Click: " + categoryClickedPos);
                         break;
@@ -134,6 +135,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     case 2:
                         //Layers
                         DrawLayerPicker();
+                        Repaint();
                         //EditorGUILayout.LabelField("Hover: " + layerHoveringPos);
                         //EditorGUILayout.LabelField("Click: " + layerClickedPos);
                         break;
@@ -275,8 +277,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.Space(3f);
             GUILayout.EndVertical();
 
-            if (categoryClickedPos > -1)
-                Repaint();
 
             if (Event.current.type == EventType.MouseUp 
                 || (Event.current.type == EventType.MouseDrag && !GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition)))
@@ -289,7 +289,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
 
             //Draw Unassigned categories
-            int objectsPerRow = (int)(EditorGUIUtility.currentViewWidth / (optionLabelWidth + 22));
+            int objectsPerRow = Mathf.CeilToInt((EditorGUIUtility.currentViewWidth - 210f) / optionLabelWidth);
+            objectsPerRow = Mathf.Max(1, objectsPerRow);
             int objectCount = categories.Count;
             bool hoveringOverCategory = false;
 
@@ -316,7 +317,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                 {
                     categoryHoveringPos = i;
-                    Repaint();
                     hoveringOverCategory = true;
                 }
 
@@ -424,8 +424,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.Space(3f);
             GUILayout.EndVertical();
 
-            if (categoryClickedPos > -1)
-                Repaint();
 
             if (Event.current.type == EventType.MouseUp
                 || (Event.current.type == EventType.MouseDrag && !GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition)))
@@ -438,7 +436,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
 
             //Draw Unassigned layers
-            int objectsPerRow = (int)(EditorGUIUtility.currentViewWidth / (optionLabelWidth + 22));
+            int objectsPerRow = Mathf.CeilToInt((EditorGUIUtility.currentViewWidth - 210f) / optionLabelWidth);
+            objectsPerRow = Mathf.Max(1, objectsPerRow);
             int objectCount = layers.Count;
             bool hoveringOverLayer = false;
 
@@ -464,7 +463,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                 {
                     layerHoveringPos = i;
-                    Repaint();
                     hoveringOverLayer = true;
                 }
 

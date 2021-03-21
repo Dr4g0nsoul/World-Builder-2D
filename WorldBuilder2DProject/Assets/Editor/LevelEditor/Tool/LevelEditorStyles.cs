@@ -35,9 +35,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Buttons style
         public static readonly Color buttonHoverColor = new Color(0.298f, 0.847f, 1f);
+        public static readonly Color buttonDangerColor = new Color(0.8739f, 0.0362f, 0.0798f);
         public static readonly Vector2 levelObjectPreviewImageOffset = new Vector2(8f, 8f);
         private static GUIStyle _button;
         private static GUIStyle _buttonActive;
+        private static GUIStyle _buttonDangerActive;
         private static GUIStyle _levelObjectImage;
         private static GUIStyle _levelObjectPreviewImage;
         private static GUIStyle _levelObjectPreviewMiniImage;
@@ -282,6 +284,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     _buttonActive.active.background = _buttonActive.normal.background;
                 }
                 return _buttonActive;
+            }
+        }
+
+        public static GUIStyle ButtonDangerActive
+        {
+            get
+            {
+                if (_buttonDangerActive == null)
+                {
+                    _buttonDangerActive = new GUIStyle(GUI.skin.button);
+                    _buttonDangerActive.normal.textColor = buttonDangerColor;
+                    _buttonDangerActive.normal.background = TintTexture(buttonDangerColor, GUI.skin.button.active.background);
+                    _buttonDangerActive.hover.textColor = buttonDangerColor;
+                    _buttonDangerActive.hover.background = TintTexture(buttonDangerColor, GUI.skin.button.hover.background);
+                    _buttonDangerActive.active.textColor = buttonDangerColor;
+                    _buttonDangerActive.active.background = TintTexture(buttonDangerColor, GUI.skin.button.normal.background);
+                }
+                return _buttonDangerActive;
             }
         }
 
@@ -530,6 +550,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Buttons style
             _button = null;
             _buttonActive = null;
+            _buttonDangerActive = null;
             _levelObjectImage = null;
             _levelObjectPreviewImage = null;
             _levelObjectPreviewMiniImage = null;

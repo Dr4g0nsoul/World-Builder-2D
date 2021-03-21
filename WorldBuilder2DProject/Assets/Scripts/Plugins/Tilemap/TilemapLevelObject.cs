@@ -41,7 +41,6 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		public Tile[] tiles = new Tile[0];
 
 		public enum AutoTileMode { All, SameGroup, None }
-		public AutoTileMode mode;
 
 		
 		public Tile GetTile(int selectedTileIndex)
@@ -53,7 +52,23 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			return null;
         }
 
-		public Tile GetAutoTile(Grid tilemapGrid, Tilemap tilemap, int selectedGroupIndex, int selectedTileIndex, Vector2 worldPos)
+		public int GetTileIndex(Tile selectedTile)
+        {
+			if(selectedTile != null)
+            {
+				for (int i = 0; i<tiles.Length; i++)
+                {
+					if(tiles[i] == selectedTile)
+                    {
+						return i;
+                    }
+
+                }
+            }
+			return -1;
+        }
+
+		public Tile GetAutoTile(Grid tilemapGrid, Tilemap tilemap, int selectedGroupIndex, int selectedTileIndex, Vector2 worldPos, AutoTileMode mode = AutoTileMode.SameGroup)
 		{
 			if (selectedGroupIndex >= 0 && selectedGroupIndex < autoTileGroups.Length 
 				&& selectedGroupIndex >= 0 && selectedTileIndex < autoTileGroups[selectedGroupIndex].autoTiles.Length
@@ -77,7 +92,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 				for(int i = 0; i < boundaryTiles.Length; i++)
                 {
-					if(boundaryTiles[i] != null && IsValidAutotile(boundaryTiles[i], selectedGroupIndex))
+					if(boundaryTiles[i] != null && IsValidAutotile(boundaryTiles[i], selectedGroupIndex, mode))
                     {
 						//2 to the power of ( i + 1 )
 						score += 1 << (i + 1);
@@ -93,7 +108,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			return null;
 		}
 
-		private bool IsValidAutotile(Tile tile, int selectedGroupIndex)
+		private bool IsValidAutotile(Tile tile, int selectedGroupIndex, AutoTileMode mode)
         {
 			if(tile != null)
             {

@@ -393,6 +393,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Level Object Layers
 
+        public LevelLayer GetLevelLayerByGuid(string guid)
+        {
+
+            if (levelLayerCache.TryGetValue(guid, out LevelLayer ret))
+            {
+                return ret;
+            }
+
+            return null;
+        }
+
         public List<LevelLayer> GetLevelObjectLayers(LevelObject obj)
         {
             LevelEditorSettings settings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();

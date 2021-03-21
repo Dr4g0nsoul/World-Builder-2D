@@ -132,6 +132,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
 
             EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(20f);
+
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -153,11 +155,39 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             if (layerList.index >= 0 && layerList.index < layerList.serializedProperty.arraySize)
             {
+                SerializedProperty currLayer = serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index);
                 EditorGUILayout.LabelField("Layer Properties", headerMiddle);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                EditorGUILayout.PropertyField(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("guid"));
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("guid"));
                 EditorGUILayout.EndVertical();
-                DrawItemProperty(serializedObject.FindProperty("levelLayers").GetArrayElementAtIndex(layerList.index).FindPropertyRelative("item"));
+                DrawItemProperty(currLayer.FindPropertyRelative("item"));
+                EditorGUILayout.Space(20f);
+
+
+                EditorGUILayout.LabelField("Layer Settings", headerMiddle);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("Sorting Layer Settings", textMiddle);
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("overrideSortingLayer"));
+                GUI.enabled = currLayer.FindPropertyRelative("overrideSortingLayer").boolValue;
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("sortingLayer"));
+                //EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("sortingOrderOffset"));
+                EditorGUILayout.Space(10f);
+                GUI.enabled = true;
+
+
+                EditorGUILayout.LabelField("Physics Layer Settings", textMiddle);
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("overridePhysicsLayer"));
+                GUI.enabled = currLayer.FindPropertyRelative("overridePhysicsLayer").boolValue;
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("physicsLayer"));
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("onlyRootObject"));
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("layersToNotOverride"));
+                EditorGUILayout.Space(10f);
+                GUI.enabled = true;
+
+                EditorGUILayout.LabelField("Parallax Scrolling", textMiddle);
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("parallaxSpeed"));
+                EditorGUILayout.Space(10f);
+                EditorGUILayout.EndVertical();
             }
         }
 

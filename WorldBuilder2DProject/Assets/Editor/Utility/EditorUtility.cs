@@ -149,8 +149,21 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             {
                 Camera cam = view.camera;
                 Vector2 mousepos = Event.current.mousePosition;
-                mousepos.y = Screen.height - mousepos.y - 36.0f;
+                mousepos.y = Screen.height - mousepos.y - 40.0f;
                 return cam.ScreenToWorldPoint(mousepos);
+            }
+            return Vector2.zero;
+        }
+
+        public static Vector2 WorldToSceneViewPos(Vector2 worldPos)
+        {
+            SceneView view = SceneView.lastActiveSceneView;
+            if (view != null)
+            {
+                Camera cam = view.camera;
+                Vector2 scenePos = cam.WorldToScreenPoint(worldPos);
+                scenePos.y = Screen.height - scenePos.y - 40.0f;
+                return scenePos;
             }
             return Vector2.zero;
         }

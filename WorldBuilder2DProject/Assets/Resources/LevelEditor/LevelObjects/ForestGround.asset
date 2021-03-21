@@ -20,9 +20,15 @@ MonoBehaviour:
     thumbnail: {fileID: 2800000, guid: 5fbec0c66316d014b9316e49d3be8563, type: 3}
     description: 
     accentColor: {r: 1, g: 1, b: 1, a: 1}
-  mainCategory: 
-  categories: []
-  levelLayers: []
+  mainCategory: 09271e61-9543-4944-8024-557227e73140
+  categories:
+  - 09271e61-9543-4944-8024-557227e73140
+  - 17865518-a62f-44c4-b3bb-efbb3c282810
+  levelLayers:
+  - 7537e771-bde1-4499-9b15-2a7cd77fd6da
+  - abcc027e-5800-4c96-a981-ffbd8a2c03d4
+  - 67426602-3f83-4931-91bf-0dd33464a7ff
+  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
   autoTileGroups:
   - autoTileGroupName: Forest
     autoTiles: ffffffff000000000100000002000000ffffffff08000000090000000a000000ffffffff1000000011000000120000000f0000000000000001000000020000000b0000000c0000001300000014000000
