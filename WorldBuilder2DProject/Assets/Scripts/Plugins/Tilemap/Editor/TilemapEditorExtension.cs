@@ -57,6 +57,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private List<Texture2D> t_tileTextures;
 		private float t_autoTilesScrollpos;
 		private bool t_inDeletionMode;
+		private Vector3Int t_lastDraggedTilePos;
+		private Vector3Int t_lastPreviewTilePos;
 		//For Level Editor Tool - end
 
 		#region Level Object Create
@@ -600,6 +602,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 				tilemap.transform.position = Vector2.zero;
 
+				Selection.activeGameObject = tilemap;
 				Selection.activeTransform = tilemap.transform;
 				if (Event.current.button == 0)
 				{
@@ -611,7 +614,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 			//Spawn tile
 			SpawnTile(obj, worldPos, mousePos);
-			Selection.activeTransform = t_currentTilemap.transform.parent.transform;
+			Selection.activeGameObject = t_currentTilemap.transform.parent.gameObject;
+			Selection.activeTransform = t_currentTilemap.transform.parent;
 			if (Event.current.button == 0)
 			{
 				Event.current.Use();
@@ -633,27 +637,57 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				t_currentTilemap.ClearAllEditorPreviewTiles();
             }
 			t_currentTilemap = null;
+			Selection.activeGameObject = null;
+			Selection.activeTransform = null;
 		}
 
 		public override void HoverObject(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
         {
 			if(t_currentTilemap != null && obj is TilemapLevelObject tilemapSettings)
             {
-				t_currentTilemap.ClearAllEditorPreviewTiles();
-				Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
-				if (selectedTile != null) {
-
-					//Draw active cell box
-					Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
-
-					DrawTileBorder(cell);
-
-					t_currentTilemap.SetEditorPreviewTile(cell, selectedTile);
+				Tile selectedTile = null;
+				if (t_selectedTile >= 0)
+				{
+					selectedTile = tilemapSettings.GetTile(t_selectedTile);
 				}
+				else if(t_selectedAutoTileGroup >= 0)
+				{
+					selectedTile = GetPrimaryAutoTileGroupCoverTile(tilemapSettings, tilemapSettings.autoTileGroups[t_selectedAutoTileGroup]);
+                }
+				//Draw active cell box
+				Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
+				DrawTileBorder(cell);
+
+				//Set Preview Tile
+				if (!t_inDeletionMode && selectedTile != null && cell != t_lastPreviewTilePos)
+				{
+					t_currentTilemap.SetEditorPreviewTile(t_lastPreviewTilePos, null);
+					t_currentTilemap.SetEditorPreviewTile(cell, selectedTile);
+					t_lastPreviewTilePos = cell;
+				}
+				SceneView.currentDrawingSceneView.Repaint();
+			}
+        }
+
+        public override bool EnableDragging => true;
+
+        public override void OnMouseDrag(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
+        {
+			if(t_currentTilemap != null)
+            {
+				Vector3Int currentDraggedTilePos = t_currentTilemap.WorldToCell(worldPos);
+
+				if (currentDraggedTilePos != t_lastDraggedTilePos)
+                {
+					t_lastDraggedTilePos = currentDraggedTilePos;
+					SpawnObject(obj, temporaryObject, t_currentTilemap.transform.parent.parent, worldPos, mousePos);
+                }
+				SceneView.currentDrawingSceneView.Repaint();
+				Event.current.Use();
             }
         }
 
-		private void DrawTileBorder(Vector3Int cell)
+        private void DrawTileBorder(Vector3Int cell)
 		{
 			if(t_inDeletionMode)
             {
@@ -706,13 +740,62 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				if (t_inDeletionMode)
 				{
 					t_currentTilemap.SetTile(cell, null);
+					if(t_menu == 1)
+                    {
+						//Update neighbor tiles
+						UpdateNeighbourTiles(tilemapSettings, cell, AutoTileMode.All, true);
+					}
 				}
 				else
 				{
-					Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
-					if (selectedTile != null)
+					if (t_menu == 0)
 					{
-						t_currentTilemap.SetTile(cell, selectedTile);
+						Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
+						if (selectedTile != null)
+						{
+							t_currentTilemap.SetTile(cell, selectedTile);
+						}
+					}
+					else if(t_menu == 1)
+                    {
+						Tile selectedTile = tilemapSettings.GetAutoTile(t_currentTilemap, t_selectedAutoTileGroup, worldPos);
+						if(selectedTile != null)
+                        {
+							t_currentTilemap.SetTile(cell, selectedTile);
+						}
+
+						//Update neighbor tiles
+						UpdateNeighbourTiles(tilemapSettings, cell, AutoTileMode.SameGroup);
+					}
+				}
+				SceneView.currentDrawingSceneView.Repaint();
+			}
+		}
+
+		private void UpdateNeighbourTiles(TilemapLevelObject tilemapSettings, Vector3Int cell, AutoTileMode mode, bool forceDefaultGroup = false)
+        {
+			//Update neighbor tiles
+			Vector3Int[] boundaryTilePositions = new Vector3Int[] // Left right top bottom top-left top-right bottom-left bottom-right
+			{
+				new Vector3Int (cell.x - 1, cell.y,     0),
+				new Vector3Int (cell.x + 1, cell.y,     0),
+				new Vector3Int (cell.x,     cell.y + 1, 0),
+				new Vector3Int (cell.x,     cell.y - 1, 0),
+				new Vector3Int (cell.x - 1, cell.y + 1, 0),
+				new Vector3Int (cell.x + 1, cell.y + 1, 0),
+				new Vector3Int (cell.x - 1, cell.y - 1, 0),
+				new Vector3Int (cell.x + 1, cell.y - 1, 0)
+			};
+			int group = forceDefaultGroup ? 0 : t_selectedAutoTileGroup;
+			foreach (Vector3Int boundaryTilePosition in boundaryTilePositions)
+			{
+				Tile boundaryTile = t_currentTilemap.GetTile<Tile>(boundaryTilePosition);
+				if (tilemapSettings.IsValidAutotile(boundaryTile, group, mode))
+				{
+					Tile selectedBoundaryTile = tilemapSettings.GetAutoTile(t_currentTilemap, group, boundaryTilePosition, mode);
+					if (selectedBoundaryTile != null)
+					{
+						t_currentTilemap.SetTile(boundaryTilePosition, selectedBoundaryTile);
 					}
 				}
 			}
@@ -744,6 +827,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
                 }
 				else if (!t_inDeletionMode && GUILayout.Button("Enter Deletion Mode", LevelEditorStyles.Button)){
 					t_inDeletionMode = true;
+					t_selectedTile = -1;
+					t_selectedAutoTileGroup = -1;
+					t_currentTilemap.ClearAllEditorPreviewTiles();
                 }
 
 				GUISkin prevSkin = GUI.skin;
@@ -766,6 +852,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
             {
 				GUILayout.Label("Click on the Scene to spawn/select tilemap");
 				base.OnLevelEditorToolInspectorGUI(obj);
+				t_selectedTile = -1;
+				t_selectedAutoTileGroup = -1;
+				t_inDeletionMode = false;
             }
         }
 
@@ -917,18 +1006,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		private void ToolDrawAutoTileGroup(TilemapLevelObject tilemapSettings, int index, AutoTileGroup group)
         {
-			Tile currentTile = tilemapSettings.GetTile(group.autoTiles[12]);
-			if (currentTile == null)
-			{
-				currentTile = tilemapSettings.GetTile(group.fallbackTile);
-				if (currentTile == null)
-				{
-					currentTile = tilemapSettings.GetTile(group.autoTiles.First((tile) =>
-					{
-						return tile >= 0;
-					}));
-				}
-			}
+			Tile currentTile = GetPrimaryAutoTileGroupCoverTile(tilemapSettings, group);
 
 			int currentTileIndex = tilemapSettings.GetTileIndex(currentTile);
 
@@ -937,6 +1015,23 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				t_selectedAutoTileGroup = selected ? -1 : index;
 				t_selectedTile = -1;
 			}, group.autoTileGroupName);
+		}
+
+		private Tile GetPrimaryAutoTileGroupCoverTile(TilemapLevelObject tilemapSettings, AutoTileGroup group)
+        {
+			Tile coverTile = tilemapSettings.GetTile(group.autoTiles[12]);
+			if (coverTile == null)
+			{
+				coverTile = tilemapSettings.GetTile(group.fallbackTile);
+				if (coverTile == null)
+				{
+					coverTile = tilemapSettings.GetTile(group.autoTiles.First((tile) =>
+					{
+						return tile >= 0;
+					}));
+				}
+			}
+			return coverTile;
 		}
 
 		#endregion
@@ -948,6 +1043,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			GUIStyle buttonStyle = selected ? LevelEditorStyles.ButtonActive : LevelEditorStyles.Button;
 			if (GUILayout.Button(GUIContent.none, buttonStyle, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
 			{
+				t_inDeletionMode = false;
 				clickAction.Invoke(selected);
 			}
 			Rect r = GUILayoutUtility.GetLastRect();

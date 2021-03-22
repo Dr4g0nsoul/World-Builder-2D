@@ -24,6 +24,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         private void CheckTransforms()
         {
+            if(levelTransforms == null)
+            {
+                levelTransforms = new LevelTransformLayer[0];
+            }
             for(int i = levelTransforms.Length - 1; i >= 0; i--)
             {
                 if(levelTransforms[i].layerTransform == null)
@@ -87,8 +91,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         return FindParentTransformCategory(obj, transformLayer, settings);
                     }
                 }
-
-                Debug.Log("asdasd");
 
                 //Create layer because not found and use that instead
                 return FindParentTransformCategory(obj, CreateLevelTransformLayer(levelLayerObject), settings);

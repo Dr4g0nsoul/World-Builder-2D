@@ -542,6 +542,24 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                         ToggleSearchMenu();
                     }
                 }
+                else if(e.type == EventType.MouseDrag)
+                {
+                    if (e.button == 0)
+                    {
+                        //Level Object Mouse Dragging
+                        if (inObjectPlacementMode && objectToPlace.IsValid() && canObjectBePlaced && objectToPlace.levelObjectEditor.EnableDragging)
+                        {
+                            if (temporaryObject != null)
+                            {
+                                objectToPlace.levelObjectEditor.OnMouseDrag(objectToPlace.levelObject, temporaryObject, temporaryObject.transform.position, Event.current.mousePosition);
+                            }
+                            else
+                            {
+                                objectToPlace.levelObjectEditor.OnMouseDrag(objectToPlace.levelObject, null, Util.EditorUtility.SceneViewToWorldPos(SceneView.currentDrawingSceneView), Event.current.mousePosition);
+                            }
+                        }
+                    }
+                }
                 else if (e.type == EventType.KeyUp)
                 {
                     if (e.keyCode == KeyCode.Space)
@@ -1393,25 +1411,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 if(!objectDrawerHidden)
                     ToggleObjectDrawer();
-                inObjectPlacementMode = true;
-                objectToPlace.Unset();
-                objectToPlace.levelObject = obj;
-                objectToPlace.levelObjectEditor = LevelObjectEditorExtension.GetBaseLevelObjectEditorExtension(obj);
-                if (objectToPlace.IsValid())
-                    objectToPlace.levelObjectEditor.OnLevelObjectSelected(objectToPlace.levelObject);
-                levelObjectsController.AddToQuickSelectBar(obj.guid);
-                List<LevelLayer> availableLayers = levelObjectsController.GetLevelObjectLayers(obj);
-                if(availableLayers != null && availableLayers.Count == 1)
-                {
-                    selectedLayer = availableLayers[0].guid;
-                }
 
-                //Temporary Object
-                if (temporaryObject != null)
-                {
-                    DestroyImmediate(temporaryObject);
-                    temporaryObject = null;
-                }
+                SelectLevelObject(obj);
             }
             GUI.color = Color.white;
             Texture2D thumbnail = obj.item.thumbnail;
@@ -1919,9 +1920,18 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void ToggleLayer(string guid)
         {
             if (selectedLayer == guid)
+            {
                 selectedLayer = null;
+                DeselectCurrentlySelectedObject();
+            }
             else
+            {
                 selectedLayer = guid;
+                if (objectToPlace.IsValid())
+                {
+                    SelectLevelObject(objectToPlace.levelObject);
+                }
+            }
 
             ReloadFilters();
         }
@@ -2348,6 +2358,32 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         public void OpenLevelObjectDrawer()
         {
             forgetNextSpacePress = true;
+        }
+
+        public void SelectLevelObject(LevelObject obj)
+        {
+            if (obj != null)
+            {
+                inObjectPlacementMode = true;
+                objectToPlace.Unset();
+                objectToPlace.levelObject = obj;
+                objectToPlace.levelObjectEditor = LevelObjectEditorExtension.GetBaseLevelObjectEditorExtension(obj);
+                if (objectToPlace.IsValid())
+                    objectToPlace.levelObjectEditor.OnLevelObjectSelected(objectToPlace.levelObject);
+                levelObjectsController.AddToQuickSelectBar(obj.guid);
+                List<LevelLayer> availableLayers = levelObjectsController.GetLevelObjectLayers(obj);
+                if (availableLayers != null && availableLayers.Count == 1)
+                {
+                    selectedLayer = availableLayers[0].guid;
+                }
+
+                //Temporary Object
+                if (temporaryObject != null)
+                {
+                    DestroyImmediate(temporaryObject);
+                    temporaryObject = null;
+                }
+            }
         }
 
         public void DeselectCurrentlySelectedObject()

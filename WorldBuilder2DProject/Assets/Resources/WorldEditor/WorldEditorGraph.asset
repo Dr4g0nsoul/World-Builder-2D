@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Test
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -744, y: -2616}
+  position: {x: -984, y: -2584}
   ports:
     keys:
     - 86329b80-7e6f-47d9-881e-6db22b85fb69
@@ -23,7 +23,10 @@ MonoBehaviour:
       _node: {fileID: -4871792554773954699}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
+        node: {fileID: -4825979069897043651}
+        reroutePoints: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -76,6 +79,63 @@ MonoBehaviour:
     - d17a9121-1d59-43e5-a5dc-c94e935be491
   assignedSceneName: Level_97e794f4-f0a2-41ee-96b4-80203ab387da
   assignedScenePath: Assets/Scenes/Levels/Level_97e794f4-f0a2-41ee-96b4-80203ab387da.unity
+--- !u!114 &-4825979069897043651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: Test Level 2
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -424, y: -2584}
+  ports:
+    keys:
+    - 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
+    values:
+    - _fieldName: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
+      _node: {fileID: -4825979069897043651}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: 86329b80-7e6f-47d9-881e-6db22b85fb69
+        node: {fileID: -4871792554773954699}
+        reroutePoints: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
+  guid: 112c846d-7b6f-4542-92e3-047992113559
+  levelName: Test Level 2
+  levelDescription: 
+  levelBoundaries:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 20
+    height: 12
+  levelExits:
+  - guid: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
+    name: Exit 1
+    active: 0
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: -0.3600452
+      y: -1.426899
+      width: 1
+      height: 1
+    entryPoint: {x: -8.902157, y: 1.0222392}
+  levelExitsUpdated: 0
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: Level_112c846d-7b6f-4542-92e3-047992113559
+  assignedScenePath: Assets/Scenes/Levels/Level_112c846d-7b6f-4542-92e3-047992113559.unity
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,8 +149,10 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
+  - {fileID: 3406478296349039305}
   - {fileID: -4871792554773954699}
   - {fileID: 1942946656207895702}
+  - {fileID: -4825979069897043651}
 --- !u!114 &1942946656207895702
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,7 +166,7 @@ MonoBehaviour:
   m_Name: ahhhhhh
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 204.51637, y: -2630.0032}
+  position: {x: 200, y: -2632}
   ports:
     keys: []
     values: []
@@ -124,3 +186,34 @@ MonoBehaviour:
     levelObjects: []
   assignedSceneName: Level_c57d1332-670a-4423-bc2d-5de5accbe33a
   assignedScenePath: Assets/Scenes/Levels/Level_c57d1332-670a-4423-bc2d-5de5accbe33a.unity
+--- !u!114 &3406478296349039305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
+  m_Name: Forest
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1000, y: -2744}
+  ports:
+    keys: []
+    values: []
+  guid: b2937ac3-b004-4819-8e61-b787d990c216
+  width: 914
+  height: 503
+  worldName: Forest
+  accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
+  worldDescription: 
+  levels:
+  - 97e794f4-f0a2-41ee-96b4-80203ab387da
+  - 112c846d-7b6f-4542-92e3-047992113559
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: 
+  assignedScenePath: 

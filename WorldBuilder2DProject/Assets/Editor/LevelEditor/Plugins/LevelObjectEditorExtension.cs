@@ -79,6 +79,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
         public virtual void HoverObject(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos) { }
 
+
+        /// <summary>
+        /// Set to true if you want to turn enable OnMouseDrag and disable deafault mouseDrag Behavior,
+        /// false otherwise
+        /// </summary>
+        public virtual bool EnableDragging => false;
+
+        /// <summary>
+        /// Called on each SceneView GUI call if the mouse button 0 is pressed and the mouse moving
+        /// </summary>
+        /// <param name="obj">The currently selected level object</param>
+        /// <param name="temporaryObject">The gameobject used for the temporary indicator, null if UseTemporaryIndicator is false</param>
+        /// <param name="worldPos">Position of the mouse in world coordinates</param>
+        /// <param name="mousePos">Pixel position of the mouse in the current SceneView window</param>
+        public virtual void OnMouseDrag(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos) { }
+
         /// <summary>
         /// Called whenever the user wants to spawn this object
         /// </summary>
@@ -109,19 +125,18 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         }
 
         /// <summary>
-        /// Called when sorting layer options are being applied
+        /// Called when sorting layer options are being applied, which is whenever a temporaryObject or the level object itself is spawned
         /// </summary>
         /// <param name="obj">The currently selected level object</param>
         /// <param name="spawningObject">The game object being spawned</param>
         /// <param name="sortingLayerName">The target sorting layer</param>
-        /// <param name="baseOrderInLayerIndex">The smallest order index of the current sorting layer (Not implemented yet)</param>
         public virtual void OnApplySortingLayers(LevelObject obj, GameObject spawningObject, string sortingLayerName)
         {
-            Debug.Log($"OnApplySortingLayers {obj.item.name}, {spawningObject.name}, {sortingLayerName}");
+            Debug.Log($"OnApplySortingLayers {obj.item.name}, {((spawningObject != null) ? spawningObject.name : "no object")}, {sortingLayerName}");
         }
 
         /// <summary>
-        /// Called when physics layer options are applied
+        /// Called when physics layer options are applied, which is whenever a temporaryObject or the level object itself is spawned
         /// </summary>
         /// <param name="obj">The currently selected level object</param>
         /// <param name="spawningObject">The game object being spawned</param>
@@ -130,7 +145,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="layersNotToOverride">The layers which should not be overridden</param>
         public virtual void OnApplyPhysicsLayers(LevelObject obj, GameObject spawningObject, int targetLayer, bool onlyRootObject, LayerMask layersNotToOverride)
         {
-            Debug.Log($"OnApplyPhysicsLayers {obj.item.name}, {spawningObject.name}, {targetLayer}, {onlyRootObject}, {layersNotToOverride}");
+            Debug.Log($"OnApplyPhysicsLayers {obj.item.name}, {((spawningObject != null) ? spawningObject.name : "no object")}, {targetLayer}, {onlyRootObject}, {layersNotToOverride}");
         }
 
         // Level Inspector Methods //
