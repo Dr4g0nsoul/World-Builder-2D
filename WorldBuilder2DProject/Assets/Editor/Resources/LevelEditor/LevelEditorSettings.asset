@@ -57,58 +57,62 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 4bab9ded5c6d112488d2923cd5e5f3e9, type: 3}
       description: 
       accentColor: {r: 0.4528302, g: 0.36383852, b: 0.254183, a: 1}
+    parallaxSpeed: 2
     overrideSortingLayer: 1
     sortingLayer: Foreground
     overridePhysicsLayer: 1
     physicsLayer: 10
     onlyRootObject: 0
+    removePhysicsComponents: 1
     layersToNotOverride:
       serializedVersion: 2
-      m_Bits: 0
-    parallaxSpeed: 1
+      m_Bits: 512
   - guid: 7537e771-bde1-4499-9b15-2a7cd77fd6da
     item:
       name: Mainground
       thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
       description: 
       accentColor: {r: 0.5757373, g: 0.8962264, b: 0.2494215, a: 1}
+    parallaxSpeed: 1
     overrideSortingLayer: 0
     sortingLayer: Ground
     overridePhysicsLayer: 0
     physicsLayer: 0
     onlyRootObject: 0
+    removePhysicsComponents: 0
     layersToNotOverride:
       serializedVersion: 2
       m_Bits: 0
-    parallaxSpeed: 1
   - guid: 67426602-3f83-4931-91bf-0dd33464a7ff
     item:
       name: Background
       thumbnail: {fileID: 2800000, guid: 24430aae6bc171f44b0211a8e3d21c18, type: 3}
       description: 
       accentColor: {r: 0.09878961, g: 0.5660378, b: 0.4646788, a: 1}
+    parallaxSpeed: 0.57
     overrideSortingLayer: 1
     sortingLayer: Background
     overridePhysicsLayer: 1
     physicsLayer: 10
     onlyRootObject: 0
+    removePhysicsComponents: 1
     layersToNotOverride:
       serializedVersion: 2
-      m_Bits: 0
-    parallaxSpeed: 1
+      m_Bits: 512
   - guid: 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
     item:
       name: Background Far
       thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
       accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
+    parallaxSpeed: 0.1
     overrideSortingLayer: 1
     sortingLayer: Background Far
     overridePhysicsLayer: 1
     physicsLayer: 10
     onlyRootObject: 0
+    removePhysicsComponents: 1
     layersToNotOverride:
       serializedVersion: 2
-      m_Bits: 0
-    parallaxSpeed: 1
+      m_Bits: 512
   quickSelectBarSize: 25

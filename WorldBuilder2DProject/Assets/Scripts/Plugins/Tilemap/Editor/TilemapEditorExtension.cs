@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -48,6 +49,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		//For Level Editor Tool - start
 		private Tilemap t_currentTilemap;
+		private TilemapInformation t_currentTilemapInformation;
+		private TilemapRenderer t_currentTilemapRenderer;
 		private int t_menu;
 		private readonly string[] t_menuItems = new string[] { "Tiles", "Auto Tiles" };
 		private Rect t_scrollRect;
@@ -59,6 +62,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private bool t_inDeletionMode;
 		private Vector3Int t_lastDraggedTilePos;
 		private Vector3Int t_lastPreviewTilePos;
+		private AutoTileMode t_autoTileMode;
 		//For Level Editor Tool - end
 
 		#region Level Object Create
@@ -97,6 +101,12 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
             tilemap.name = "Tilemap";
             tilemap.AddComponent<Tilemap>();
             tilemap.AddComponent<TilemapRenderer>();
+			tilemap.AddComponent<TilemapInformation>();
+			Rigidbody2D rb = tilemap.AddComponent<Rigidbody2D>();
+			rb.bodyType = RigidbodyType2D.Static;
+			tilemap.AddComponent<CompositeCollider2D>();
+			TilemapCollider2D col = tilemap.AddComponent<TilemapCollider2D>();
+			col.usedByComposite = true;
             tilemap.transform.parent = currentPrefab.transform;
             tilemap.transform.position = Vector3.zero;
             tilemap.transform.rotation = Quaternion.identity;
@@ -245,8 +255,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 					GUI.skin = prevSkin;
 					if (GUILayout.Button("Set as thumbnail"))
 					{
-						// Needs to be called twice because reasons
-						SetThumbnail(tilemap.tiles[selectedTile].sprite, tilemap, serializedObject);
+						SetThumbnail(tilemap, serializedObject);
 						selectedTile = -1;
 					}
 					GUI.skin = levelEditorSkin;
@@ -284,7 +293,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			GUILayout.EndVertical();
 		}
 
-		private void DrawTile(int index, Tile tile)
+		private void DrawTile(int index, LevelTile tile)
         {
 			GUIStyle buttonStyle = selectedTile == index ? LevelEditorStyles.ButtonActive : LevelEditorStyles.Button;
 			if (GUILayout.Button(GUIContent.none, buttonStyle, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
@@ -325,17 +334,17 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			{
 				if(tilemap.item.thumbnail == null)
                 {
-					SetThumbnail(sprite, tilemap, serializedObject);
+					SetThumbnail(tilemap, serializedObject);
                 }
-				Tile existingTile = AssetDatabase.LoadAssetAtPath<Tile>(TILES_FOLDER + "/" + sprite.name + ".asset");
+				LevelTile existingTile = AssetDatabase.LoadAssetAtPath<LevelTile>(TILES_FOLDER + "/" + sprite.name + ".asset");
 				//Create tile asset
 				if (existingTile == null)
 				{
-					Tile newTile = ScriptableObject.CreateInstance<Tile>();
+					LevelTile newTile = ScriptableObject.CreateInstance<LevelTile>();
 					newTile.name = sprite.name;
 					newTile.sprite = sprite;
 					Util.EditorUtility.CreateAssetAndFolders(TILES_FOLDER, sprite.name, newTile);
-					existingTile = AssetDatabase.LoadAssetAtPath<Tile>(TILES_FOLDER + "/" + newTile.name + ".asset");
+					existingTile = AssetDatabase.LoadAssetAtPath<LevelTile>(TILES_FOLDER + "/" + newTile.name + ".asset");
 					if(existingTile != null)
                     {
 						serializedObject.FindProperty("tiles").arraySize += 1;
@@ -370,19 +379,23 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			}
 		}
 
-		private void SetThumbnail(Sprite sprite, TilemapLevelObject tilemap, SerializedObject serializedObject)
+		private void SetThumbnail(TilemapLevelObject tilemap, SerializedObject serializedObject)
         {
-			if (!AssetDatabase.IsValidFolder(THUMBNAIL_FOLDER))
+			if (selectedTile >= 0 && selectedTile < tilemap.tiles.Length)
 			{
-				Util.EditorUtility.CreateFolders(THUMBNAIL_FOLDER);
+				if (!AssetDatabase.IsValidFolder(THUMBNAIL_FOLDER))
+				{
+					Util.EditorUtility.CreateFolders(THUMBNAIL_FOLDER);
+				}
+				Texture2D thumbnail = LevelEditorStyles.TextureFromSprite(tilemap.tiles[selectedTile].sprite);
+				thumbnail.filterMode = FilterMode.Point;
+				File.WriteAllBytes($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png", thumbnail.EncodeToPNG());
+				AssetDatabase.ImportAsset($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
+				AssetDatabase.Refresh();
+				thumbnail = AssetDatabase.LoadAssetAtPath<Texture2D>($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
+				thumbnail.filterMode = FilterMode.Point;
+				serializedObject.FindProperty("item").FindPropertyRelative("thumbnail").objectReferenceValue = thumbnail;
 			}
-			Texture2D thumbnail = LevelEditorStyles.TextureFromSprite(tilemap.tiles[selectedTile].sprite);
-			thumbnail.filterMode = FilterMode.Point;
-			File.WriteAllBytes($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png", thumbnail.EncodeToPNG());
-			AssetDatabase.ImportAsset($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
-			AssetDatabase.Refresh();
-			thumbnail = AssetDatabase.LoadAssetAtPath<Texture2D>($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
-			serializedObject.FindProperty("item").FindPropertyRelative("thumbnail").objectReferenceValue = thumbnail;
 		}
 
 		private void AutoTilesInspectorGUI(TilemapLevelObject tilemap, SerializedObject serializedObject)
@@ -459,10 +472,10 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		private void DrawAutoTilePicker(AutoTileGroup group, TilemapLevelObject tilemap, SerializedObject serializedObject)
         {
-			GUILayout.BeginVertical(EditorStyles.helpBox);
+			GUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.MaxWidth(150));
 			int rows = 5;
 			int cols = 4;
-			float sizePerButton = Mathf.Min(EditorGUIUtility.currentViewWidth / cols - 40, 250);
+			float sizePerButton = Mathf.Min(EditorGUIUtility.currentViewWidth / cols - 40, 150);
 			GUILayout.BeginHorizontal();
 			GUILayout.Space(10f);
 			for (int x = 0; x < cols; x++)
@@ -474,45 +487,51 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 					GUILayout.BeginHorizontal();
 					GUILayout.Space(5f);
 
-					Tile currentTile = tilemap.GetTile(group.autoTiles[x + y * cols]);
+					LevelTile currentTile = null;
+					int index = x + y * cols;
+					if (index >= 0 && index < group.autoTiles.Length) {
+						currentTile = tilemap.GetTile(group.autoTiles[index]);
+					
 
 
-					if (selectedTile < 0 && !clearAutoTile)
-						GUI.enabled = false;
-					if (GUILayout.Button(GUIContent.none, LevelEditorStyles.Button, GUILayout.Width(sizePerButton), GUILayout.Height(sizePerButton)))
-					{
-						if (clearAutoTile)
+						if (selectedTile < 0 && !clearAutoTile)
+							GUI.enabled = false;
+						if (GUILayout.Button(GUIContent.none, LevelEditorStyles.Button, GUILayout.Width(sizePerButton), GUILayout.Height(sizePerButton)))
 						{
-							serializedObject.FindProperty("autoTileGroups").GetArrayElementAtIndex(selectedAutotileGroup)
-							.FindPropertyRelative("autoTiles").GetArrayElementAtIndex(x + y * cols).intValue = -1;
+							if (clearAutoTile)
+							{
+								serializedObject.FindProperty("autoTileGroups").GetArrayElementAtIndex(selectedAutotileGroup)
+								.FindPropertyRelative("autoTiles").GetArrayElementAtIndex(index).intValue = -1;
+							}
+							else
+							{
+								serializedObject.FindProperty("autoTileGroups").GetArrayElementAtIndex(selectedAutotileGroup)
+									.FindPropertyRelative("autoTiles").GetArrayElementAtIndex(index).intValue = selectedTile;
+							}
 						}
-						else
+						Rect r = GUILayoutUtility.GetLastRect();
+						GUI.enabled = true;
+
+						if (currentTile != null)
 						{
-							serializedObject.FindProperty("autoTileGroups").GetArrayElementAtIndex(selectedAutotileGroup)
-								.FindPropertyRelative("autoTiles").GetArrayElementAtIndex(x + y * cols).intValue = selectedTile;
+							Rect imageRect = new Rect()
+							{
+								position = new Vector2(r.position.x + 5, r.position.y + 5),
+								size = new Vector2(r.width - 10, r.height - 10)
+							};
+							Texture2D texture = tileTextures[group.autoTiles[index]];
+							GUI.DrawTexture(imageRect, texture, ScaleMode.ScaleAndCrop, true, 0f, Color.white, 0f, 5f);
 						}
+
+						GUI.color = Color.white;
+
+						GUIStyle symbolStyle = new GUIStyle(LevelEditorStyles.TextCentered);
+						symbolStyle.fontSize = 60;
+						symbolStyle.normal.textColor = new Color(1, 1, 1, 0.7f);
+						symbolStyle.alignment = TextAnchor.MiddleCenter;
+						GUI.Label(r, autoTileBackdrop[index], symbolStyle);
+
 					}
-					Rect r = GUILayoutUtility.GetLastRect();
-					GUI.enabled = true;
-
-					if (currentTile != null)
-					{
-						Rect imageRect = new Rect()
-						{
-							position = new Vector2(r.position.x + 5, r.position.y + 5),
-							size = new Vector2(r.width - 10, r.height - 10)
-						};
-						Texture2D texture = tileTextures[group.autoTiles[x + y * cols]];
-						GUI.DrawTexture(imageRect, texture, ScaleMode.ScaleAndCrop, true, 0f, Color.white, 0f, 5f);
-					}
-
-					GUI.color = Color.white;
-
-					GUIStyle symbolStyle = new GUIStyle(LevelEditorStyles.TextCentered);
-					symbolStyle.fontSize = 60;
-					symbolStyle.normal.textColor = new Color(1, 1, 1, 0.7f);
-					symbolStyle.alignment = TextAnchor.MiddleCenter;
-					GUI.Label(r, autoTileBackdrop[x + y * cols], symbolStyle);
 
 					GUILayout.Space(5f);
 					GUILayout.EndHorizontal();
@@ -544,7 +563,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			}
 			Rect rFallback = GUILayoutUtility.GetLastRect();
 			GUI.enabled = true;
-			if (group.fallbackTile >= 0)
+			if (group.fallbackTile >= 0 && group.fallbackTile < tileTextures.Count)
 			{
 				Rect imageRect = new Rect()
 				{
@@ -577,6 +596,50 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
         #endregion
 
         #region Custom Tool
+
+        public override void OnApplySortingLayers(LevelObject obj, GameObject spawningObject, string sortingLayerName)
+        {
+			TilemapRenderer tilemapRenderer = t_currentTilemapRenderer;
+			if (tilemapRenderer == null && spawningObject.transform.childCount > 0)
+            {
+				tilemapRenderer = spawningObject.transform.GetChild(0).GetComponent<TilemapRenderer>();
+            }
+			if(tilemapRenderer != null)
+            {
+				tilemapRenderer.sortingLayerName = sortingLayerName;
+            }
+        }
+
+        public override void OnApplyPhysicsLayers(LevelObject obj, GameObject spawningObject, int targetLayer, bool onlyRootObject, LayerMask layersNotToOverride, bool removePhysicsComponents)
+        {
+			Tilemap tilemap = t_currentTilemap;
+			if (tilemap == null && spawningObject.transform.childCount > 0)
+			{
+				tilemap = spawningObject.transform.GetChild(0).GetComponent<Tilemap>();
+			}
+
+			if (tilemap != null && (layersNotToOverride & 1 << tilemap.gameObject.layer) == 0)
+            {
+				tilemap.transform.parent.gameObject.layer = targetLayer;
+				if(!onlyRootObject)
+                {
+					tilemap.gameObject.layer = targetLayer;
+                }
+				if (removePhysicsComponents)
+				{
+					Collider2D[] colliders = tilemap.gameObject.GetComponents<Collider2D>();
+					for (int i = colliders.Length - 1; i >= 0; i--)
+					{
+						GameObject.DestroyImmediate(colliders[i]);
+					}
+					Rigidbody2D[] rigidbodies = tilemap.gameObject.GetComponents<Rigidbody2D>();
+					for (int i = rigidbodies.Length - 1; i >= 0; i--)
+					{
+						GameObject.DestroyImmediate(rigidbodies[i]);
+					}
+				}
+			}
+        }
 
         public override bool UseTemporaryIndicator => false;
 
@@ -613,7 +676,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			}
 
 			//Spawn tile
-			SpawnTile(obj, worldPos, mousePos);
+			SpawnTile(obj, worldPos);
 			Selection.activeGameObject = t_currentTilemap.transform.parent.gameObject;
 			Selection.activeTransform = t_currentTilemap.transform.parent;
 			if (Event.current.button == 0)
@@ -634,6 +697,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		{
 			if(t_currentTilemap != null)
             {
+				SaveTilemapInfo();
 				t_currentTilemap.ClearAllEditorPreviewTiles();
             }
 			t_currentTilemap = null;
@@ -643,9 +707,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		public override void HoverObject(LevelObject obj, GameObject temporaryObject, Vector2 worldPos, Vector2 mousePos)
         {
-			if(t_currentTilemap != null && obj is TilemapLevelObject tilemapSettings)
+			if(t_currentTilemap != null && t_currentTilemapInformation != null && obj is TilemapLevelObject tilemapSettings)
             {
-				Tile selectedTile = null;
+				LevelTile selectedTile = null;
 				if (t_selectedTile >= 0)
 				{
 					selectedTile = tilemapSettings.GetTile(t_selectedTile);
@@ -656,7 +720,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
                 }
 				//Draw active cell box
 				Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
-				DrawTileBorder(cell);
+				DrawTileBorder(cell, t_currentTilemapInformation.GetTileProperties(cell));
 
 				//Set Preview Tile
 				if (!t_inDeletionMode && selectedTile != null && cell != t_lastPreviewTilePos)
@@ -687,30 +751,31 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
             }
         }
 
-        private void DrawTileBorder(Vector3Int cell)
+        private void DrawTileBorder(Vector3Int cell, TilemapCellProperties info)
 		{
 			if(t_inDeletionMode)
             {
 				if(t_currentTilemap.GetTile(cell) != null)
                 {
-					DrawTileBorder(cell, LevelEditorStyles.buttonDangerColor);
+					DrawTileBorder(cell, LevelEditorStyles.buttonDangerColor, info);
                 }
 				else
                 {
-					DrawTileBorder(cell, Color.white);
+					DrawTileBorder(cell, Color.white, info);
 				}
             }
 			else if(t_currentTilemap.GetTile(cell) != null)
             {
-				DrawTileBorder(cell, LevelEditorStyles.buttonHoverColor);
+				DrawTileBorder(cell, LevelEditorStyles.buttonHoverColor, info);
+				
 			}
 			else
             {
-				DrawTileBorder(cell, Color.white);
+				DrawTileBorder(cell, Color.white, info);
 			}
 		}
 
-		private void DrawTileBorder(Vector3Int cell, Color color)
+		private void DrawTileBorder(Vector3Int cell, Color color, TilemapCellProperties info)
         {
 			Bounds cellBounds = t_currentTilemap.GetBoundsLocal(cell);
 			Vector2 cellCenter = t_currentTilemap.GetCellCenterWorld(cell);
@@ -729,46 +794,61 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 			GUI.color = color;
 			GUI.Box(drawRect, " ");
+			LevelTile myTile = t_currentTilemap.GetTile<LevelTile>(cell);
+			if(myTile != null && info.isAutoTile)
+            {
+				GUI.Label(drawRect, info.autoTileGroup+"");
+            }
 			GUI.color = Color.white;
 		}
 
-		private void SpawnTile(LevelObject obj, Vector2 worldPos, Vector2 mousePos)
+		private void SpawnTile(LevelObject obj, Vector2 worldPos)
 		{
-			if (t_currentTilemap != null && obj is TilemapLevelObject tilemapSettings)
+			if (t_currentTilemap != null && t_currentTilemapInformation != null && obj is TilemapLevelObject tilemapSettings)
 			{
 				Vector3Int cell = t_currentTilemap.WorldToCell(worldPos);
+				
 				if (t_inDeletionMode)
 				{
 					t_currentTilemap.SetTile(cell, null);
+
 					if(t_menu == 1)
                     {
+						TilemapCellProperties tileProperties = t_currentTilemapInformation.GetTileProperties(cell);
 						//Update neighbor tiles
 						UpdateNeighbourTiles(tilemapSettings, cell, AutoTileMode.All, true);
 					}
+
+					t_currentTilemapInformation.ClearTileProperties(cell);
 				}
 				else
 				{
 					if (t_menu == 0)
 					{
-						Tile selectedTile = tilemapSettings.GetTile(t_selectedTile);
+						LevelTile selectedTile = tilemapSettings.GetTile(t_selectedTile);
 						if (selectedTile != null)
 						{
 							t_currentTilemap.SetTile(cell, selectedTile);
+							t_currentTilemapInformation.ClearTileProperties(cell);
 						}
 					}
 					else if(t_menu == 1)
                     {
-						Tile selectedTile = tilemapSettings.GetAutoTile(t_currentTilemap, t_selectedAutoTileGroup, worldPos);
+						TilemapCellProperties tileProperties = t_currentTilemapInformation.GetTileProperties(cell);
+						LevelTile selectedTile = tilemapSettings.GetAutoTile(t_currentTilemap, t_currentTilemapInformation, t_selectedAutoTileGroup, worldPos, t_autoTileMode);
 						if(selectedTile != null)
                         {
 							t_currentTilemap.SetTile(cell, selectedTile);
+							t_currentTilemapInformation.SetTileProperties(cell, new TilemapCellProperties(t_selectedAutoTileGroup));
+							UnityEditor.EditorUtility.SetDirty(t_currentTilemapInformation.gameObject);
 						}
 
 						//Update neighbor tiles
-						UpdateNeighbourTiles(tilemapSettings, cell, AutoTileMode.SameGroup);
+						UpdateNeighbourTiles(tilemapSettings, cell, t_autoTileMode);
 					}
 				}
 				SceneView.currentDrawingSceneView.Repaint();
+				EditorSceneManager.MarkSceneDirty(t_currentTilemap.gameObject.scene);
 			}
 		}
 
@@ -789,13 +869,14 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			int group = forceDefaultGroup ? 0 : t_selectedAutoTileGroup;
 			foreach (Vector3Int boundaryTilePosition in boundaryTilePositions)
 			{
-				Tile boundaryTile = t_currentTilemap.GetTile<Tile>(boundaryTilePosition);
-				if (tilemapSettings.IsValidAutotile(boundaryTile, group, mode))
+				if (tilemapSettings.IsValidAutotile(boundaryTilePosition, t_currentTilemapInformation, group, mode))
 				{
-					Tile selectedBoundaryTile = tilemapSettings.GetAutoTile(t_currentTilemap, group, boundaryTilePosition, mode);
+					LevelTile selectedBoundaryTile = tilemapSettings.GetAutoTile(t_currentTilemap, t_currentTilemapInformation, group, boundaryTilePosition, mode);
 					if (selectedBoundaryTile != null)
 					{
 						t_currentTilemap.SetTile(boundaryTilePosition, selectedBoundaryTile);
+						t_currentTilemapInformation.SetTileProperties(boundaryTilePosition, new TilemapCellProperties(group));
+						UnityEditor.EditorUtility.SetDirty(t_currentTilemapInformation.gameObject);
 					}
 				}
 			}
@@ -882,7 +963,19 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				t_currentTilemap = child.GetComponent<Tilemap>();
 				if (t_currentTilemap != null)
 				{
-					break;
+					t_currentTilemapInformation = null;
+					t_currentTilemapRenderer = null;
+					t_currentTilemapInformation = t_currentTilemap.transform.GetComponent<TilemapInformation>();
+					t_currentTilemapRenderer = t_currentTilemap.transform.GetComponent<TilemapRenderer>();
+					if (t_currentTilemapInformation != null && t_currentTilemapRenderer != null && t_currentTilemapInformation != null)
+					{
+						t_currentTilemapInformation.LoadTilemapInfo();
+						break;
+					}
+					else
+                    {
+						t_currentTilemap = null;
+                    }
 				}
 			}
 
@@ -892,6 +985,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			t_selectedAutoTileGroup = -1;
 			t_autoTilesScrollpos = 0f;
 			t_inDeletionMode = false;
+			t_autoTileMode = AutoTileMode.SameGroup;
 
 			GenerateTileTextures(obj);
         }
@@ -900,7 +994,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
         {
 			t_tileTextures = new List<Texture2D>();
 
-			foreach(Tile tile in obj.tiles)
+			foreach(LevelTile tile in obj.tiles)
             {
 				t_tileTextures.Add(LevelEditorStyles.TextureFromSprite(tile.sprite));
 			}
@@ -964,6 +1058,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 			GUILayout.Label("Auto Tiles", LevelEditorStyles.HeaderCentered);
 			GUILayout.Space(5f);
+
+			t_autoTileMode = (AutoTileMode)EditorGUILayout.EnumPopup(t_autoTileMode);
 			
 			int objectsPerRow = Mathf.FloorToInt(LevelEditorTool.ObjectInspectorWidth / tileSize - 2f);
 			int objectCount = tilemapSettings.autoTileGroups.Length;
@@ -1006,7 +1102,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		private void ToolDrawAutoTileGroup(TilemapLevelObject tilemapSettings, int index, AutoTileGroup group)
         {
-			Tile currentTile = GetPrimaryAutoTileGroupCoverTile(tilemapSettings, group);
+			LevelTile currentTile = GetPrimaryAutoTileGroupCoverTile(tilemapSettings, group);
 
 			int currentTileIndex = tilemapSettings.GetTileIndex(currentTile);
 
@@ -1017,9 +1113,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			}, group.autoTileGroupName);
 		}
 
-		private Tile GetPrimaryAutoTileGroupCoverTile(TilemapLevelObject tilemapSettings, AutoTileGroup group)
+		private LevelTile GetPrimaryAutoTileGroupCoverTile(TilemapLevelObject tilemapSettings, AutoTileGroup group)
         {
-			Tile coverTile = tilemapSettings.GetTile(group.autoTiles[12]);
+			LevelTile coverTile = tilemapSettings.GetTile(group.autoTiles[12]);
 			if (coverTile == null)
 			{
 				coverTile = tilemapSettings.GetTile(group.fallbackTile);
@@ -1038,7 +1134,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 		#region Util
 
-		private void ToolDrawTile(int index, Tile tile, bool selected, Action<bool> clickAction, string hovertext = "")
+		private void ToolDrawTile(int index, LevelTile tile, bool selected, Action<bool> clickAction, string hovertext = "")
 		{
 			GUIStyle buttonStyle = selected ? LevelEditorStyles.ButtonActive : LevelEditorStyles.Button;
 			if (GUILayout.Button(GUIContent.none, buttonStyle, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
@@ -1063,6 +1159,33 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				GUI.Label(r, "X", xStyle);
 			}
 		}
+
+		private void SaveTilemapInfo()
+        {
+			if(t_currentTilemapInformation != null)
+            {
+
+				SerializedObject tilemapInfoSO = new SerializedObject(t_currentTilemapInformation);
+				tilemapInfoSO.Update();
+                SerializedProperty keys = tilemapInfoSO.FindProperty("serializedKeys");
+				SerializedProperty values = tilemapInfoSO.FindProperty("serializedValues");
+				keys.arraySize = 0;
+				values.arraySize = 0;
+
+				int i = 0;
+				foreach (KeyValuePair<string, TilemapCellProperties> properties in t_currentTilemapInformation.tilemapInfo)
+				{
+					keys.arraySize += 1;
+					keys.GetArrayElementAtIndex(i).stringValue = properties.Key;
+					values.arraySize += 1;
+					values.GetArrayElementAtIndex(i).FindPropertyRelative("isAutoTile").boolValue = properties.Value.isAutoTile;
+					values.GetArrayElementAtIndex(i).FindPropertyRelative("autoTileGroup").intValue = properties.Value.autoTileGroup;
+					i++;
+				}
+
+				tilemapInfoSO.ApplyModifiedProperties();
+			}
+        }
 
 		#endregion
 

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48dd65a1f21676f48b9495cd666544a2, type: 3}
+  m_Name: TreeLeafTiles
+  m_EditorClassIdentifier: 
+  guid: 020c0ecf-932d-409d-8e58-d2b68fb8a18f
+  objectPrefab: {fileID: 6351595031331407122, guid: 71c1de95307c50e4282551f5361da6d8,
+    type: 3}
+  item:
+    name: TreeLeafTiles
+    thumbnail: {fileID: 2800000, guid: 7cbed523f4f8c3e47a67feda724b4de8, type: 3}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
+  categories:
+  - 17865518-a62f-44c4-b3bb-efbb3c282810
+  levelLayers:
+  - abcc027e-5800-4c96-a981-ffbd8a2c03d4
+  - 67426602-3f83-4931-91bf-0dd33464a7ff
+  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+  autoTileGroups:
+  - autoTileGroupName: Bright
+    autoTiles: ffffffff000000000100000002000000ffffffff030000000400000005000000ffffffff06000000070000000800000004000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    fallbackTile: 4
+  - autoTileGroupName: Dark
+    autoTiles: ffffffff090000000a0000000b000000ffffffff0c0000000d0000000e000000ffffffff0f00000010000000110000000d000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    fallbackTile: 13
+  tiles:
+  - {fileID: 11400000, guid: 10dba34b904f5fe43a9c3f2bd5ab756b, type: 2}
+  - {fileID: 11400000, guid: bf8279b72eb1a07439af1fede2a8995b, type: 2}
+  - {fileID: 11400000, guid: 77917ed52b848504b9ab3e7e9d35d30c, type: 2}
+  - {fileID: 11400000, guid: 085b0e387131b8f4587e28bdfda1b63e, type: 2}
+  - {fileID: 11400000, guid: d758c5778c0ffd9429d28b166157c892, type: 2}
+  - {fileID: 11400000, guid: d27dccb6526cd1a4e868b78ce1140ae0, type: 2}
+  - {fileID: 11400000, guid: 79d285f489b64344c88776e2f5bff5b1, type: 2}
+  - {fileID: 11400000, guid: f15c32789224d16409e15e77e94ecf3d, type: 2}
+  - {fileID: 11400000, guid: b686464836a856e49b15c71458f909a1, type: 2}
+  - {fileID: 11400000, guid: 939b82d121ed91549ba2bcc6db2af598, type: 2}
+  - {fileID: 11400000, guid: 3fad3e2e759ac494e8e4a90f7630c27c, type: 2}
+  - {fileID: 11400000, guid: 371956babc9618c4abb08e48f6bff4ee, type: 2}
+  - {fileID: 11400000, guid: 5fbea9887e135c14bafd2201ec5ddb1d, type: 2}
+  - {fileID: 11400000, guid: 934a2dc2b649161478651b8078ccf9d6, type: 2}
+  - {fileID: 11400000, guid: c26cc84fffe82224c8bc59c4e54155ee, type: 2}
+  - {fileID: 11400000, guid: ffc402f6a84126042b77f183b69bb451, type: 2}
+  - {fileID: 11400000, guid: b97bac7caf5279c44b300f7b174800d9, type: 2}
+  - {fileID: 11400000, guid: 984a8fb96a8018348b954ebeb598732f, type: 2}

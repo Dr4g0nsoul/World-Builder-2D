@@ -8,9 +8,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
     public class LevelEditorSettings : ScriptableObject
     {
 
-        public const int SORTING_ORDER_MIN_LIMIT = -10000;
-        public const int SORTING_ORDER_MAX_LIMIT = 10000;
-
         [Header("General")]
 
         //Tag which specifies where the object root for all the level objects is located
@@ -60,16 +57,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //The representation of an element in the level editor
         public LevelEditorItem item;
 
+        //The parallax scrolling speed of the layer
+        [Range(0f, 2f)] public float parallaxSpeed = 1f;
+
         //The sorting layer for every game object placed on this layer
         public bool overrideSortingLayer;
         [SortingLayer] public string sortingLayer;
-
-        /*
-        //Base sorting order is increased by this offset for each level object spawned on this layer
-        public int sortingOrderOffset;
-        //Current base sorting order offset
-        public int currBaseSortingOrder;
-        */
 
         //The physics layer for every game object placed on this layer
         public bool overridePhysicsLayer;
@@ -78,10 +71,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //If only the root object is affected
         public bool onlyRootObject;
 
+        //Removes all physics components like rigidbodies and colliders
+        public bool removePhysicsComponents;
+
         //Which layers should not be overridden
         public LayerMask layersToNotOverride;
 
-        //The horizontal parallax scrolling speed of the layer
-        [Range(0f, 2f)] public float parallaxSpeed = 1f;
     }
 }

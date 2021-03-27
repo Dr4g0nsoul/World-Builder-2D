@@ -109,7 +109,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <returns>Spawned GameObject</returns>
         public virtual GameObject SpawnObject(LevelObject obj, GameObject temporaryObject, Transform parentTransform, Vector2 worldPos, Vector2 mousePos)
         {
-            Debug.Log($"Spawn {obj.item.name} at {worldPos} with parent {parentTransform}");
             GameObject newObject = PrefabUtility.InstantiatePrefab(obj.objectPrefab) as GameObject;
             if (newObject != null)
             {
@@ -132,7 +131,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="sortingLayerName">The target sorting layer</param>
         public virtual void OnApplySortingLayers(LevelObject obj, GameObject spawningObject, string sortingLayerName)
         {
-            Debug.Log($"OnApplySortingLayers {obj.item.name}, {((spawningObject != null) ? spawningObject.name : "no object")}, {sortingLayerName}");
+            ApplyToChildrenRecursively(spawningObject.transform, (child) =>
+            {
+                SpriteRenderer[] spriteRenderers = child.GetComponents<SpriteRenderer>();
+                foreach(SpriteRenderer sr in spriteRenderers)
+                {
+                    sr.sortingLayerName = sortingLayerName;
+                }
+            });
         }
 
         /// <summary>
@@ -143,9 +149,54 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="targetLayer">The target physics layer</param>
         /// <param name="onlyRootObject">If only the root object should be affected</param>
         /// <param name="layersNotToOverride">The layers which should not be overridden</param>
-        public virtual void OnApplyPhysicsLayers(LevelObject obj, GameObject spawningObject, int targetLayer, bool onlyRootObject, LayerMask layersNotToOverride)
+        /// <param name="removePhysicsComponents">Whether or not to remove physics related components</param>
+        public virtual void OnApplyPhysicsLayers(LevelObject obj, GameObject spawningObject, int targetLayer, bool onlyRootObject, LayerMask layersNotToOverride, bool removePhysicsComponents)
         {
-            Debug.Log($"OnApplyPhysicsLayers {obj.item.name}, {((spawningObject != null) ? spawningObject.name : "no object")}, {targetLayer}, {onlyRootObject}, {layersNotToOverride}");
+            if (onlyRootObject)
+            {
+                //Can gameobject layer be overwritten?
+                if((layersNotToOverride & 1 << spawningObject.layer) == 0)
+                {
+                    spawningObject.layer = targetLayer;
+                    if(removePhysicsComponents)
+                    {
+                        Collider2D[] colliders = spawningObject.GetComponents<Collider2D>();
+                        for(int i = colliders.Length - 1; i >= 0; i--)
+                        {
+                            GameObject.DestroyImmediate(colliders[i]);
+                        }
+                        Rigidbody2D[] rigidbodies = spawningObject.GetComponents<Rigidbody2D>();
+                        for (int i = rigidbodies.Length - 1; i >= 0; i--)
+                        {
+                            GameObject.DestroyImmediate(rigidbodies[i]);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ApplyToChildrenRecursively(spawningObject.transform, (child) =>
+                {
+                    //Can gameobject layer be overwritten?
+                    if ((layersNotToOverride & 1 << child.gameObject.layer) == 0)
+                    {
+                        child.gameObject.layer = targetLayer;
+                        if (removePhysicsComponents)
+                        {
+                            Collider2D[] colliders = child.gameObject.GetComponents<Collider2D>();
+                            for (int i = colliders.Length - 1; i >= 0; i--)
+                            {
+                                GameObject.DestroyImmediate(colliders[i]);
+                            }
+                            Rigidbody2D[] rigidbodies = child.gameObject.GetComponents<Rigidbody2D>();
+                            for (int i = rigidbodies.Length - 1; i >= 0; i--)
+                            {
+                                GameObject.DestroyImmediate(rigidbodies[i]);
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         // Level Inspector Methods //
@@ -177,7 +228,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 LevelEditorTool.SetBeforeGUIAction(() =>
                 {
                     UnityEditor.EditorUtility.FocusProjectWindow();
-                    ProjectWindowUtil.ShowCreatedAsset(obj);
+                    EditorGUIUtility.PingObject(obj);
                 }, EventType.Repaint);
             }
             GUILayout.EndHorizontal();
@@ -259,5 +310,25 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
             return null;
         }
+
+
+        #region Helper functions
+
+        public void ApplyToChildrenRecursively(Transform parent, Action<Transform> action)
+        {
+            if(action != null)
+            {
+                if(parent.childCount > 0)
+                {
+                    foreach(Transform child in parent)
+                    {
+                        ApplyToChildrenRecursively(child, action);
+                    }
+                }
+                action.Invoke(parent);
+            }
+        }
+
+        #endregion
     }
 }

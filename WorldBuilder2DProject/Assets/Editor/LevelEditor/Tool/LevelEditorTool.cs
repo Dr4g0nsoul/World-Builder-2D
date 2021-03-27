@@ -521,12 +521,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                                 {
                                     if (currLayer.overrideSortingLayer)
                                     {
-                                        objectToPlace.levelObjectEditor.OnApplySortingLayers(objectToPlace.levelObject, temporaryObject, currLayer.sortingLayer);
+                                        objectToPlace.levelObjectEditor.OnApplySortingLayers(objectToPlace.levelObject, newObject, currLayer.sortingLayer);
                                     }
                                     if (currLayer.overridePhysicsLayer)
                                     {
-                                        objectToPlace.levelObjectEditor.OnApplyPhysicsLayers(objectToPlace.levelObject, temporaryObject, currLayer.physicsLayer,
-                                            currLayer.onlyRootObject, currLayer.layersToNotOverride);
+                                        objectToPlace.levelObjectEditor.OnApplyPhysicsLayers(objectToPlace.levelObject, newObject, currLayer.physicsLayer,
+                                            currLayer.onlyRootObject, currLayer.layersToNotOverride, currLayer.removePhysicsComponents);
                                     }
                                 }
                             }
@@ -883,11 +883,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                             {
                                 objectToPlace.levelObjectEditor.OnApplySortingLayers(objectToPlace.levelObject, temporaryObject, currLayer.sortingLayer);
                             }
+                            /*
                             if (currLayer.overridePhysicsLayer)
                             {
                                 objectToPlace.levelObjectEditor.OnApplyPhysicsLayers(objectToPlace.levelObject, temporaryObject, currLayer.physicsLayer,
-                                    currLayer.onlyRootObject, currLayer.layersToNotOverride);
+                                    currLayer.onlyRootObject, currLayer.layersToNotOverride, currLayer.removePhysicsComponents);
                             }
+                            */
                         }
                     }
                     temporaryObject.transform.position = Util.EditorUtility.SceneViewToWorldPos(SceneView.currentDrawingSceneView);
@@ -1373,7 +1375,14 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 if (i % objectsPerRow == 0)
                     GUILayout.BeginHorizontal();
 
-                DrawLevelObjectButton(obj);
+                if (obj != null)
+                {
+                    DrawLevelObjectButton(obj);
+                }
+                else
+                {
+                    levelObjectsController.LoadLevelObjects();
+                }
                 
                 if ((i + 1) % objectsPerRow == 0 || i == objectCount - 1)
                 {
@@ -2212,7 +2221,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             Vector2 bottomRight = new Vector2(windowRect.position.x + windowRect.width,
                 windowRect.position.y + windowRect.height);
 
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(currPrefabStage.prefabAssetPath);
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(currPrefabStage.assetPath);
             if (prefab != null)
             {
                 LevelObject currObject = levelObjectsController.GetLevelObjectByPrefab(prefab);

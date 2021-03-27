@@ -264,7 +264,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains all categories
-                if (!categories.Except(obj.categories.ToList()).Any())
+                if (obj != null && !categories.Except(obj.categories.ToList()).Any())
                     filteredLevelObjects.Add(obj.guid, obj);
             }
             lastSearch = "";
@@ -279,7 +279,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains layer
-                if (Array.Exists(obj.levelLayers, (val) => val == layer))
+                if (obj != null && Array.Exists(obj.levelLayers, (val) => val == layer))
                 {
                     filteredLevelObjects.Add(obj.guid, obj);
                 }
@@ -297,7 +297,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains layer
-                if(Array.Exists(obj.levelLayers, (val) => val == layer))
+                if(obj != null && Array.Exists(obj.levelLayers, (val) => val == layer))
                 {
                     //Check if level object contains all categories
                     if (!categories.Except(obj.categories.ToList()).Any())
@@ -311,7 +311,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             foreach (LevelObject obj in filteredLevelObjects.Values.ToList())
             {
-                if(!Array.Exists(obj.categories, (val) => val == category))
+                if(obj != null && !Array.Exists(obj.categories, (val) => val == category))
                     filteredLevelObjects.Remove(obj.guid);
             }
             lastSearch = "";
@@ -333,7 +333,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
             foreach(LevelObject obj in objectsToSearchThrough)
             {
-                if(obj.item.name.ToLower().Contains(search.ToLower()))
+                if(obj != null && obj.item.name.ToLower().Contains(search.ToLower()))
                 {
                     searchFilteredLevelObjects.Add(obj.guid, obj);
                 }

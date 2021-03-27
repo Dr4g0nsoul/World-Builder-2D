@@ -3,8 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - LevelRoot
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -12,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Ground
   - 
   - Player
   - Enemies
@@ -50,6 +49,9 @@ TagManager:
     locked: 0
   - name: Ground
     uniqueID: 2544443423
+    locked: 0
+  - name: Environment
+    uniqueID: 13910543
     locked: 0
   - name: Enemies
     uniqueID: 715317393

@@ -19,14 +19,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor {
         [MenuItem("Level Editor/Open Level Editor _SPACE")]
         public static void OpenLevelEditor()
         {
-            if (ToolManager.activeToolType != typeof(LevelEditorTool))
+            if (!Application.isPlaying)
             {
-                ToolManager.SetActiveTool<LevelEditorTool>();
-            }
-            if (EditorWindow.focusedWindow != SceneView.lastActiveSceneView)
-            {
-                SceneView.lastActiveSceneView.Focus();
-                LevelEditorTool.LevelEditorToolInstance.OpenLevelObjectDrawer();
+                if (ToolManager.activeToolType != typeof(LevelEditorTool))
+                {
+                    ToolManager.SetActiveTool<LevelEditorTool>();
+                }
+                if (EditorWindow.focusedWindow != SceneView.lastActiveSceneView)
+                {
+                    SceneView.lastActiveSceneView.Focus();
+                    LevelEditorTool.LevelEditorToolInstance.OpenLevelObjectDrawer();
+                }
             }
         }
     }

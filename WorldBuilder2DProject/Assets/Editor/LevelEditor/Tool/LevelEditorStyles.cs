@@ -707,7 +707,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public static Texture2D TextureFromSprite(Sprite sprite)
         {
-            if (sprite.rect.width != sprite.texture.width)
+            if (sprite != null && sprite.rect.width != sprite.texture.width)
             {
                 Texture2D newText = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
                 //Get readable copy of texture

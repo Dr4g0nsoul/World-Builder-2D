@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48dd65a1f21676f48b9495cd666544a2, type: 3}
+  m_Name: TreeStompTiles
+  m_EditorClassIdentifier: 
+  guid: f7e5fc15-7305-4997-8b4b-9e43e979eea4
+  objectPrefab: {fileID: 333998834333445862, guid: eaadc0c160a094e4ab1e7f1a0ded8c49,
+    type: 3}
+  item:
+    name: TreeStompTiles
+    thumbnail: {fileID: 2800000, guid: 0261b7cf3d39778479a802f0bc2e69f4, type: 3}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
+  categories:
+  - 17865518-a62f-44c4-b3bb-efbb3c282810
+  levelLayers:
+  - abcc027e-5800-4c96-a981-ffbd8a2c03d4
+  - 67426602-3f83-4931-91bf-0dd33464a7ff
+  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+  autoTileGroups: []
+  tiles:
+  - {fileID: 11400000, guid: d59c99277aee2bb4ebb2968def91042f, type: 2}
+  - {fileID: 11400000, guid: 0823b1881de6be44d9725dc96f9e05d6, type: 2}
+  - {fileID: 11400000, guid: 270f566312e8e774ebb298b1cb311036, type: 2}
+  - {fileID: 11400000, guid: f48c17c37526ca5459ce9aee81314ed3, type: 2}
+  - {fileID: 11400000, guid: 12f6f740eedf39d4099ea9779cc83761, type: 2}
+  - {fileID: 11400000, guid: dcb5c5924d7ebe3408df62cb1e46af74, type: 2}
+  - {fileID: 11400000, guid: e3241cdfb9dbd4b40bb94bfed7f82c65, type: 2}
+  - {fileID: 11400000, guid: b4c22e02cc7c2674cb34bcf25d7e5fac, type: 2}
+  - {fileID: 11400000, guid: fab75bffd5e5b314893eff9cc1da1d17, type: 2}
+  - {fileID: 11400000, guid: 1f54e3ea19931654181ccdb5c91a2cbe, type: 2}
+  - {fileID: 11400000, guid: 8c51dd09f481fc84cb537305a7b32585, type: 2}
+  - {fileID: 11400000, guid: 8d912aa3f65ab784396df2f51ab9a422, type: 2}
+  - {fileID: 11400000, guid: 74dea28c93c362d4aa81cb04586eb89d, type: 2}
+  - {fileID: 11400000, guid: 437705745754a3041a9040acf5571f28, type: 2}
+  - {fileID: 11400000, guid: 2e4fbc44cb4dd4f4083e6e92fde946f5, type: 2}

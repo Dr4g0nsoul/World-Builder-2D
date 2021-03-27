@@ -163,9 +163,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 DrawItemProperty(currLayer.FindPropertyRelative("item"));
                 EditorGUILayout.Space(20f);
 
-
+                
                 EditorGUILayout.LabelField("Layer Settings", headerMiddle);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.Space(10f);
+
+                EditorGUILayout.LabelField("Parallax Scrolling", textMiddle);
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("parallaxSpeed"));
+                EditorGUILayout.Space(10f);
+
                 EditorGUILayout.LabelField("Sorting Layer Settings", textMiddle);
                 EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("overrideSortingLayer"));
                 GUI.enabled = currLayer.FindPropertyRelative("overrideSortingLayer").boolValue;
@@ -181,11 +187,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("physicsLayer"));
                 EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("onlyRootObject"));
                 EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("layersToNotOverride"));
+                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("removePhysicsComponents"));
                 EditorGUILayout.Space(10f);
                 GUI.enabled = true;
 
-                EditorGUILayout.LabelField("Parallax Scrolling", textMiddle);
-                EditorGUILayout.PropertyField(currLayer.FindPropertyRelative("parallaxSpeed"));
+                
                 EditorGUILayout.Space(10f);
                 EditorGUILayout.EndVertical();
             }
