@@ -19,9 +19,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor {
         [MenuItem("Level Editor/Open Level Editor _SPACE")]
         public static void OpenLevelEditor()
         {
-            if (EditorTools.activeToolType != typeof(LevelEditorTool))
+            if (ToolManager.activeToolType != typeof(LevelEditorTool))
             {
-                EditorTools.SetActiveTool<LevelEditorTool>();
+                ToolManager.SetActiveTool<LevelEditorTool>();
             }
             if (EditorWindow.focusedWindow != SceneView.lastActiveSceneView)
             {
