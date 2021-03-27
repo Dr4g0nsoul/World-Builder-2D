@@ -797,7 +797,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			LevelTile myTile = t_currentTilemap.GetTile<LevelTile>(cell);
 			if(myTile != null && info.isAutoTile)
             {
-				GUI.Label(drawRect, info.autoTileGroup+"");
+				GUIStyle labelMiddle = new GUIStyle(GUI.skin.label);
+				labelMiddle.alignment = TextAnchor.MiddleCenter;
+				GUI.Label(drawRect, info.autoTileGroup+"", labelMiddle);
             }
 			GUI.color = Color.white;
 		}
