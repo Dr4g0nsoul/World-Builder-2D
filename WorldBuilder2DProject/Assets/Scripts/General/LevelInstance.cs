@@ -1,4 +1,5 @@
 ﻿using dr4g0nsoul.WorldBuilder2D.Util;
+using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,11 +17,37 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         [ReadOnly] public string level;
 
+        private LevelNode levelNode;
+        public LevelNode Level
+        {
+            get
+            {
+                if(levelNode == null)
+                {
+                    LevelController controller = LevelController.Instance;
+                    if(controller != null)
+                    {
+                        levelNode = controller.GetLevel(level);
+                    }
+                }
+                return levelNode;
+            }
+        }
+
         //Level Transforms
         public LevelTransformLayer[] levelTransforms;
         public LevelTransformLayer unknownLayer;
 
         #region Hierarchy Management
+
+        #region Public Functions
+
+        public LevelTransformLayer[] GetLevelLayers()
+        {
+            return levelTransforms;
+        }
+
+        #endregion
 
         private void CheckTransforms()
         {

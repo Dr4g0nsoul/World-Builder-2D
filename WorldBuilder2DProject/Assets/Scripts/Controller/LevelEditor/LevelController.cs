@@ -227,7 +227,7 @@ public class LevelController
         {
             foreach(WorldNode world in worlds.Values)
             {
-                if(world.levels.Contains(levelGuid))
+                if(world.levels != null && world.levels.Contains(levelGuid))
                 {
                     return world;
                 }

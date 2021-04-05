@@ -1,4 +1,5 @@
-﻿using dr4g0nsoul.WorldBuilder2D.Util;
+﻿using dr4g0nsoul.WorldBuilder2D.LevelEditor;
+using dr4g0nsoul.WorldBuilder2D.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -205,5 +206,20 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             WorldEditorStyles.RefreshStyles();
         }
 
+        public override string GetPortTooltip(NodePort port)
+        {
+            if(port.node is LevelNode lNode)
+            {
+                foreach(LevelExit exit in lNode.levelExits)
+                {
+                    if(exit.guid == port.fieldName)
+                    {
+                        return $"{exit.name} ({(exit.active ? "active" : "inactive")})";
+                    }
+                }
+            }
+            
+            return base.GetPortTooltip(port);
+        }
     }
 }

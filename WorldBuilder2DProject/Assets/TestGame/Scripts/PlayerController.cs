@@ -1,3 +1,4 @@
+using dr4g0nsoul.WorldBuilder2D.LevelEditor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 /**
  * 
- * Controller from https://github.com/sergioadair/Simple-2D-Character-Controller
+ * Controller taken from https://github.com/sergioadair/Simple-2D-Character-Controller and modified by me
  * 
  */
 public class PlayerController : MonoBehaviour
@@ -33,6 +34,7 @@ public class PlayerController : MonoBehaviour
     private bool isJumping;
     private int extraJumpsValue = 1;
     private int extraJumps;
+    private bool justJumped = false;
 
     private bool attacking;
     public float attackSpeed;
@@ -76,7 +78,8 @@ public class PlayerController : MonoBehaviour
 
         // Is the player on the ground?
         isGrounded = Physics2D.OverlapCircle(feetTransform.position, feetRadius, groundLayer);
-        animator.SetBool("Falling", rb.velocity.y < 0 && !isGrounded);
+        animator.SetBool("Falling", rb.velocity.y <= 0.01f && !isGrounded);
+        animator.SetBool("Grounded", isGrounded && !justJumped);
 
         if (isGrounded)
         {
@@ -114,7 +117,10 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 isJumping = true;
                 jumpTimeCounter = jumpTime;
+                animator.SetBool("Grounded", false);
                 animator.SetTrigger("Jump");
+                justJumped = true;
+                StartCoroutine(JustJumpedAnimationFix());
             }
             else if (extraJumps > 0)
             {
@@ -155,7 +161,7 @@ public class PlayerController : MonoBehaviour
         {
             attacking = true;
             animator.SetTrigger("Attack");
-            animator.SetFloat("AttackAnimationSpeed", 1f / attackSpeed);
+            animator.SetFloat("AttackAnimationSpeed", attackSpeed);
         }
         
     }
@@ -164,4 +170,27 @@ public class PlayerController : MonoBehaviour
     {
         attacking = false;
     }
+
+    IEnumerator JustJumpedAnimationFix()
+    {
+        yield return new WaitForSeconds(0.2f);
+        justJumped = false;
+    }
+
+    #region Changing Levels
+
+    public void EnteredLevelExit()
+    {
+        rb.velocity = Vector2.zero;
+        rb.simulated = false;
+    }
+
+    public void EnteredNewLevel(LevelExit entryPoint)
+    {
+        transform.position = entryPoint.entryPoint;
+        rb.simulated = true;
+    }
+
+    #endregion
+
 }

@@ -10,8 +10,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         [Header("General")]
 
-        //Tag which specifies where the object root for all the level objects is located
-        [Tag] public string levelEditorRootTag;
+        //Not used anymore: Tag which specifies where the object root for each level is located
+        //[Tag] public string levelRootTag;
 
         //List of all the level object tags
         [HideInInspector] public LevelObjectCategory[] levelObjectCategories;

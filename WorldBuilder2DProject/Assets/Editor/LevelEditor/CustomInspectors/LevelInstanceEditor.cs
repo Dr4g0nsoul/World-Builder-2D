@@ -83,6 +83,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 SerializedProperty addedObj = list.serializedProperty.GetArrayElementAtIndex(list.serializedProperty.arraySize - 1);
                 addedObj.FindPropertyRelative("guid").stringValue = Guid.NewGuid().ToString();
                 addedObj.FindPropertyRelative("name").stringValue = $"Exit {list.serializedProperty.arraySize}";
+                addedObj.FindPropertyRelative("active").boolValue = true;
                 Vector2 pos = SceneView.lastActiveSceneView != null ? (Vector2)SceneView.lastActiveSceneView.camera.transform.position : Vector2.zero;
                 addedObj.FindPropertyRelative("levelExitTrigger").rectValue = new Rect(pos, Vector2.one);
                 addedObj.FindPropertyRelative("entryPoint").vector2Value = pos;
@@ -188,12 +189,11 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                         Handles.color = editPositionColor;
                         newPosition = Handles.FreeMoveHandle(newPosition, Quaternion.identity, 0.7f, Vector2.zero, Handles.ConeHandleCap);
                         Handles.DrawDottedLine(newBounds.position, newPosition, 5f);
-
-                        Repaint();
                     }
                     break;
             }
             Handles.color = Color.white;
+            sceneView.Repaint();
         }
 
         #region GUI
@@ -246,14 +246,9 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
 
             //Debug information
             EditorGUILayout.Space(20f);
-            showDebugFields.target = EditorGUILayout.ToggleLeft("Show debug fields", showDebugFields.target);
-            if (EditorGUILayout.BeginFadeGroup(showDebugFields.faded))
-            {
-                GUI.enabled = false;
-                EditorGUILayout.PropertyField(levelSearializedObject.FindProperty("levelExitsUpdated"));
-                GUI.enabled = true;
-            }
-            EditorGUILayout.EndFadeGroup();
+            GUI.enabled = false;
+            EditorGUILayout.PropertyField(levelSearializedObject.FindProperty("levelExitsUpdated"));
+            GUI.enabled = true;
         }
 
         private void DrawLevelExit(SerializedProperty currLevelExit)
@@ -277,6 +272,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
             LevelEditorStyles.DrawHorizontalLine(Color.grey, new RectOffset(50, 50, 3, 15));
 
             EditorGUILayout.PropertyField(currLevelExit.FindPropertyRelative("guid"));
+            EditorGUILayout.PropertyField(currLevelExit.FindPropertyRelative("active"));
             EditorGUILayout.PropertyField(currLevelExit.FindPropertyRelative("name"));
 
             if(EditBounds(currLevelExit.FindPropertyRelative("levelExitTrigger")))

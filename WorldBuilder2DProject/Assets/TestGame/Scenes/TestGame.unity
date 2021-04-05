@@ -124,6 +124,24 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!61 &317622622 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 4559716708577461525, guid: c268adf48a89a014b81645708963b3a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1442529087329729309}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1259509539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6471973245531550187, guid: c268adf48a89a014b81645708963b3a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 1442529087329729309}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa95cfad749fe34ca5f6df5d2f402af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!20 &1496898009 stripped
 Camera:
   m_CorrespondingSourceObject: {fileID: 5268892491421090990, guid: c268adf48a89a014b81645708963b3a9,
@@ -160,8 +178,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 1496898009}
-  playerCollider: {fileID: 0}
+  playerCollider: {fileID: 317622622}
   startLevel: 
+  skipLevelLoading: 0
+  onPreviousLevelUnloadStart:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1259509539}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: EnteredLevelExit
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onPreviousLevelUnloading:
+    m_PersistentCalls:
+      m_Calls: []
+  onPreviousLevelUnloadComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewLevelLoadStart:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewLevelLoading:
+    m_PersistentCalls:
+      m_Calls: []
+  onNewLevelLoadComplete:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1259509539}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: EnteredNewLevel
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &1565228939
 Transform:
   m_ObjectHideFlags: 0

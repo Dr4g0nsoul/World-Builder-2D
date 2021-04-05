@@ -20,14 +20,5 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         //Level Entry / Exit
         public Rect levelExitTrigger;
         public Vector2 entryPoint;
-
-        public virtual bool CanEnter() => true;
-    }
-
-    [System.Serializable]
-    public class LevelEntryPoint
-    {
-        public string levelGuid;
-        public Vector2 entryPointLocation;
     }
 }

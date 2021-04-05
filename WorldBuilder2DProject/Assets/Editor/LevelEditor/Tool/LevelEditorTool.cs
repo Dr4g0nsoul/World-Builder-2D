@@ -676,12 +676,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 else if (levelEditorSettings == null || worldEditorGraph == null)
                 {
                     ShowButtonMessage(cameraBounds, "Uninitialized Level Editor!", "Please press the button below to generate necessary editor assets", "Initialize Level Editor", () => CreateLevelEditorAssets());
-                }
+                }/*
                 else if (levelEditorSettings.levelEditorRootTag == null || levelEditorSettings.levelEditorRootTag.Length <= 0
                     || levelEditorSettings.levelEditorRootTag == "Untagged")
                 {
                     ShowMessage(cameraBounds, "Level Root Tag missing!", "Set the tag for the game object who acts as root for the level strucure.");
                 }
+                */
                 else
                 {
                     //--- Setup Levels ---

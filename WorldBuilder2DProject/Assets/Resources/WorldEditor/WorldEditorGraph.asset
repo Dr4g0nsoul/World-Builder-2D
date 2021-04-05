@@ -13,20 +13,18 @@ MonoBehaviour:
   m_Name: Test
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1160, y: -2696}
+  position: {x: -872, y: -2632}
   ports:
     keys:
     - 86329b80-7e6f-47d9-881e-6db22b85fb69
     - 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
+    - 14984e05-5237-43fe-97d9-410feddefecb
     values:
     - _fieldName: 86329b80-7e6f-47d9-881e-6db22b85fb69
       _node: {fileID: -4871792554773954699}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
-        node: {fileID: -4825979069897043651}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -36,6 +34,18 @@ MonoBehaviour:
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
       connections: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
+    - _fieldName: 14984e05-5237-43fe-97d9-410feddefecb
+      _node: {fileID: -4871792554773954699}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: 5e2941f1-3113-4492-b70a-07b65fe57a1f
+        node: {fileID: -138885732908548619}
+        reroutePoints: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -52,26 +62,37 @@ MonoBehaviour:
   levelExits:
   - guid: 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
     name: Exit 1
-    active: 0
+    active: 1
     otherLevelGuid: 
     levelExitTrigger:
       serializedVersion: 2
-      x: -10.644685
-      y: 0.032024384
+      x: -23.454468
+      y: 8.644893
       width: 1
-      height: 12.63673
-    entryPoint: {x: -10.851122, y: -2.0764966}
+      height: 16.120535
+    entryPoint: {x: -22.0302, y: 1.3748605}
   - guid: 86329b80-7e6f-47d9-881e-6db22b85fb69
     name: Exit 2
-    active: 0
+    active: 1
     otherLevelGuid: 
     levelExitTrigger:
       serializedVersion: 2
-      x: 10.675751
-      y: 2.5817928
+      x: 36.434845
+      y: 15.683833
       width: 1
-      height: 7.4829445
-    entryPoint: {x: 9.644992, y: -0.41554004}
+      height: 11.833811
+    entryPoint: {x: 34.860237, y: 10.362742}
+  - guid: 14984e05-5237-43fe-97d9-410feddefecb
+    name: Exit 3
+    active: 1
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: 6.127363
+      y: -5.19666
+      width: 7.5739174
+      height: 2.0072937
+    entryPoint: {x: 9.995893, y: 2.5170875}
   levelExitsUpdated: 0
   preferredItems:
     categories: []
@@ -92,7 +113,7 @@ MonoBehaviour:
   m_Name: Test Level 2
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1832, y: -2648}
+  position: {x: -1704, y: -2600}
   ports:
     keys:
     - 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
@@ -101,10 +122,7 @@ MonoBehaviour:
       _node: {fileID: -4825979069897043651}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 86329b80-7e6f-47d9-881e-6db22b85fb69
-        node: {fileID: -4871792554773954699}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -136,6 +154,63 @@ MonoBehaviour:
     levelObjects: []
   assignedSceneName: Level_112c846d-7b6f-4542-92e3-047992113559
   assignedScenePath: Assets/Scenes/Levels/Level_112c846d-7b6f-4542-92e3-047992113559.unity
+--- !u!114 &-138885732908548619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: Cavern Crossroads
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1592, y: -1864}
+  ports:
+    keys:
+    - 5e2941f1-3113-4492-b70a-07b65fe57a1f
+    values:
+    - _fieldName: 5e2941f1-3113-4492-b70a-07b65fe57a1f
+      _node: {fileID: -138885732908548619}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: 14984e05-5237-43fe-97d9-410feddefecb
+        node: {fileID: -4871792554773954699}
+        reroutePoints: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
+  guid: 6249a840-3f58-4688-9c9f-4c37d23e5bac
+  levelName: Cavern Crossroads
+  levelDescription: 
+  levelBoundaries:
+    serializedVersion: 2
+    x: -23.489109
+    y: -5.9988146
+    width: 130.97221
+    height: 39.989418
+  levelExits:
+  - guid: 5e2941f1-3113-4492-b70a-07b65fe57a1f
+    name: Back To Start Area
+    active: 1
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: -5.8220453
+      y: 14.084235
+      width: 9.451236
+      height: 2.5588088
+    entryPoint: {x: -5.4434566, y: 10.926361}
+  levelExitsUpdated: 0
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: Level_6249a840-3f58-4688-9c9f-4c37d23e5bac
+  assignedScenePath: Assets/Scenes/Levels/Level_6249a840-3f58-4688-9c9f-4c37d23e5bac.unity
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -150,9 +225,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodes:
   - {fileID: 3406478296349039305}
+  - {fileID: 54554736457197497}
   - {fileID: 6769783703820135514}
   - {fileID: -4871792554773954699}
   - {fileID: -4825979069897043651}
+  - {fileID: -138885732908548619}
+--- !u!114 &54554736457197497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
+  m_Name: Caverns
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1800, y: -2008}
+  ports:
+    keys: []
+    values: []
+  guid: 7884dd4e-8a98-4dac-a41e-90d7058e8aa3
+  width: 2399
+  height: 856
+  worldName: Caverns
+  accentColor: {r: 1, g: 1, b: 1, a: 1}
+  worldDescription: 
+  levels:
+  - 6249a840-3f58-4688-9c9f-4c37d23e5bac
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: 
+  assignedScenePath: 
 --- !u!114 &3406478296349039305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,13 +273,13 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1176, y: -2776}
+  position: {x: -2184, y: -2792}
   ports:
     keys: []
     values: []
   guid: b2937ac3-b004-4819-8e61-b787d990c216
-  width: 1061
-  height: 656
+  width: 2480
+  height: 676
   worldName: Forest
   accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
   worldDescription: 
@@ -197,7 +304,7 @@ MonoBehaviour:
   m_Name: Mountains
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 217.90358, y: -2718.5918}
+  position: {x: 1256, y: -2728}
   ports:
     keys: []
     values: []

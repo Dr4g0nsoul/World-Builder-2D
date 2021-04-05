@@ -203,20 +203,6 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 
             serializedObject.ApplyModifiedProperties();
         }
-        /*
-        LevelNode lNode = target as LevelNode;
-        Rect r = new Rect()
-        {
-            position = Vector2.zero,
-            size = new Vector2(16f, 16f)
-        };
-        NodePort port1 = null;
-        foreach (NodePort port in lNode.DynamicPorts) {
-            port1 = port;
-            break;
-        }
-        NodeEditorGUILayout.PortField(new Vector2(50f, 50f), port1);
-        */
     }
 
     public override int GetWidth()
