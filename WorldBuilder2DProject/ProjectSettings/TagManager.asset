@@ -33,7 +33,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - CameraCollision
   - 
   - 
   - 
@@ -61,4 +61,7 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 3124183977
+    locked: 0
+  - name: Overlay
+    uniqueID: 2639834939
     locked: 0

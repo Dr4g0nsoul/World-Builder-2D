@@ -1,4 +1,4 @@
-using dr4g0nsoul.WorldBuilder2D.LevelEditor;
+using dr4g0nsoul.WorldBuilder2D.Game;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,12 +39,17 @@ public class PlayerController : MonoBehaviour
     private bool attacking;
     public float attackSpeed;
 
+    public LevelManager levelManager;
+    public TransitionAnimation transitionAnimation;
+    private bool inLevelTransition;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         extraJumps = extraJumpsValue;
         attacking = false;
+        inLevelTransition = false;
     }
 
     private void Update()
@@ -179,16 +184,36 @@ public class PlayerController : MonoBehaviour
 
     #region Changing Levels
 
-    public void EnteredLevelExit()
+    public void EnteredLevelExit(LevelTransitionInfo levelTransition)
     {
-        rb.velocity = Vector2.zero;
-        rb.simulated = false;
+        if (levelManager != null && !inLevelTransition)
+        {
+            inLevelTransition = true;
+            rb.velocity = Vector2.zero;
+            rb.simulated = false;
+            transitionAnimation.Animate();
+            StartCoroutine(LoadNextLevel(levelTransition));
+        }
     }
 
-    public void EnteredNewLevel(LevelExit entryPoint)
+    public void EnteredNewLevel(LevelTransitionInfo levelTransition, Vector2 entryPoint)
     {
-        transform.position = entryPoint.entryPoint;
+        transitionAnimation.Animate(true);
+        StartCoroutine(ReenableTransitions(entryPoint));
+    }
+
+    IEnumerator LoadNextLevel(LevelTransitionInfo levelTransition)
+    {
+        yield return new WaitWhile(() => transitionAnimation.IsAnimating);
+        levelManager.LevelLoader.LoadLevel(levelTransition);
+    }
+
+    IEnumerator ReenableTransitions(Vector2 entryPoint)
+    {
+        transform.position = entryPoint;
         rb.simulated = true;
+        yield return new WaitWhile(() => transitionAnimation.IsAnimating);
+        inLevelTransition = false;
     }
 
     #endregion

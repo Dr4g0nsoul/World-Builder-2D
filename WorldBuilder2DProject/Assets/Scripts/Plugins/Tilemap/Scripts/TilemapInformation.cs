@@ -10,7 +10,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
         public string[] serializedKeys;
         public TilemapCellProperties[] serializedValues;
-        public SortedDictionary<string, TilemapCellProperties> tilemapInfo = new SortedDictionary<string, TilemapCellProperties>();
+        public Dictionary<string, TilemapCellProperties> tilemapInfo = new Dictionary<string, TilemapCellProperties>();
 
 
         public void LoadTilemapInfo()

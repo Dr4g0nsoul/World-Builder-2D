@@ -390,10 +390,13 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				Texture2D thumbnail = LevelEditorStyles.TextureFromSprite(tilemap.tiles[selectedTile].sprite);
 				thumbnail.filterMode = FilterMode.Point;
 				File.WriteAllBytes($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png", thumbnail.EncodeToPNG());
+				TextureImporter thumbnailImporter = TextureImporter.GetAtPath($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png") as TextureImporter;
+				thumbnailImporter.filterMode = FilterMode.Point;
 				AssetDatabase.ImportAsset($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
 				AssetDatabase.Refresh();
 				thumbnail = AssetDatabase.LoadAssetAtPath<Texture2D>($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
-				thumbnail.filterMode = FilterMode.Point;
+				//thumbnail.filterMode = FilterMode.Point;
+				
 				serializedObject.FindProperty("item").FindPropertyRelative("thumbnail").objectReferenceValue = thumbnail;
 			}
 		}

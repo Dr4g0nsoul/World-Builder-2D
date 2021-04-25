@@ -7,7 +7,7 @@ using UnityEngine;
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor {
     public class LevelEditorMenu
     {
-        [MenuItem("Level Editor/Scene View Toggle Fullscreen _F11")]
+        [MenuItem("Tools/Level Editor/Scene View Toggle Fullscreen _F11")]
         public static void SceneViewToggleFullscreen()
         {
             if (SceneView.lastActiveSceneView != null)
@@ -16,7 +16,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor {
             }
         }
 
-        [MenuItem("Level Editor/Open Level Editor _SPACE")]
+        [MenuItem("Tools/Level Editor/Open Level Editor _F10")]
         public static void OpenLevelEditor()
         {
             if (!Application.isPlaying)

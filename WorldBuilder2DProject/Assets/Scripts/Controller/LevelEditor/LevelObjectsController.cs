@@ -36,13 +36,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
 
-        private SortedDictionary<string, LevelObject> levelObjects = new SortedDictionary<string, LevelObject>();
+        private Dictionary<string, LevelObject> levelObjects = new Dictionary<string, LevelObject>();
 
         //Filtering
-        private SortedDictionary<string, LevelObject> filteredLevelObjects = new SortedDictionary<string, LevelObject>();
+        private Dictionary<string, LevelObject> filteredLevelObjects = new Dictionary<string, LevelObject>();
         private string lastSearch = "";
         private bool lastSearchAll = false;
-        private SortedDictionary<string, LevelObject> searchFilteredLevelObjects = new SortedDictionary<string, LevelObject>();
+        private Dictionary<string, LevelObject> searchFilteredLevelObjects = new Dictionary<string, LevelObject>();
         public enum PreferredItemsFilterMode { None, Level, World }
 
         //Level Object data
@@ -51,8 +51,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private List<string> currentLevelFavorites = new List<string>();
 
         //Cached Level Editor Settings Data
-        private SortedDictionary<string, LevelObjectCategory> levelObjectCategoryCache;
-        private SortedDictionary<string, LevelLayer> levelLayerCache;
+        private Dictionary<string, LevelObjectCategory> levelObjectCategoryCache;
+        private Dictionary<string, LevelLayer> levelLayerCache;
 
         #region Initialization
 
@@ -97,7 +97,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 //Build category cache
                 if (levelObjectCategoryCache == null)
-                    levelObjectCategoryCache = new SortedDictionary<string, LevelObjectCategory>();
+                    levelObjectCategoryCache = new Dictionary<string, LevelObjectCategory>();
                 
                 levelObjectCategoryCache.Clear();
 
@@ -108,7 +108,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 //Build level layer cache
                 if (levelLayerCache == null)
-                    levelLayerCache = new SortedDictionary<string, LevelLayer>();
+                    levelLayerCache = new Dictionary<string, LevelLayer>();
 
                 levelLayerCache.Clear();
 
@@ -144,15 +144,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             return null;
         }
 
-        public SortedDictionary<string, LevelObject> GetAllLevelObjects()
+        public Dictionary<string, LevelObject> GetAllLevelObjects()
         {
             return levelObjects;
         }
 
-        public SortedDictionary<int, LevelObject> GetDummyLevelObjects(int amount)
+        public Dictionary<int, LevelObject> GetDummyLevelObjects(int amount)
         {
             int i = 0;
-            SortedDictionary<int, LevelObject> result = new SortedDictionary<int, LevelObject>();
+            Dictionary<int, LevelObject> result = new Dictionary<int, LevelObject>();
             while (i < amount)
             {
                 foreach (LevelObject lobj in levelObjects.Values)
@@ -169,7 +169,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #region Filtering level objects
 
-        public SortedDictionary<string, LevelObject> GetFilteredLevelObjects(string search = null, bool searchAll = false)
+        public Dictionary<string, LevelObject> GetFilteredLevelObjects(string search = null, bool searchAll = false)
         {
             if (string.IsNullOrEmpty(search))
             {
@@ -188,15 +188,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 
-        public SortedDictionary<string, LevelObject> GetPreferredLevelObjects(PreferredItemsFilterMode preferredItemsFilterMode, string levelGuid)
+        public Dictionary<string, LevelObject> GetPreferredLevelObjects(PreferredItemsFilterMode preferredItemsFilterMode, string levelGuid)
         {
-            SortedDictionary<string, LevelObject> preferredLevelObjects = new SortedDictionary<string, LevelObject>();
+            Dictionary<string, LevelObject> preferredLevelObjects = new Dictionary<string, LevelObject>();
 
             LevelNode lNode = LevelController.Instance.GetLevel(levelGuid);
 
             if (preferredItemsFilterMode == PreferredItemsFilterMode.None || lNode == null)
             {
-                preferredLevelObjects = new SortedDictionary<string, LevelObject>(levelObjects);
+                preferredLevelObjects = new Dictionary<string, LevelObject>(levelObjects);
             }
             else
             {
@@ -259,7 +259,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             filteredLevelObjects.Clear();
 
-            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+            Dictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
 
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
@@ -274,7 +274,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             filteredLevelObjects.Clear();
 
-            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+            Dictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
 
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
@@ -291,7 +291,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             filteredLevelObjects.Clear();
 
-            SortedDictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
+            Dictionary<string, LevelObject> preferredLevelObjects = GetPreferredLevelObjects(preferredItemsFilterMode, levelGuid);
 
             //Category and layer filters
             foreach (LevelObject obj in preferredLevelObjects.Values)

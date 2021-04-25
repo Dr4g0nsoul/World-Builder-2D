@@ -70,7 +70,7 @@ MonoBehaviour:
       y: 8.644893
       width: 1
       height: 16.120535
-    entryPoint: {x: -22.0302, y: 1.3748605}
+    entryPoint: {x: -21.978851, y: 1.4262081}
   - guid: 86329b80-7e6f-47d9-881e-6db22b85fb69
     name: Exit 2
     active: 1
@@ -189,9 +189,9 @@ MonoBehaviour:
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
-    x: -23.489109
+    x: -23.501995
     y: -5.9988146
-    width: 130.97221
+    width: 130.99841
     height: 39.989418
   levelExits:
   - guid: 5e2941f1-3113-4492-b70a-07b65fe57a1f

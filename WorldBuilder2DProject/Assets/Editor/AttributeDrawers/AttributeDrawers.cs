@@ -1,4 +1,5 @@
 ﻿using dr4g0nsoul.WorldBuilder2D.LevelEditor;
+using dr4g0nsoul.WorldBuilder2D.WorldEditor;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,19 +34,19 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
     }
 
     [CustomPropertyDrawer(typeof(SortingLayerAttribute))]
-    public class SortingLayerAttributeDrawer : PropertyDrawer 
+    public class SortingLayerAttributeDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if(property.propertyType == SerializedPropertyType.String)
+            if (property.propertyType == SerializedPropertyType.String)
             {
                 EditorGUI.BeginProperty(position, label, property);
                 SortingLayer[] sortingLayers = SortingLayer.layers;
                 string[] sortingLayerNames = new string[sortingLayers.Length];
                 int selectedIndex = 0;
-                for(int i = 0; i<sortingLayers.Length; i++)
+                for (int i = 0; i < sortingLayers.Length; i++)
                 {
-                    if(sortingLayers[i].name == property.stringValue)
+                    if (sortingLayers[i].name == property.stringValue)
                     {
                         selectedIndex = i;
                     }
@@ -62,7 +63,7 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
     }
 
     [CustomPropertyDrawer(typeof(PhysicsLayerAttribute))]
-    public class PhysicsLayerAttributeDrawer : PropertyDrawer 
+    public class PhysicsLayerAttributeDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -74,6 +75,60 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
             {
                 EditorGUI.PropertyField(position, property, label);
             }
+        }
+    }
+
+    [CustomPropertyDrawer(typeof(LevelPickerAttribute))]
+    public class LevelPickerAttributeDrawer : PropertyDrawer
+    {
+
+        private string[] levelNames;
+        private string[] levelGuids;
+
+        public LevelPickerAttributeDrawer() : base()
+        {
+            LevelController levelController = LevelController.Instance;
+            LevelNode[] levels = levelController.GetLevels();
+            List<string> levelNames = new List<string>();
+            List<string> levelGuids = new List<string>();
+            foreach (LevelNode level in levels)
+            {
+                string worldName = levelController.GetWorldByLevel(level.guid)?.worldName;
+                levelNames.Add(string.IsNullOrEmpty(worldName) ? level.levelName : $"{worldName} - {level.levelName}");
+                levelGuids.Add(level.guid);
+            }
+
+            this.levelNames = levelNames.ToArray();
+            this.levelGuids = levelGuids.ToArray();
+        }
+
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            if (property.propertyType == SerializedPropertyType.String && levelGuids.Length > 0)
+            {
+                int selectedIndex = -1;
+
+                for(int i = 0; i < levelGuids.Length; i++)
+                {
+                    if(levelGuids[i] == property.stringValue)
+                    {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
+
+                selectedIndex = EditorGUI.Popup(position, label.text, selectedIndex, levelNames);
+                if(selectedIndex >= 0 && selectedIndex < levelGuids.Length)
+                {
+                    property.stringValue = levelGuids[selectedIndex];
+                }
+            }
+            else
+            {
+                EditorGUI.PropertyField(position, property, label);
+            }
+
+
         }
     }
 }

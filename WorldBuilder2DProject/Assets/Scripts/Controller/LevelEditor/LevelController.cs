@@ -45,11 +45,11 @@ public class LevelController
     private WorldEditorGraph worldEditorGraph;
 
     //Level variables
-    private SortedDictionary<string, LevelNode> levels;
-    private SortedDictionary<string, Texture2D> thumbnailCache;
+    private Dictionary<string, LevelNode> levels;
+    private Dictionary<string, Texture2D> thumbnailCache;
 
     //World variables
-    private SortedDictionary<string, WorldNode> worlds;
+    private Dictionary<string, WorldNode> worlds;
 
     #region Initialization
 
@@ -65,7 +65,7 @@ public class LevelController
 
         //Clear data
         if (levels == null)
-            levels = new SortedDictionary<string, LevelNode>();
+            levels = new Dictionary<string, LevelNode>();
         levels.Clear();
 
         if (worldEditorGraph != null)
@@ -89,7 +89,7 @@ public class LevelController
 
         //Clear data
         if (worlds == null)
-            worlds = new SortedDictionary<string, WorldNode>();
+            worlds = new Dictionary<string, WorldNode>();
         worlds.Clear();
 
         if (worldEditorGraph != null)
@@ -120,6 +120,13 @@ public class LevelController
         return lNode;
     }
 
+    public LevelNode[] GetLevels()
+    {
+        if (levels != null)
+            return levels.Values.ToArray();
+        return null;
+    }
+
     public bool IsValidLevel(string guid)
     {
         if (string.IsNullOrEmpty(guid))
@@ -148,7 +155,7 @@ public class LevelController
     {
         if(thumbnailCache == null)
         {
-            thumbnailCache = new SortedDictionary<string, Texture2D>();
+            thumbnailCache = new Dictionary<string, Texture2D>();
         }
         thumbnailCache.Clear();
     }
@@ -157,7 +164,7 @@ public class LevelController
     {
         if (thumbnailCache == null)
         {
-            thumbnailCache = new SortedDictionary<string, Texture2D>();
+            thumbnailCache = new Dictionary<string, Texture2D>();
         }
 
         if (IsValidLevel(guid))

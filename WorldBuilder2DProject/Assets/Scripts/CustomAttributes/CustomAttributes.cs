@@ -25,4 +25,5 @@ namespace dr4g0nsoul.WorldBuilder2D.Util
 
     }
 
+    public class LevelPickerAttribute : PropertyAttribute { }
 }

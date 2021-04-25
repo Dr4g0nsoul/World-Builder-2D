@@ -40,13 +40,13 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private readonly Dictionary<int, int[]> altAutoTileResultValues = new Dictionary<int, int[]>()
 		{
 			{138, new int[]{2, 10, 130, 136, 170, 202, 42, 74, 234} }, //Top-left corner
-			{203, new int[]{8, 3, 11, 67, 193, 131, 194, 75, 139, 195, 200, 219, 235 } }, //Top-center
-			{73, new int[]{1, 9, 65, 72, 89, 201, 25} }, //Top-right corner
-			{174, new int[]{12, 14, 140, 168, 44, 164, 142, 46, 172, 162, 190, 238, 156, 158 } }, //Center-left
+			{203, new int[]{8, 3, 11, 67, 193, 131, 194, 75, 139, 195, 200, 219, 235, 91, 251} }, //Top-center
+			{73, new int[]{1, 9, 65, 72, 89, 201, 25, 217} }, //Top-right corner
+			{174, new int[]{12, 14, 140, 168, 44, 164, 142, 46, 172, 162, 190, 238, 156, 158, 254 } }, //Center-left
 			{255, new int[]{} }, //Center
-			{93, new int[]{13, 76, 88, 28, 84, 77, 29, 81, 92, 125, 221, 125} }, //Center-right
-			{38, new int[]{6, 34, 36, 166, 54, 134, 22} }, //Bottom-left
-			{55, new int[]{4, 7, 19, 49, 35, 11, 23, 39, 50, 51, 119, 183} }, //Bottom-center
+			{93, new int[]{13, 76, 88, 28, 84, 77, 29, 81, 92, 125, 221, 125, 253} }, //Center-right
+			{38, new int[]{6, 34, 36, 166, 54, 134, 22, 182} }, //Bottom-left
+			{55, new int[]{4, 7, 19, 49, 35, 11, 23, 39, 50, 51, 119, 183, 247} }, //Bottom-center
 			{21, new int[]{5, 17, 20, 85, 53, 68, 117} } //Bottom-right
 		};
 

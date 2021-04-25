@@ -149,7 +149,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float objectDrawerHeight;
         private bool objectDrawerHidden = true;
         private bool objectDrawerHiddenComplete = true;
-        private SortedDictionary<string, LevelObject> drawerLevelObjects;
+        private Dictionary<string, LevelObject> drawerLevelObjects;
 
 
         //Hover Box
@@ -322,7 +322,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             objectDrawerHidden = true;
             objectDrawerHiddenComplete = true;
             objectDrawerHeight = 0f;
-            drawerLevelObjects = new SortedDictionary<string, LevelObject>();
+            drawerLevelObjects = new Dictionary<string, LevelObject>();
 
             //Object placement
             objectToPlace.Unset();
@@ -619,7 +619,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private void SceneSaved(Scene scene)
         {
             DeselectCurrentlySelectedObject();
-            GenerateThumbnail(scene);
+            if (SceneManager.sceneCount > 1)
+            {
+                GenerateThumbnail(SceneManager.GetSceneAt(1));
+            }
         }
 
         private void OnBeforeSceneGUI(SceneView view)
@@ -2100,18 +2103,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     Camera thumbnailCam = cameraObject.AddComponent<Camera>();
                     thumbnailCam.enabled = false;
 
-                    //Load/Setup texture
-                    /*
-                    RenderTexture thumbnail = Resources.Load<RenderTexture>($"{LevelController.LEVEL_THUMBNAIL_RESOURCE_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}");
-                    
-                    if(thumbnail == null)
-                    {
-                        thumbnail = new RenderTexture(LevelController.LEVEL_THUMBNAIL_RESOLUTION, LevelController.LEVEL_THUMBNAIL_RESOLUTION, 32);
-                        Util.EditorUtility.CreateAssetAndFolders(LevelController.LEVEL_THUMBNAIL_LOCATION, $"{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}", thumbnail, ".renderTexture");
-                    }
-                    */
-
-                    
 
                     //Disable all other levels
                     //-Get all loaded scenes
@@ -2136,31 +2127,72 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     //Position camera
                     Rect levelRect = LevelController.Instance.GetLevel(guid).levelBoundaries;
-                    thumbnailCam.orthographic = true;
-                    cameraObject.transform.position = new Vector3(levelRect.position.x, levelRect.position.y, -10f);
 
-                    //Resize camera to match rect size
-                    //- height = 2 * Camera.main.orthographicSize;
-                    thumbnailCam.orthographicSize = levelRect.height / 2f;
-                    //- width = height * Camera.main.aspect;
-                    thumbnailCam.aspect = levelRect.width / levelRect.height;
+                    //New Stuff
 
-                    //Setup camera render target
-                    thumbnailCam.targetTexture = RenderTexture.GetTemporary(thumbnailCam.pixelWidth, thumbnailCam.pixelHeight, 24, RenderTextureFormat.ARGB32);
-                    RenderTexture.active = thumbnailCam.targetTexture;
+                    Debug.Log("Initializing camera and stuff...");
 
-                    //Render scene
-                    thumbnailCam.Render();
 
-                    Texture2D previewImage = new Texture2D(thumbnailCam.pixelWidth, thumbnailCam.pixelHeight, TextureFormat.RGB24, false);
-                    previewImage.ReadPixels(new Rect(0, 0, thumbnailCam.pixelWidth, thumbnailCam.pixelHeight), 0, 0);
-                    thumbnailCam.targetTexture = null;
-                    previewImage.Apply();
+                    Camera renderCamera = thumbnailCam;
+                    renderCamera.enabled = true;
+                    renderCamera.cameraType = CameraType.Game;
+                    renderCamera.forceIntoRenderTexture = true;
+                    renderCamera.orthographic = true;
+                    renderCamera.orthographicSize = 5;
+                    renderCamera.aspect = 1.0f;
+                    renderCamera.targetDisplay = 2;
 
-                    byte[] bytes = previewImage.EncodeToPNG();
+                    int resolution = 512;
+                    float cameraDistance = -2f;
+
+                    RenderTexture renderTexture = RenderTexture.GetTemporary(resolution, resolution, 24);
+
+                    renderCamera.targetTexture = renderTexture;
+
+                    Vector4 bounds = new Vector4(levelRect.position.x + levelRect.size.x / 2f, levelRect.position.y - levelRect.size.y / 2f,//
+                        levelRect.position.y + levelRect.size.y / 2f, levelRect.position.x - levelRect.size.x / 2f);
+
+                    Debug.Log("Boundaries computed successfuly! The computed boundaries are " + bounds);
+                    Debug.Log("Computing target image resolution and final setup...");
+
+                    int xRes = Mathf.RoundToInt(resolution * ((bounds.x - bounds.w) / (renderCamera.aspect * renderCamera.orthographicSize * 2 * renderCamera.aspect)));
+                    int yRes = Mathf.RoundToInt(resolution * ((bounds.z - bounds.y) / (renderCamera.aspect * renderCamera.orthographicSize * 2 / renderCamera.aspect)));
+
+                    Texture2D virtualPhoto = new Texture2D(xRes, yRes, TextureFormat.RGB24, false);
+                    RenderTexture.active = renderTexture;
+
+                    Debug.Log("Success! Everything seems ready to render!");
+
+                    for (float i = bounds.w, xPos = 0; i < bounds.x; i += renderCamera.aspect * renderCamera.orthographicSize * 2, xPos++)
+                    {
+                        for (float j = bounds.y, yPos = 0; j < bounds.z; j += renderCamera.aspect * renderCamera.orthographicSize * 2, yPos++)
+                        {
+                            renderCamera.transform.position = new Vector3(i + renderCamera.aspect * renderCamera.orthographicSize, j + renderCamera.aspect * renderCamera.orthographicSize, cameraDistance);
+
+                            renderCamera.Render();
+
+                            virtualPhoto.ReadPixels(new Rect(0, 0, resolution, resolution), (int)xPos * resolution, (int)yPos * resolution);
+
+                            Debug.Log("Rendered and copied chunk " + (xPos + 1) + ":" + (yPos + 1));
+                        }
+                    }
+
+                    Debug.Log("All chunks rendered! Some final adjustments and picture should be saved!");
+
+                    RenderTexture.active = null;
+                    renderCamera.targetTexture = null;
+
+                    byte[] bytes = virtualPhoto.EncodeToPNG();
+
                     File.WriteAllBytes($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png", bytes);
+                    Debug.Log("All done! Always happy to help you :)");
 
                     AssetDatabase.ImportAsset($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png");
+                    TextureImporter textureImporter = TextureImporter.GetAtPath($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png") as TextureImporter;
+                    textureImporter.filterMode = FilterMode.Point;
+                    textureImporter.textureCompression = TextureImporterCompression.Uncompressed;
+                    textureImporter.SaveAndReimport();
+
 
                     //Reenable other levels
                     for (int i = 1; i < loadedScenes.Length; i++)
@@ -2175,14 +2207,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     DestroyImmediate(cameraObject);
                     LevelController.Instance.EmptyLevelThumbnailsCache();
-
-                    //AssetDatabase.SaveAssets();
-
-                    return true;
                 }
 
             }
             return false;
+            
         }
 
         private void SetLevelRoot(bool force = false)
@@ -2432,6 +2461,5 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         #endregion
     }
-
 
 }
