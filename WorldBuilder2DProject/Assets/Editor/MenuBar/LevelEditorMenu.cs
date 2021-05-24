@@ -16,7 +16,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor {
             }
         }
 
-        [MenuItem("Tools/Level Editor/Open Level Editor _F10")]
+        [MenuItem("Tools/Level Editor/Open Level Editor _SPACE")]
         public static void OpenLevelEditor()
         {
             if (!Application.isPlaying)

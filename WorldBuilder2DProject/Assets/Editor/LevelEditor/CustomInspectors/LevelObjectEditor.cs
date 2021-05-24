@@ -63,7 +63,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 Array.Resize(ref toolbarOptions, 4);
                 toolbarOptions[3] = customTabName;
-                objectEditor.OnCustomInspectorEnable();
+                objectEditor.OnCustomInspectorEnable(this, serializedObject);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if(objectEditor != null && !string.IsNullOrEmpty(objectEditor.CustomInspectorTabName()))
+            {
+                objectEditor.OnCustomInspectorDisable(this, serializedObject);
             }
         }
 

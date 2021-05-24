@@ -57,6 +57,8 @@ namespace XNodeEditor {
         public override void OnInspectorGUI() {
             serializedObject.Update();
 
+            GUI.skin = null;
+
             if (GUILayout.Button("Edit graph", GUILayout.Height(40))) {
                 SerializedProperty graphProp = serializedObject.FindProperty("graph");
                 NodeEditorWindow w = NodeEditorWindow.Open(graphProp.objectReferenceValue as XNode.NodeGraph);

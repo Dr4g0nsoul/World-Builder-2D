@@ -106,19 +106,21 @@ namespace dr4g0nsoul.WorldBuilder2D.Game
                     if (exit.active && manager.playerCollider.bounds.Intersects(new Bounds(exit.levelExitTrigger.position, exit.levelExitTrigger.size)))
                     {
                         var exitPort = currentLevel.Level.GetPort(exit.guid);
-                        var targetPort = exitPort?.GetConnection(0);
-                        if (targetPort != null && targetPort.node is LevelNode targetLevelNode)
-                        {
-                            foreach (LevelExit otherExit in targetLevelNode.levelExits)
+                        if (exitPort != null && exitPort.ConnectionCount > 0) {
+                            var targetPort = exitPort?.GetConnection(0);
+                            if (targetPort != null && targetPort.node is LevelNode targetLevelNode)
                             {
-                                if (otherExit.guid == targetPort.fieldName)
+                                foreach (LevelExit otherExit in targetLevelNode.levelExits)
                                 {
-                                    lastLevelTransition = CreateTransitionInfo(exit, currentLevel.Level, otherExit, targetLevelNode);
-                                    manager.onLevelExitTriggered.Invoke(lastLevelTransition);
-                                    return;
+                                    if (otherExit.guid == targetPort.fieldName)
+                                    {
+                                        lastLevelTransition = CreateTransitionInfo(exit, currentLevel.Level, otherExit, targetLevelNode);
+                                        manager.onLevelExitTriggered.Invoke(lastLevelTransition);
+                                        return;
+                                    }
                                 }
+                                Debug.LogError($"Target level exit {targetPort.fieldName} not found in Level {exit.otherLevelGuid}");
                             }
-                            Debug.LogError($"Target level exit {targetPort.fieldName} not found in Level {exit.otherLevelGuid}");
                         }
                     }
                 }

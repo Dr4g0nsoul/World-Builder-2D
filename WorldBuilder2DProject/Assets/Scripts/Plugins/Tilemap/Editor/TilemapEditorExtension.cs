@@ -18,7 +18,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 	public class TilemapEditorExtension : LevelObjectEditorExtension
 	{
 
-		public const string TILES_FOLDER = "Assets/Resources/LevelEditorTiles";
+		public const string TILES_FOLDER = "Assets/Resources/LevelEditor/Tiles";
 		public const string THUMBNAIL_FOLDER = "Assets/Editor/Resources/LevelEditorTilesThumbnails";
 		public const string THUMBNAIL_PREFIX = "thumb";
 		public const int TILES_AMOUNT_PER_GROUP = 20;
@@ -121,8 +121,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
         public override string CustomInspectorTabName() => "Tilemap";
 
-		public override void OnCustomInspectorEnable()
-		{
+        public override void OnCustomInspectorEnable(LevelObjectEditor levelObjectEditor, SerializedObject serializedObject)
+        {
 			tileTextures = new List<Texture2D>();
 			levelEditorSkin = Resources.Load<GUISkin>("LevelEditor/Skin/LESkin");
 			tileRemoved = false;

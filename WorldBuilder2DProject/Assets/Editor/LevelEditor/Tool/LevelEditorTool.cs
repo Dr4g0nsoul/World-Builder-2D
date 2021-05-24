@@ -106,6 +106,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float categoriesMoreBoxScrollPos;
         private Tween showCategoryMoreBoxAnimation;
         private float showCategoryMoreBoxAnimationValue;
+        private bool categoriesMoreBoxOpen;
 
         //Preferred items
         private LevelObjectsController.PreferredItemsFilterMode preferredItemsFilterMode;
@@ -117,6 +118,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float layersMoreBoxScrollPos;
         private Tween showLayerMoreBoxAnimation;
         private float showLayerMoreBoxAnimationValue;
+        private bool layersMoreBoxOpen;
 
         //More Box
         private readonly Vector2 moreBoxSize = new Vector2(330f, 200f);
@@ -298,6 +300,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             selectedCategories = new List<string>();
             categoriesMoreBoxScrollPos = 0f;
             showCategoryMoreBoxAnimationValue = 0f;
+            categoriesMoreBoxOpen = false;
 
             //Preferred Items
             preferredItemsFilterMode = LevelObjectsController.PreferredItemsFilterMode.None;
@@ -306,6 +309,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             selectedLayer = null;
             layersMoreBoxScrollPos = 0f;
             showLayerMoreBoxAnimationValue = 0f;
+            layersMoreBoxOpen = false;
 
             //Search
             searchString = "";
@@ -954,11 +958,22 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.EndArea();
 
             //Menu Boxes
-            categoriesMoreBoxScrollPos = DrawMoreBox(menuBarRect.position + Vector2.down * LevelEditorStyles.MoreBox.margin.bottom, 
-                (index) => DrawCategoryButton(levelEditorSettings.levelObjectCategories[index + GetResponsiveAmount(menuBarCategoriesAmount)]), levelEditorSettings.levelObjectCategories.Length - GetResponsiveAmount(menuBarCategoriesAmount), categoriesMoreBoxScrollPos, showCategoryMoreBoxAnimationValue,
-                systemMenuBarItems[6], () => ClearCategoryFilter());
-            layersMoreBoxScrollPos = DrawMoreBox(new Vector2(menuBarRect.position.x + GetResponsiveAmount(layerMoreBoxXPos), menuBarRect.position.y - LevelEditorStyles.MoreBox.margin.bottom),
-                (index) => DrawLayerButton(levelLayers[index + GetResponsiveAmount(menuBarLayersAmount)]), levelLayers.Count - GetResponsiveAmount(menuBarLayersAmount), layersMoreBoxScrollPos, showLayerMoreBoxAnimationValue);
+            if(Event.current.type == EventType.Layout)
+            {
+                categoriesMoreBoxOpen = showCategoryMoreBoxAnimationValue > 0f;
+                layersMoreBoxOpen = showLayerMoreBoxAnimationValue > 0f;
+            }
+            if (categoriesMoreBoxOpen)
+            {
+                categoriesMoreBoxScrollPos = DrawMoreBox(menuBarRect.position + Vector2.down * LevelEditorStyles.MoreBox.margin.bottom,
+                    (index) => DrawCategoryButton(levelEditorSettings.levelObjectCategories[index + GetResponsiveAmount(menuBarCategoriesAmount)]), levelEditorSettings.levelObjectCategories.Length - GetResponsiveAmount(menuBarCategoriesAmount), categoriesMoreBoxScrollPos, showCategoryMoreBoxAnimationValue,
+                    systemMenuBarItems[6], () => ClearCategoryFilter());
+            }
+            if (layersMoreBoxOpen)
+            {
+                layersMoreBoxScrollPos = DrawMoreBox(new Vector2(menuBarRect.position.x + GetResponsiveAmount(layerMoreBoxXPos), menuBarRect.position.y - LevelEditorStyles.MoreBox.margin.bottom),
+                    (index) => DrawLayerButton(levelLayers[index + GetResponsiveAmount(menuBarLayersAmount)]), levelLayers.Count - GetResponsiveAmount(menuBarLayersAmount), layersMoreBoxScrollPos, showLayerMoreBoxAnimationValue);
+            }
 
         }
 
@@ -1196,72 +1211,69 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             float newScrollPos = scrollPos;
 
-            if (animationValue > 0f)
+            if (contentDrawFunction != null)
             {
-                if (contentDrawFunction != null)
+                Rect moreBoxRect = new Rect()
                 {
-                    Rect moreBoxRect = new Rect()
-                    {
-                        position = bottomLeft + Vector2.down * moreBoxSize.y * animationValue,
-                        size = new Vector2(moreBoxSize.x, moreBoxSize.y * animationValue)
-                    };
+                    position = bottomLeft + Vector2.down * moreBoxSize.y * animationValue,
+                    size = new Vector2(moreBoxSize.x, moreBoxSize.y * animationValue)
+                };
 
-                    if (Event.current.type == EventType.Layout)
-                    {
-                        BlockMouseInArea(moreBoxRect);
-                    }
+                if (Event.current.type == EventType.Layout)
+                {
+                    BlockMouseInArea(moreBoxRect);
+                }
 
-                    if(moreBoxRect.Contains(Event.current.mousePosition))
-                    {
-                        mouseHoveringMenuBar = true;
-                    }
+                if(moreBoxRect.Contains(Event.current.mousePosition))
+                {
+                    mouseHoveringMenuBar = true;
+                }
 
-                    GUILayout.BeginArea(moreBoxRect, LevelEditorStyles.MoreBox);
-                    int objectsPerRow = Mathf.FloorToInt(moreBoxSize.x / (LevelEditorStyles.MenuButtonCircle.fixedWidth + LevelEditorStyles.MenuButtonCircle.margin.right + LevelEditorStyles.MenuButtonCircle.margin.left) + 1);
+                GUILayout.BeginArea(moreBoxRect, LevelEditorStyles.MoreBox);
+                int objectsPerRow = Mathf.FloorToInt(moreBoxSize.x / (LevelEditorStyles.MenuButtonCircle.fixedWidth + LevelEditorStyles.MenuButtonCircle.margin.right + LevelEditorStyles.MenuButtonCircle.margin.left) + 1);
 
-                    newScrollPos = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(scrollPos, 0f)), false, false).y;
+                newScrollPos = GUILayout.BeginScrollView(new Vector2(0, Mathf.Max(scrollPos, 0f)), false, false).y;
 
-                    GUILayout.BeginVertical();
-                    for (int i = 0; i < itemCount; i++)
-                    {
-                        if (i % objectsPerRow == 0)
-                            GUILayout.BeginHorizontal();
-
-                        contentDrawFunction.Invoke(i);
-
-                        EnableMouse();
-
-                        if ((i + 1) % objectsPerRow == 0 || i == itemCount - 1)
-                        {
-                            GUILayout.EndHorizontal();
-                        }
-                    }
-
-                    if (bottomButton != null && bottomClickAction != null)
-                    {
-                        GUILayout.BeginHorizontal(GUI.skin.GetStyle("HorizontalRule"));
-                        GUILayout.EndHorizontal();
+                GUILayout.BeginVertical();
+                for (int i = 0; i < itemCount; i++)
+                {
+                    if (i % objectsPerRow == 0)
                         GUILayout.BeginHorizontal();
-                        if (GUILayout.Button("Clear Category Filter", LevelEditorStyles.MenuButtonSquare))
-                            bottomClickAction.Invoke();
-                        EnableMouse();
+
+                    contentDrawFunction.Invoke(i);
+
+                    EnableMouse();
+
+                    if ((i + 1) % objectsPerRow == 0 || i == itemCount - 1)
+                    {
                         GUILayout.EndHorizontal();
                     }
-                    GUILayout.EndVertical();
-                    GUILayout.EndScrollView();
+                }
 
-                    if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
-                    {
-                        newScrollPos += lastScrollDelta;
-                        scrollDone = lastScrollDelta != 0;
-                    }
-                    DisableScroll();
-                    GUILayout.EndArea();
+                if (bottomButton != null && bottomClickAction != null)
+                {
+                    GUILayout.BeginHorizontal(GUI.skin.GetStyle("HorizontalRule"));
+                    GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    if (GUILayout.Button("Clear Category Filter", LevelEditorStyles.MenuButtonSquare))
+                        bottomClickAction.Invoke();
+                    EnableMouse();
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.EndVertical();
+                GUILayout.EndScrollView();
+
+                if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
+                {
+                    newScrollPos += lastScrollDelta;
+                    scrollDone = lastScrollDelta != 0;
+                }
+                DisableScroll();
+                GUILayout.EndArea();
 
 
 
                     
-                }
             }
 
             return newScrollPos;
@@ -2129,10 +2141,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     Rect levelRect = LevelController.Instance.GetLevel(guid).levelBoundaries;
 
                     //New Stuff
-
-                    Debug.Log("Initializing camera and stuff...");
-
-
                     Camera renderCamera = thumbnailCam;
                     renderCamera.enabled = true;
                     renderCamera.cameraType = CameraType.Game;
@@ -2152,16 +2160,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     Vector4 bounds = new Vector4(levelRect.position.x + levelRect.size.x / 2f, levelRect.position.y - levelRect.size.y / 2f,//
                         levelRect.position.y + levelRect.size.y / 2f, levelRect.position.x - levelRect.size.x / 2f);
 
-                    Debug.Log("Boundaries computed successfuly! The computed boundaries are " + bounds);
-                    Debug.Log("Computing target image resolution and final setup...");
-
                     int xRes = Mathf.RoundToInt(resolution * ((bounds.x - bounds.w) / (renderCamera.aspect * renderCamera.orthographicSize * 2 * renderCamera.aspect)));
                     int yRes = Mathf.RoundToInt(resolution * ((bounds.z - bounds.y) / (renderCamera.aspect * renderCamera.orthographicSize * 2 / renderCamera.aspect)));
 
                     Texture2D virtualPhoto = new Texture2D(xRes, yRes, TextureFormat.RGB24, false);
                     RenderTexture.active = renderTexture;
-
-                    Debug.Log("Success! Everything seems ready to render!");
 
                     for (float i = bounds.w, xPos = 0; i < bounds.x; i += renderCamera.aspect * renderCamera.orthographicSize * 2, xPos++)
                     {
@@ -2173,11 +2176,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                             virtualPhoto.ReadPixels(new Rect(0, 0, resolution, resolution), (int)xPos * resolution, (int)yPos * resolution);
 
-                            Debug.Log("Rendered and copied chunk " + (xPos + 1) + ":" + (yPos + 1));
                         }
                     }
-
-                    Debug.Log("All chunks rendered! Some final adjustments and picture should be saved!");
 
                     RenderTexture.active = null;
                     renderCamera.targetTexture = null;
@@ -2185,7 +2185,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     byte[] bytes = virtualPhoto.EncodeToPNG();
 
                     File.WriteAllBytes($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png", bytes);
-                    Debug.Log("All done! Always happy to help you :)");
 
                     AssetDatabase.ImportAsset($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png");
                     TextureImporter textureImporter = TextureImporter.GetAtPath($"{LevelController.LEVEL_THUMBNAIL_LOCATION}/{LevelController.LEVEL_THUMBNAIL_RESOURCE_NAME_PREFIX}_{guid}.png") as TextureImporter;

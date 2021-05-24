@@ -6,9 +6,8 @@ public class ParallaxLayer : MonoBehaviour {
 	
 	[SerializeField]
 	private float speedX;
-	private float speedY;
 
-	private bool isSetup = false;
+	public bool isSetup = false;
 	private Transform cameraTransform;
 	private Vector3 previousCameraPosition;
 
@@ -16,20 +15,18 @@ public class ParallaxLayer : MonoBehaviour {
 		if (gameCamera != null)
 		{
 			cameraTransform = gameCamera.transform;
-			previousCameraPosition = cameraTransform.position;
+			previousCameraPosition = Vector2.zero;
 			speedX = horizontalSpeed;
-			speedY = 1f;
 			isSetup = true;
+			transform.position = Vector3.zero;
 		}
 	}
 
 	void Update () {
 		if (isSetup)
 		{
-			previousCameraPosition = cameraTransform.position;
-
 			Vector3 distance = cameraTransform.position - previousCameraPosition;
-			transform.position += Vector3.Scale(distance, new Vector3(speedX, speedY));
+			transform.position -= new Vector3(Vector2.Scale(distance, new Vector2(speedX - 1f, 0f)).x, 0f, 0f);
 
 			previousCameraPosition = cameraTransform.position;
 		}

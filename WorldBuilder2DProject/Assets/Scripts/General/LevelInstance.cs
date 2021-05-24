@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
@@ -33,6 +32,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 return levelNode;
             }
         }
+
+        private LevelEditorSettings settings;
+
+        //Parallax preview
+        private Camera sceneViewCamera;
 
         //Level Transforms
         public LevelTransformLayer[] levelTransforms;
@@ -90,6 +94,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         public Transform FindParentTransform(LevelObject obj, string levelLayer, LevelEditorSettings settings)
         {
+#if !UNITY_EDITOR
+            return null;
+#endif
             if(obj != null && !string.IsNullOrEmpty(levelLayer) && settings != null)
             {
                 CheckTransforms();
@@ -174,13 +181,15 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 //Search for first transfrom with the level object name which is not a prefab
                 foreach(Transform potentialParent in levelTransformCategory.categoryTransform)
                 {
+#if UNITY_EDITOR
                     if(potentialParent.parent == levelTransformCategory.categoryTransform //Is direct child
-                        && PrefabUtility.GetCorrespondingObjectFromSource(potentialParent) == null //Is not a prefab
+                        && UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(potentialParent) == null //Is not a prefab
                         //&& potentialParent.GetComponents(typeof(Component)).Length < 2 //Has only transform component on it
                         && potentialParent.name == obj.item.name) //Has the same name
                     {
                         return potentialParent;
                     }
+#endif
                 }
             }
 
@@ -324,7 +333,54 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             return newLevelTransformCategory;
         }
 
-        #endregion
+#endregion
+
+#region Parallax Scrolling Preview
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (!Application.isPlaying)
+            {
+                if (sceneViewCamera == null)
+                {
+                    UnityEditor.SceneView sceneView = UnityEditor.EditorWindow.GetWindow<UnityEditor.SceneView>();
+                    if (sceneView != null)
+                        sceneViewCamera = sceneView.camera;
+                }
+                if (settings == null)
+                {
+                    settings = LevelEditorSettingsController.Instance.GetLevelEditorSettings();
+                }
+                if (settings != null && sceneViewCamera != null)
+                {
+                    foreach (LevelTransformLayer layer in levelTransforms)
+                    {
+                        float speedX = 1f;
+                        foreach (LevelLayer levelLayer in settings.levelLayers)
+                        {
+                            if (levelLayer.guid == layer.layerGuid)
+                            {
+                                speedX = levelLayer.parallaxSpeed;
+                                break;
+                            }
+                        }
+                        if (true || speedX != 1f)
+                        {
+                            Vector2 distance = sceneViewCamera.transform.position;
+                            layer.layerTransform.position = new Vector3(-Vector2.Scale(distance, new Vector2(speedX - 1f, 0f)).x, 0f, 0f);
+                        }
+                        else
+                        {
+                            layer.layerTransform.position = Vector3.zero;
+                        }
+                    }
+                }
+            }
+        }
+#endif
+
+#endregion
 
     }
 

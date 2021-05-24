@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36f74efb76235c74a9527ce0eec7e516, type: 3}
+  m_Name: ForestBackground
+  m_EditorClassIdentifier: 
+  guid: 04ea5544-a102-4040-a28a-742ea35b58aa
+  objectPrefab: {fileID: 1003984555831692638, guid: 1f51430c9639341468a4211df0561aaf,
+    type: 3}
+  item:
+    name: ForestBackground
+    thumbnail: {fileID: 2800000, guid: 5b7bde1e88d58f445994eac1265caa47, type: 3}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
+  categories:
+  - 17865518-a62f-44c4-b3bb-efbb3c282810
+  levelLayers:
+  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+  parallaxBackgroundLayers:
+  - name: Sky
+    image: {fileID: 21300000, guid: 05a433b24aec3f64ea8eb6f4d4cbbf04, type: 3}
+    parallaxSpeed: 0
+    yOffset: 2
+  - name: Cloud
+    image: {fileID: 21300000, guid: 94ffc8f5ad069e6459a248d0c5911967, type: 3}
+    parallaxSpeed: 0.05
+    yOffset: 2
+  - name: Mountain
+    image: {fileID: 21300000, guid: eafa6f79255908944864e58c7a6b9202, type: 3}
+    parallaxSpeed: 0.1
+    yOffset: 1
+  - name: Pine Back
+    image: {fileID: 21300000, guid: e35e2a031c6b7f94b8aa1031f522a683, type: 3}
+    parallaxSpeed: 0.2
+    yOffset: -3
+  - name: Pine Front
+    image: {fileID: 21300000, guid: 05837912ba3d32541a1fc34fce5548ce, type: 3}
+    parallaxSpeed: 0.5
+    yOffset: -6.5

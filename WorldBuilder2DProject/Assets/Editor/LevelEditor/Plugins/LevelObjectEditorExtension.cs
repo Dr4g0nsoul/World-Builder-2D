@@ -245,7 +245,16 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <summary>
         /// Custom Inspector On Enable GUI
         /// </summary>
-        public virtual void OnCustomInspectorEnable() { }
+        /// <param name="levelObjectEditor">The level object editor that calls this function</param>
+        /// <param name="serializedObject">Serialized object representing the level object</param>
+        public virtual void OnCustomInspectorEnable(LevelObjectEditor levelObjectEditor, SerializedObject serializedObject) { }
+
+        /// <summary>
+        /// Custom Inspector On Disable GUI
+        /// </summary>
+        /// <param name="levelObjectEditor">The level object editor that calls this function</param>
+        /// <param name="serializedObject">Serialized object representing the level object</param>
+        public virtual void OnCustomInspectorDisable(LevelObjectEditor levelObjectEditor, SerializedObject serializedObject) { }
 
         /// <summary>
         /// Custom Inspector Tab GUI

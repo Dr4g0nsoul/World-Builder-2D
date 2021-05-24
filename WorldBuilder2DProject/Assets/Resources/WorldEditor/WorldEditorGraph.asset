@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Test
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -872, y: -2632}
+  position: {x: -856, y: -3016}
   ports:
     keys:
     - 86329b80-7e6f-47d9-881e-6db22b85fb69
@@ -55,10 +55,10 @@ MonoBehaviour:
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
-    x: 6.554367
-    y: 9.503517
-    width: 59.555683
-    height: 23.429317
+    x: 5.8050404
+    y: 25.389019
+    width: 147.07579
+    height: 55.200325
   levelExits:
   - guid: 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
     name: Exit 1
@@ -78,9 +78,9 @@ MonoBehaviour:
     levelExitTrigger:
       serializedVersion: 2
       x: 36.434845
-      y: 15.683833
+      y: 10.999773
       width: 1
-      height: 11.833811
+      height: 2.4656982
     entryPoint: {x: 34.860237, y: 10.362742}
   - guid: 14984e05-5237-43fe-97d9-410feddefecb
     name: Exit 3
@@ -95,9 +95,10 @@ MonoBehaviour:
     entryPoint: {x: 9.995893, y: 2.5170875}
   levelExitsUpdated: 0
   preferredItems:
-    categories: []
-    levelObjects:
-    - d17a9121-1d59-43e5-a5dc-c94e935be491
+    categories:
+    - 09271e61-9543-4944-8024-557227e73140
+    - e74c1e07-5b1e-4051-b82d-ef180254a462
+    levelObjects: []
   assignedSceneName: Level_97e794f4-f0a2-41ee-96b4-80203ab387da
   assignedScenePath: Assets/Scenes/Levels/Level_97e794f4-f0a2-41ee-96b4-80203ab387da.unity
 --- !u!114 &-4825979069897043651
@@ -113,7 +114,7 @@ MonoBehaviour:
   m_Name: Test Level 2
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1704, y: -2600}
+  position: {x: -1800, y: -2920}
   ports:
     keys:
     - 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
@@ -273,7 +274,7 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2184, y: -2792}
+  position: {x: -2152, y: -3176}
   ports:
     keys: []
     values: []
@@ -304,7 +305,7 @@ MonoBehaviour:
   m_Name: Mountains
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1256, y: -2728}
+  position: {x: 1272, y: -2776}
   ports:
     keys: []
     values: []

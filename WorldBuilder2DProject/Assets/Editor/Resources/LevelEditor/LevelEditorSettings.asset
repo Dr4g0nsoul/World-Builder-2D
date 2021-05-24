@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c790e2fb0976312418c87b3007785984, type: 3}
   m_Name: LevelEditorSettings
   m_EditorClassIdentifier: 
-  levelEditorRootTag: LevelRoot
   levelObjectCategories:
   - guid: 09271e61-9543-4944-8024-557227e73140
     item:
@@ -57,7 +56,7 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 4bab9ded5c6d112488d2923cd5e5f3e9, type: 3}
       description: 
       accentColor: {r: 0.4528302, g: 0.36383852, b: 0.254183, a: 1}
-    parallaxSpeed: 2
+    parallaxSpeed: 0
     overrideSortingLayer: 1
     sortingLayer: Foreground
     overridePhysicsLayer: 1
@@ -89,7 +88,7 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 24430aae6bc171f44b0211a8e3d21c18, type: 3}
       description: 
       accentColor: {r: 0.09878961, g: 0.5660378, b: 0.4646788, a: 1}
-    parallaxSpeed: 0.57
+    parallaxSpeed: 0.95
     overrideSortingLayer: 1
     sortingLayer: Background
     overridePhysicsLayer: 1
@@ -105,7 +104,7 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
       accentColor: {r: 0.13861692, g: 0.8396226, b: 0.8121752, a: 1}
-    parallaxSpeed: 0.1
+    parallaxSpeed: 1
     overrideSortingLayer: 1
     sortingLayer: Background Far
     overridePhysicsLayer: 1
