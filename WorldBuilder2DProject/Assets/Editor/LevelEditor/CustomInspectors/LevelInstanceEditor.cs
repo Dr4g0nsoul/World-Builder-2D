@@ -301,6 +301,7 @@ namespace dr4g0nsoul.WorldBuilder2D.WorldEditor
                 {
                     bounds.rectValue = newBounds;
                     editSizeMode = false;
+                    EditorUtility.SetDirty(target);
                     return true;
                 }
             }

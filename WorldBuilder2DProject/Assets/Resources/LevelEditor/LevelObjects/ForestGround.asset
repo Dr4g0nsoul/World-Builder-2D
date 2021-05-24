@@ -28,7 +28,6 @@ MonoBehaviour:
   - abcc027e-5800-4c96-a981-ffbd8a2c03d4
   - 7537e771-bde1-4499-9b15-2a7cd77fd6da
   - 67426602-3f83-4931-91bf-0dd33464a7ff
-  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
   autoTileGroups:
   - autoTileGroupName: Forest
     autoTiles: ffffffff220000000c00000024000000ffffffff10000000060000001b000000ffffffff170000000e0000001200000005000000ffffffffffffffffffffffff1f0000000b0000000300000001000000

@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
+  m_Name: WhiteFlower
+  m_EditorClassIdentifier: 
+  guid: 6cb686d8-1bef-4b6e-aedb-0d425f150fd8
+  objectPrefab: {fileID: 7080174313336164691, guid: 943f9b2df904add4dbc2f5b48ce78b21,
+    type: 3}
+  item:
+    name: WhiteFlower
+    thumbnail: {fileID: 0}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
+  categories:
+  - 17865518-a62f-44c4-b3bb-efbb3c282810
+  - e77fd903-9f45-4578-aae2-b58c430f8ca3
+  levelLayers:
+  - 7537e771-bde1-4499-9b15-2a7cd77fd6da
+  - 67426602-3f83-4931-91bf-0dd33464a7ff
+  - abcc027e-5800-4c96-a981-ffbd8a2c03d4

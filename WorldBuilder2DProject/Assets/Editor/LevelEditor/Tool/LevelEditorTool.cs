@@ -194,7 +194,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float hbOpacity;
         private Tween hbAnimation;
         private readonly float hbFadeDuration = 0.7f;
-        private readonly float hbShowDelay = 1.5f;
+        private readonly float hbShowDelay = 1f;
         private readonly float hbHideDelay = .5f;
 
         //Object placement
@@ -433,7 +433,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             otherSystemItems[0] = new LevelEditorItem
             {
                 name = "Open Inspector",
-                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/info-no-border"),
+                thumbnail = Resources.Load<Texture2D>(LevelEditorStyles.ICON_ROOT + "MDI/burger_menu"),
                 accentColor = LevelEditorStyles.buttonHoverColor
             };
         }
@@ -2105,8 +2105,11 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (LevelController.Instance.IsValidLevel(guid))
             {
                 GameObject level = levelScene.GetRootGameObjects()[0];
-                if (level != null)
+                LevelInstance levelInstance = level.GetComponent<LevelInstance>();
+                if (level != null && levelInstance != null)
                 {
+                    levelInstance.ResetParallaxScrolling();
+
                     //Set default scene as active scene
                     EditorSceneManager.SetActiveScene(EditorSceneManager.GetSceneAt(0));
 
@@ -2206,6 +2209,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     DestroyImmediate(cameraObject);
                     LevelController.Instance.EmptyLevelThumbnailsCache();
+                    levelInstance.ReenableParrallaxScrolling();
                 }
 
             }

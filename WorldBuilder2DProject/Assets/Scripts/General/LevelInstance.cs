@@ -37,6 +37,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Parallax preview
         private Camera sceneViewCamera;
+        private bool blockParallaxPreview = false;
 
         //Level Transforms
         public LevelTransformLayer[] levelTransforms;
@@ -340,7 +341,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (!Application.isPlaying)
+            if (levelTransforms != null && !Application.isPlaying && !blockParallaxPreview)
             {
                 if (sceneViewCamera == null)
                 {
@@ -379,6 +380,23 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 #endif
+
+        public void ResetParallaxScrolling()
+        {
+            if (levelTransforms != null)
+            {
+                blockParallaxPreview = true;
+                foreach (LevelTransformLayer layer in levelTransforms)
+                {
+                    layer.layerTransform.position = Vector3.zero;
+                }
+            }
+        }
+
+        public void ReenableParrallaxScrolling()
+        {
+            blockParallaxPreview = false;
+        }
 
 #endregion
 

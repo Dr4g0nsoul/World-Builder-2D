@@ -29,7 +29,7 @@ MonoBehaviour:
   - name: Sky
     image: {fileID: 21300000, guid: 05a433b24aec3f64ea8eb6f4d4cbbf04, type: 3}
     parallaxSpeed: 0
-    yOffset: 2
+    yOffset: 4
   - name: Cloud
     image: {fileID: 21300000, guid: 94ffc8f5ad069e6459a248d0c5911967, type: 3}
     parallaxSpeed: 0.05

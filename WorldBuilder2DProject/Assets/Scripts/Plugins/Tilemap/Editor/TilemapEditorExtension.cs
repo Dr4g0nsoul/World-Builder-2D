@@ -173,30 +173,34 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			//Add new sprites to tilemap
 			if (Event.current.type == EventType.ExecuteCommand && Event.current.commandName == "ObjectSelectorClosed")
 			{
-				if (EditorGUIUtility.GetObjectPickerObject().GetType() == typeof(Texture2D))
+				UnityEngine.Object pickedObject = EditorGUIUtility.GetObjectPickerObject();
+				if (pickedObject != null)
 				{
-					Texture2D tex = EditorGUIUtility.GetObjectPickerObject() as Texture2D;
-					if (tex != null)
+					if (pickedObject.GetType() == typeof(Texture2D))
 					{
-						string pathToTexture = AssetDatabase.GetAssetPath(tex);
-						TextureImporter textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
-						if (textureImporter != null && textureImporter.textureType == TextureImporterType.Sprite)
+						Texture2D tex = EditorGUIUtility.GetObjectPickerObject() as Texture2D;
+						if (tex != null)
 						{
-							UnityEngine.Object[] spriteObjects = AssetDatabase.LoadAllAssetsAtPath(pathToTexture);
-							foreach (UnityEngine.Object spriteObject in spriteObjects)
+							string pathToTexture = AssetDatabase.GetAssetPath(tex);
+							TextureImporter textureImporter = AssetImporter.GetAtPath(pathToTexture) as TextureImporter;
+							if (textureImporter != null && textureImporter.textureType == TextureImporterType.Sprite)
 							{
-								Sprite sprite = spriteObject as Sprite;
-								AddTile(sprite, tilemap, serializedObject);
+								UnityEngine.Object[] spriteObjects = AssetDatabase.LoadAllAssetsAtPath(pathToTexture);
+								foreach (UnityEngine.Object spriteObject in spriteObjects)
+								{
+									Sprite sprite = spriteObject as Sprite;
+									AddTile(sprite, tilemap, serializedObject);
+								}
 							}
 						}
 					}
-				}
-				else if (EditorGUIUtility.GetObjectPickerObject().GetType() == typeof(Sprite))
-				{
-					Sprite sprite = EditorGUIUtility.GetObjectPickerObject() as Sprite;
-					if (sprite != null)
+					else if (pickedObject.GetType() == typeof(Sprite))
 					{
-						AddTile(sprite, tilemap, serializedObject);
+						Sprite sprite = EditorGUIUtility.GetObjectPickerObject() as Sprite;
+						if (sprite != null)
+						{
+							AddTile(sprite, tilemap, serializedObject);
+						}
 					}
 				}
 			}
@@ -390,6 +394,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				Texture2D thumbnail = LevelEditorStyles.TextureFromSprite(tilemap.tiles[selectedTile].sprite);
 				thumbnail.filterMode = FilterMode.Point;
 				File.WriteAllBytes($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png", thumbnail.EncodeToPNG());
+				AssetDatabase.ImportAsset($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");
+				AssetDatabase.Refresh();
 				TextureImporter thumbnailImporter = TextureImporter.GetAtPath($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png") as TextureImporter;
 				thumbnailImporter.filterMode = FilterMode.Point;
 				AssetDatabase.ImportAsset($"{THUMBNAIL_FOLDER}/{THUMBNAIL_PREFIX}_{tilemap.guid}.png");

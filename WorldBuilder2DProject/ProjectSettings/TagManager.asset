@@ -53,6 +53,9 @@ TagManager:
   - name: Environment
     uniqueID: 13910543
     locked: 0
+  - name: Hazards
+    uniqueID: 2169556969
+    locked: 0
   - name: Enemies
     uniqueID: 715317393
     locked: 0

@@ -19,36 +19,42 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
       accentColor: {r: 0.5660378, g: 0.35683766, b: 0.15218939, a: 1}
-  - guid: eeae123a-5fc2-465b-944a-801e8e45e381
-    item:
-      name: Player
-      thumbnail: {fileID: 2800000, guid: 4d8fc2dac4a975c4bb29ef0174d5abf0, type: 3}
-      description: 
-      accentColor: {r: 0.6660055, g: 0.23820755, b: 0.9528302, a: 1}
   - guid: e74c1e07-5b1e-4051-b82d-ef180254a462
     item:
       name: Enemy
       thumbnail: {fileID: 2800000, guid: b95b0a65d062060419a9824a6d928dd0, type: 3}
       description: 
-      accentColor: {r: 0.8962264, g: 0.3616805, b: 0.29169634, a: 1}
+      accentColor: {r: 0.754717, g: 0.11035956, b: 0.1221329, a: 1}
   - guid: 7fcf29ce-9a4e-48b8-9f9a-24af34e7d640
     item:
       name: Hazard
       thumbnail: {fileID: 2800000, guid: 286a977ce95637c45b171ad489ddc7f4, type: 3}
       description: 
-      accentColor: {r: 0.6886792, g: 0.6886792, b: 0.6886792, a: 1}
+      accentColor: {r: 0.8980392, g: 0.36078432, b: 0.2901961, a: 1}
+  - guid: c9e5faf2-5392-4aea-80b1-e64087c035d9
+    item:
+      name: Water
+      thumbnail: {fileID: 2800000, guid: d06e0f64cc91ca1498c94eef75c021f5, type: 3}
+      description: 
+      accentColor: {r: 0.23137254, g: 0.6883784, b: 0.85882354, a: 1}
   - guid: 17865518-a62f-44c4-b3bb-efbb3c282810
     item:
       name: Decoration
       thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
       description: 
       accentColor: {r: 0.23082057, g: 0.8584906, b: 0.60305536, a: 1}
-  - guid: fdd6b701-a366-46fe-8d27-6ab94fe655e5
+  - guid: e77fd903-9f45-4578-aae2-b58c430f8ca3
     item:
-      name: Puzzle
-      thumbnail: {fileID: 2800000, guid: 53bb323699ebdbc4c8a05ecab503357c, type: 3}
+      name: Forest
+      thumbnail: {fileID: 2800000, guid: 1a1475ba53c88c04a959e7dfe7065ee7, type: 3}
       description: 
-      accentColor: {r: 0.8811517, g: 0.9339623, b: 0.23349057, a: 1}
+      accentColor: {r: 0.6320754, g: 0.4601859, b: 0.1699448, a: 1}
+  - guid: ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
+    item:
+      name: Volcano
+      thumbnail: {fileID: 2800000, guid: 7422fd5a2923ea24b9506e65eba12c0f, type: 3}
+      description: 
+      accentColor: {r: 0.85882354, g: 0.35259774, b: 0.23137254, a: 1}
   levelLayers:
   - guid: abcc027e-5800-4c96-a981-ffbd8a2c03d4
     item:
@@ -88,7 +94,7 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: 24430aae6bc171f44b0211a8e3d21c18, type: 3}
       description: 
       accentColor: {r: 0.09878961, g: 0.5660378, b: 0.4646788, a: 1}
-    parallaxSpeed: 0.95
+    parallaxSpeed: 0.9
     overrideSortingLayer: 1
     sortingLayer: Background
     overridePhysicsLayer: 1

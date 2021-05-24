@@ -26,7 +26,7 @@ MonoBehaviour:
   levelLayers:
   - abcc027e-5800-4c96-a981-ffbd8a2c03d4
   - 67426602-3f83-4931-91bf-0dd33464a7ff
-  - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
+  - 7537e771-bde1-4499-9b15-2a7cd77fd6da
   autoTileGroups:
   - autoTileGroupName: Bright
     autoTiles: ffffffff000000000100000002000000ffffffff030000000400000005000000ffffffff06000000070000000800000004000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff

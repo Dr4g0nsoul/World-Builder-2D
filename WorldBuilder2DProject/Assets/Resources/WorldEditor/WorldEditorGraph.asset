@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4871792554773954699
+--- !u!114 &-4789111862040498701
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10,151 +10,29 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Test
+  m_Name: Start Area
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -856, y: -3016}
+  position: {x: -1112, y: -2856}
   ports:
-    keys:
-    - 86329b80-7e6f-47d9-881e-6db22b85fb69
-    - 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
-    - 14984e05-5237-43fe-97d9-410feddefecb
-    values:
-    - _fieldName: 86329b80-7e6f-47d9-881e-6db22b85fb69
-      _node: {fileID: -4871792554773954699}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-    - _fieldName: 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
-      _node: {fileID: -4871792554773954699}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-    - _fieldName: 14984e05-5237-43fe-97d9-410feddefecb
-      _node: {fileID: -4871792554773954699}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 5e2941f1-3113-4492-b70a-07b65fe57a1f
-        node: {fileID: -138885732908548619}
-        reroutePoints: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-  guid: 97e794f4-f0a2-41ee-96b4-80203ab387da
-  levelName: Test
+    keys: []
+    values: []
+  guid: 5195228c-691d-4793-b3c7-f8b9b1ab5b5b
+  levelName: Start Area
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
-    x: 5.8050404
-    y: 25.389019
-    width: 147.07579
-    height: 55.200325
-  levelExits:
-  - guid: 79cf6bc0-42be-48d7-90b0-89c7cc5c914a
-    name: Exit 1
-    active: 1
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: -23.454468
-      y: 8.644893
-      width: 1
-      height: 16.120535
-    entryPoint: {x: -21.978851, y: 1.4262081}
-  - guid: 86329b80-7e6f-47d9-881e-6db22b85fb69
-    name: Exit 2
-    active: 1
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: 36.434845
-      y: 10.999773
-      width: 1
-      height: 2.4656982
-    entryPoint: {x: 34.860237, y: 10.362742}
-  - guid: 14984e05-5237-43fe-97d9-410feddefecb
-    name: Exit 3
-    active: 1
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: 6.127363
-      y: -5.19666
-      width: 7.5739174
-      height: 2.0072937
-    entryPoint: {x: 9.995893, y: 2.5170875}
-  levelExitsUpdated: 0
-  preferredItems:
-    categories:
-    - 09271e61-9543-4944-8024-557227e73140
-    - e74c1e07-5b1e-4051-b82d-ef180254a462
-    levelObjects: []
-  assignedSceneName: Level_97e794f4-f0a2-41ee-96b4-80203ab387da
-  assignedScenePath: Assets/Scenes/Levels/Level_97e794f4-f0a2-41ee-96b4-80203ab387da.unity
---- !u!114 &-4825979069897043651
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Test Level 2
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -1800, y: -2920}
-  ports:
-    keys:
-    - 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
-    values:
-    - _fieldName: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
-      _node: {fileID: -4825979069897043651}
-      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections: []
-      _direction: 2
-      _connectionType: 1
-      _typeConstraint: 2
-      _dynamic: 1
-  guid: 112c846d-7b6f-4542-92e3-047992113559
-  levelName: Test Level 2
-  levelDescription: 
-  levelBoundaries:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 20
-    height: 12
-  levelExits:
-  - guid: 703d2e5d-a5d7-412f-8967-2ee3fb9f4840
-    name: Exit 1
-    active: 0
-    otherLevelGuid: 
-    levelExitTrigger:
-      serializedVersion: 2
-      x: -0.3600452
-      y: -1.426899
-      width: 1
-      height: 1
-    entryPoint: {x: -8.902157, y: 1.0222392}
+    x: 37.729034
+    y: 5.145465
+    width: 93.625084
+    height: 20.316967
+  levelExits: []
   levelExitsUpdated: 0
   preferredItems:
     categories: []
     levelObjects: []
-  assignedSceneName: Level_112c846d-7b6f-4542-92e3-047992113559
-  assignedScenePath: Assets/Scenes/Levels/Level_112c846d-7b6f-4542-92e3-047992113559.unity
+  assignedSceneName: Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b
+  assignedScenePath: Assets/Scenes/Levels/Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b.unity
 --- !u!114 &-138885732908548619
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,10 +55,7 @@ MonoBehaviour:
       _node: {fileID: -138885732908548619}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 14984e05-5237-43fe-97d9-410feddefecb
-        node: {fileID: -4871792554773954699}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -225,12 +100,11 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 3406478296349039305}
   - {fileID: 54554736457197497}
+  - {fileID: 3406478296349039305}
   - {fileID: 6769783703820135514}
-  - {fileID: -4871792554773954699}
-  - {fileID: -4825979069897043651}
   - {fileID: -138885732908548619}
+  - {fileID: -4789111862040498701}
 --- !u!114 &54554736457197497
 MonoBehaviour:
   m_ObjectHideFlags: 0
