@@ -60,6 +60,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private List<Texture2D> t_tileTextures;
 		private float t_autoTilesScrollpos;
 		private bool t_inDeletionMode;
+		private bool t_inRectToolMode;
+		private Vector3Int t_rectToolStartPos;
+		private bool t_rectToolStartSet;
 		private Vector3Int t_lastDraggedTilePos;
 		private Vector3Int t_lastPreviewTilePos;
 		private AutoTileMode t_autoTileMode;
@@ -672,7 +675,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 					tilemap = base.SpawnObject(obj, temporaryObject, parentTransform, worldPos, mousePos);
 				}
 
-				tilemap.transform.position = Vector2.zero;
+				tilemap.transform.localPosition = Vector2.zero;
 
 				Selection.activeGameObject = tilemap;
 				Selection.activeTransform = tilemap.transform;
@@ -734,6 +737,11 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				//Set Preview Tile
 				if (!t_inDeletionMode && selectedTile != null && cell != t_lastPreviewTilePos)
 				{
+					if(t_inRectToolMode && t_rectToolStartSet)
+                    {
+						t_currentTilemap.ClearAllEditorPreviewTiles();
+						BoxFill(t_currentTilemap, selectedTile, t_rectToolStartPos, cell, true);
+                    }
 					t_currentTilemap.SetEditorPreviewTile(t_lastPreviewTilePos, null);
 					t_currentTilemap.SetEditorPreviewTile(cell, selectedTile);
 					t_lastPreviewTilePos = cell;
@@ -748,13 +756,16 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
         {
 			if(t_currentTilemap != null)
             {
-				Vector3Int currentDraggedTilePos = t_currentTilemap.WorldToCell(worldPos);
+				if (!t_inRectToolMode)
+				{
+					Vector3Int currentDraggedTilePos = t_currentTilemap.WorldToCell(worldPos);
 
-				if (currentDraggedTilePos != t_lastDraggedTilePos)
-                {
-					t_lastDraggedTilePos = currentDraggedTilePos;
-					SpawnObject(obj, temporaryObject, t_currentTilemap.transform.parent.parent, worldPos, mousePos);
-                }
+					if (currentDraggedTilePos != t_lastDraggedTilePos)
+					{
+						t_lastDraggedTilePos = currentDraggedTilePos;
+						SpawnObject(obj, temporaryObject, t_currentTilemap.transform.parent.parent, worldPos, mousePos);
+					}
+				}
 				SceneView.currentDrawingSceneView.Repaint();
 				Event.current.Use();
             }
@@ -775,8 +786,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
             }
 			else if(t_currentTilemap.GetTile(cell) != null)
             {
-				DrawTileBorder(cell, LevelEditorStyles.buttonHoverColor, info);
-				
+				DrawTileBorder(cell, LevelEditorStyles.buttonHoverColor, info);	
 			}
 			else
             {
@@ -823,15 +833,36 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				{
 					t_currentTilemap.SetTile(cell, null);
 
+					/* DISABLE UPDATE TILES WHEN DELETING */
+					/*
 					if(t_menu == 1)
                     {
 						TilemapCellProperties tileProperties = t_currentTilemapInformation.GetTileProperties(cell);
 						//Update neighbor tiles
 						UpdateNeighbourTiles(tilemapSettings, cell, AutoTileMode.All, true);
 					}
+					*/
 
 					t_currentTilemapInformation.ClearTileProperties(cell);
 				}
+				else if(t_inRectToolMode && t_menu == 0)
+                {
+					LevelTile selectedTile = tilemapSettings.GetTile(t_selectedTile);
+					if (selectedTile != null)
+					{
+						if (t_rectToolStartSet)
+						{
+							BoxFill(t_currentTilemap, selectedTile, t_rectToolStartPos, cell);
+							t_rectToolStartSet = false;
+						}
+						else
+                        {
+							t_rectToolStartSet = true;
+							t_rectToolStartPos = cell;
+						}
+					}
+				}
+					
 				else
 				{
 					if (t_menu == 0)
@@ -919,6 +950,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
                 }
 				else if (!t_inDeletionMode && GUILayout.Button("Enter Deletion Mode", LevelEditorStyles.Button)){
 					t_inDeletionMode = true;
+					t_inRectToolMode = false;
+					t_rectToolStartSet = false;
 					t_selectedTile = -1;
 					t_selectedAutoTileGroup = -1;
 					t_currentTilemap.ClearAllEditorPreviewTiles();
@@ -935,6 +968,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 						ToolTileGUI(obj);
 						break;
 					case 1:
+						t_inRectToolMode = false;
+						t_rectToolStartSet = false;
 						ToolAutoTileGUI(obj);
 						break;
                 }
@@ -947,7 +982,9 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				t_selectedTile = -1;
 				t_selectedAutoTileGroup = -1;
 				t_inDeletionMode = false;
-            }
+				t_inRectToolMode = false;
+				t_rectToolStartSet = false;
+			}
         }
 
 		private void ToolTileGUI(LevelObject obj)
@@ -996,6 +1033,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			t_selectedAutoTileGroup = -1;
 			t_autoTilesScrollpos = 0f;
 			t_inDeletionMode = false;
+			t_inRectToolMode = false;
+			t_rectToolStartSet = false;
 			t_autoTileMode = AutoTileMode.SameGroup;
 
 			GenerateTileTextures(obj);
@@ -1016,6 +1055,17 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		private void ToolDrawTilePicker(TilemapLevelObject tilemapSettings)
         {
 			GUILayout.Label("All Tiles", LevelEditorStyles.HeaderCentered);
+			if (t_inRectToolMode && GUILayout.Button("Fill rectangle", LevelEditorStyles.ButtonActive))
+			{
+				t_inRectToolMode = false;
+				t_rectToolStartSet = false;
+			}
+			else if (!t_inRectToolMode && GUILayout.Button("Fill rectangle", LevelEditorStyles.Button))
+			{
+				t_inRectToolMode = true;
+				t_inDeletionMode = false;
+				t_currentTilemap.ClearAllEditorPreviewTiles();
+			}
 			GUILayout.Space(5f);
 
 			int objectsPerRow = Mathf.FloorToInt(LevelEditorTool.ObjectInspectorWidth / tileSize - 2f);
@@ -1151,6 +1201,8 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			if (GUILayout.Button(GUIContent.none, buttonStyle, GUILayout.Width(tileSize), GUILayout.Height(tileSize)))
 			{
 				t_inDeletionMode = false;
+				t_inRectToolMode = false;
+				t_rectToolStartSet = false;
 				clickAction.Invoke(selected);
 			}
 			Rect r = GUILayoutUtility.GetLastRect();
@@ -1197,6 +1249,32 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 				tilemapInfoSO.ApplyModifiedProperties();
 			}
         }
+
+		private void BoxFill(Tilemap map, TileBase tile, Vector3Int start, Vector3Int end, bool editorPreview = false)
+		{
+			//Determine directions on X and Y axis
+			var xDir = start.x < end.x ? 1 : -1;
+			var yDir = start.y < end.y ? 1 : -1;
+			//How many tiles on each axis?
+			int xCols = 1 + Mathf.Abs(start.x - end.x);
+			int yCols = 1 + Mathf.Abs(start.y - end.y);
+			//Start painting
+			for (var x = 0; x < xCols; x++)
+			{
+				for (var y = 0; y < yCols; y++)
+				{
+					var tilePos = start + new Vector3Int(x * xDir, y * yDir, 0);
+					if (editorPreview)
+					{
+						map.SetEditorPreviewTile(tilePos, tile);
+					}
+					else
+					{
+						map.SetTile(tilePos, tile);
+					}
+				}
+			}
+		}
 
 		#endregion
 

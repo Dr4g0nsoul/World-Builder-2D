@@ -26,8 +26,6 @@ MonoBehaviour:
   - ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
   levelLayers:
   - 7537e771-bde1-4499-9b15-2a7cd77fd6da
-  - 67426602-3f83-4931-91bf-0dd33464a7ff
-  - abcc027e-5800-4c96-a981-ffbd8a2c03d4
   autoTileGroups:
   - autoTileGroupName: Lava
     autoTiles: ffffffff000000000000000000000000ffffffff020000000200000002000000ffffffff02000000020000000200000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff

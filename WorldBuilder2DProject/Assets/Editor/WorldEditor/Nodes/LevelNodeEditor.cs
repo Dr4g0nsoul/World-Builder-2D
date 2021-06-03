@@ -809,6 +809,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
                 {
                     lNode.AddDynamicBoth(typeof(LevelNode), Node.ConnectionType.Override, Node.TypeConstraint.Strict, exit.guid);
                 }
+                Debug.Log(exit.name);
             }
             
 

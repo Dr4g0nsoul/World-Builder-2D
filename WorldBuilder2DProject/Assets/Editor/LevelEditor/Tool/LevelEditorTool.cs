@@ -563,6 +563,13 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                             }
                         }
                     }
+                    else if (e.button == 2)
+                    {
+                        if (!Tools.viewToolActive)
+                        {
+                            e.Use();
+                        }
+                    }
                 }
                 else if (e.type == EventType.KeyUp)
                 {
@@ -2154,7 +2161,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     renderCamera.targetDisplay = 2;
 
                     int resolution = 512;
-                    float cameraDistance = -2f;
+                    float cameraDistance = -9f;
 
                     RenderTexture renderTexture = RenderTexture.GetTemporary(resolution, resolution, 24);
 

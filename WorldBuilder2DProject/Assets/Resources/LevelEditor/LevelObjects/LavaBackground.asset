@@ -23,12 +23,15 @@ MonoBehaviour:
   mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
   categories:
   - 17865518-a62f-44c4-b3bb-efbb3c282810
+  - ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
   levelLayers:
   - 41be8c3d-e7ff-43fc-b7f8-9d8f6658fbcb
   parallaxBackgroundLayers:
   - name: Background Far
     image: {fileID: 21300000, guid: 9bed709d8bc096d4fb0a5820bc942690, type: 3}
     parallaxSpeed: 0.1
+    yOffset: 0
   - name: Background Near
     image: {fileID: 21300000, guid: 88e0e50386a0e4647a3b6d79707febd1, type: 3}
     parallaxSpeed: 0.3
+    yOffset: 0

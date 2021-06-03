@@ -114,7 +114,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1750523873
   m_SortingLayer: 3
-  m_SortingOrder: 10
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -227,7 +227,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2167498328694500348}
   - component: {fileID: 313862889431978485}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: VolcanoPlattforms
   m_TagString: Untagged
   m_Icon: {fileID: 0}

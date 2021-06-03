@@ -23,6 +23,7 @@ MonoBehaviour:
   mainCategory: 17865518-a62f-44c4-b3bb-efbb3c282810
   categories:
   - 17865518-a62f-44c4-b3bb-efbb3c282810
+  - e77fd903-9f45-4578-aae2-b58c430f8ca3
   levelLayers:
   - abcc027e-5800-4c96-a981-ffbd8a2c03d4
   - 67426602-3f83-4931-91bf-0dd33464a7ff
@@ -31,14 +32,8 @@ MonoBehaviour:
   tiles:
   - {fileID: 11400000, guid: d59c99277aee2bb4ebb2968def91042f, type: 2}
   - {fileID: 11400000, guid: 0823b1881de6be44d9725dc96f9e05d6, type: 2}
-  - {fileID: 11400000, guid: 270f566312e8e774ebb298b1cb311036, type: 2}
-  - {fileID: 11400000, guid: f48c17c37526ca5459ce9aee81314ed3, type: 2}
-  - {fileID: 11400000, guid: 12f6f740eedf39d4099ea9779cc83761, type: 2}
   - {fileID: 11400000, guid: dcb5c5924d7ebe3408df62cb1e46af74, type: 2}
   - {fileID: 11400000, guid: e3241cdfb9dbd4b40bb94bfed7f82c65, type: 2}
-  - {fileID: 11400000, guid: b4c22e02cc7c2674cb34bcf25d7e5fac, type: 2}
-  - {fileID: 11400000, guid: fab75bffd5e5b314893eff9cc1da1d17, type: 2}
-  - {fileID: 11400000, guid: 1f54e3ea19931654181ccdb5c91a2cbe, type: 2}
   - {fileID: 11400000, guid: 8c51dd09f481fc84cb537305a7b32585, type: 2}
   - {fileID: 11400000, guid: 8d912aa3f65ab784396df2f51ab9a422, type: 2}
   - {fileID: 11400000, guid: 74dea28c93c362d4aa81cb04586eb89d, type: 2}

@@ -10,30 +10,96 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Start Area
+  m_Name: Mountain Road
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1112, y: -2856}
+  position: {x: -1944, y: -3112}
   ports:
-    keys: []
-    values: []
+    keys:
+    - c450d9e2-9829-49d8-b7d9-d014457c31f3
+    - cc59631c-b2a7-439b-89a3-d44dcc59390a
+    - 08782a35-ad72-4eb0-964d-f296e389f960
+    values:
+    - _fieldName: c450d9e2-9829-49d8-b7d9-d014457c31f3
+      _node: {fileID: -4789111862040498701}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections:
+      - fieldName: 7569911d-5696-4192-a179-854c438c3ccf
+        node: {fileID: -1618667538126382294}
+        reroutePoints: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
+    - _fieldName: cc59631c-b2a7-439b-89a3-d44dcc59390a
+      _node: {fileID: -4789111862040498701}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
+    - _fieldName: 08782a35-ad72-4eb0-964d-f296e389f960
+      _node: {fileID: -4789111862040498701}
+      _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      connections: []
+      _direction: 2
+      _connectionType: 1
+      _typeConstraint: 2
+      _dynamic: 1
   guid: 5195228c-691d-4793-b3c7-f8b9b1ab5b5b
-  levelName: Start Area
+  levelName: Mountain Road
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
-    x: 37.729034
+    x: 21.419
     y: 5.145465
-    width: 93.625084
+    width: 98.138596
     height: 20.316967
-  levelExits: []
+  levelExits:
+  - guid: c450d9e2-9829-49d8-b7d9-d014457c31f3
+    name: To Start Area
+    active: 1
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: -26.52058
+      y: 5.135644
+      width: 1.7256165
+      height: 7.7423058
+    entryPoint: {x: -17.773737, y: 3.5785644}
+  - guid: cc59631c-b2a7-439b-89a3-d44dcc59390a
+    name: To Underground Passage
+    active: 1
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: 22.865852
+      y: -4.2905893
+      width: 7.2853546
+      height: 2.0570993
+    entryPoint: {x: 18.135721, y: -0.3532138}
+  - guid: 08782a35-ad72-4eb0-964d-f296e389f960
+    name: To Volcano Cave
+    active: 1
+    otherLevelGuid: 
+    levelExitTrigger:
+      serializedVersion: 2
+      x: 70.85477
+      y: 3.325994
+      width: 1.825676
+      height: 6.822955
+    entryPoint: {x: 67.918915, y: 1.5211871}
   levelExitsUpdated: 0
   preferredItems:
     categories: []
     levelObjects: []
   assignedSceneName: Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b
   assignedScenePath: Assets/Scenes/Levels/Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b.unity
---- !u!114 &-138885732908548619
+--- !u!114 &-1618667538126382294
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,50 +109,53 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Cavern Crossroads
+  m_Name: Start Area
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1592, y: -1864}
+  position: {x: -2744, y: -3112}
   ports:
     keys:
-    - 5e2941f1-3113-4492-b70a-07b65fe57a1f
+    - 7569911d-5696-4192-a179-854c438c3ccf
     values:
-    - _fieldName: 5e2941f1-3113-4492-b70a-07b65fe57a1f
-      _node: {fileID: -138885732908548619}
+    - _fieldName: 7569911d-5696-4192-a179-854c438c3ccf
+      _node: {fileID: -1618667538126382294}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections: []
+      connections:
+      - fieldName: c450d9e2-9829-49d8-b7d9-d014457c31f3
+        node: {fileID: -4789111862040498701}
+        reroutePoints: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 1
-  guid: 6249a840-3f58-4688-9c9f-4c37d23e5bac
-  levelName: Cavern Crossroads
+  guid: b6308798-f525-4ede-a632-19f0765bbdf7
+  levelName: Start Area
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
-    x: -23.501995
-    y: -5.9988146
-    width: 130.99841
-    height: 39.989418
+    x: 10.374628
+    y: 6.091294
+    width: 45.649456
+    height: 20.507454
   levelExits:
-  - guid: 5e2941f1-3113-4492-b70a-07b65fe57a1f
-    name: Back To Start Area
+  - guid: 7569911d-5696-4192-a179-854c438c3ccf
+    name: Start Area Exit
     active: 1
     otherLevelGuid: 
     levelExitTrigger:
       serializedVersion: 2
-      x: -5.8220453
-      y: 14.084235
-      width: 9.451236
-      height: 2.5588088
-    entryPoint: {x: -5.4434566, y: 10.926361}
+      x: 32.304085
+      y: 7.5835495
+      width: 1.2890778
+      height: 7.5306168
+    entryPoint: {x: 30.44706, y: 4.37934}
   levelExitsUpdated: 0
   preferredItems:
     categories: []
     levelObjects: []
-  assignedSceneName: Level_6249a840-3f58-4688-9c9f-4c37d23e5bac
-  assignedScenePath: Assets/Scenes/Levels/Level_6249a840-3f58-4688-9c9f-4c37d23e5bac.unity
+  assignedSceneName: Level_b6308798-f525-4ede-a632-19f0765bbdf7
+  assignedScenePath: Assets/Scenes/Levels/Level_b6308798-f525-4ede-a632-19f0765bbdf7.unity
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,11 +169,12 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 54554736457197497}
+  - {fileID: 4160076340692827671}
   - {fileID: 3406478296349039305}
-  - {fileID: 6769783703820135514}
-  - {fileID: -138885732908548619}
+  - {fileID: 54554736457197497}
   - {fileID: -4789111862040498701}
+  - {fileID: -1618667538126382294}
+  - {fileID: 199429217961087287}
 --- !u!114 &54554736457197497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,23 +188,55 @@ MonoBehaviour:
   m_Name: Caverns
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1800, y: -2008}
+  position: {x: -440, y: -3368}
   ports:
     keys: []
     values: []
   guid: 7884dd4e-8a98-4dac-a41e-90d7058e8aa3
-  width: 2399
-  height: 856
+  width: 1145
+  height: 716
   worldName: Caverns
-  accentColor: {r: 1, g: 1, b: 1, a: 1}
+  accentColor: {r: 0.9150943, g: 0.3178583, b: 0.21150766, a: 1}
   worldDescription: 
-  levels:
-  - 6249a840-3f58-4688-9c9f-4c37d23e5bac
+  levels: []
   preferredItems:
     categories: []
     levelObjects: []
   assignedSceneName: 
   assignedScenePath: 
+--- !u!114 &199429217961087287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: Underground Passage
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -1288, y: -2568}
+  ports:
+    keys: []
+    values: []
+  guid: 3b44fb92-f27b-4265-b13e-763e17ffa4f3
+  levelName: Underground Passage
+  levelDescription: 
+  levelBoundaries:
+    serializedVersion: 2
+    x: 50.673874
+    y: -10.652869
+    width: 101.36368
+    height: 43.946594
+  levelExits: []
+  levelExitsUpdated: 0
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: Level_3b44fb92-f27b-4265-b13e-763e17ffa4f3
+  assignedScenePath: Assets/Scenes/Levels/Level_3b44fb92-f27b-4265-b13e-763e17ffa4f3.unity
 --- !u!114 &3406478296349039305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,25 +250,25 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2152, y: -3176}
+  position: {x: -3112, y: -3320}
   ports:
     keys: []
     values: []
   guid: b2937ac3-b004-4819-8e61-b787d990c216
-  width: 2480
-  height: 676
+  width: 2667
+  height: 675
   worldName: Forest
   accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
   worldDescription: 
   levels:
-  - 97e794f4-f0a2-41ee-96b4-80203ab387da
-  - 112c846d-7b6f-4542-92e3-047992113559
+  - 5195228c-691d-4793-b3c7-f8b9b1ab5b5b
+  - b6308798-f525-4ede-a632-19f0765bbdf7
   preferredItems:
     categories: []
     levelObjects: []
   assignedSceneName: 
   assignedScenePath: 
---- !u!114 &6769783703820135514
+--- !u!114 &4160076340692827671
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,18 +278,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
-  m_Name: Mountains
+  m_Name: Caverns
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: 1272, y: -2776}
+  position: {x: -968, y: -2376}
   ports:
     keys: []
     values: []
-  guid: a18c1d4c-1418-427b-945a-53aa19e5dcaf
+  guid: c837fdd2-5c87-4a7f-ac6e-eea8482c31fd
   width: 400
   height: 400
-  worldName: Mountains
-  accentColor: {r: 0.7830189, g: 0.657871, b: 0.4764596, a: 0.6117647}
+  worldName: Caverns
+  accentColor: {r: 1, g: 1, b: 1, a: 1}
   worldDescription: 
   levels: []
   preferredItems:

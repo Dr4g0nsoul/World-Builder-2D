@@ -47,10 +47,13 @@ TagManager:
   - name: Background
     uniqueID: 2959207339
     locked: 0
+  - name: Envrinment Back
+    uniqueID: 2165190273
+    locked: 0
   - name: Ground
     uniqueID: 2544443423
     locked: 0
-  - name: Environment
+  - name: Environment Front
     uniqueID: 13910543
     locked: 0
   - name: Hazards

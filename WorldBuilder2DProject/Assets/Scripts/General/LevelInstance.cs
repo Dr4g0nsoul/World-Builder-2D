@@ -197,9 +197,9 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //If none is found create it
             GameObject levelObjectContainer = new GameObject();
             levelObjectContainer.name = obj.name;
-            levelObjectContainer.transform.position = Vector2.zero;
             levelObjectContainer.transform.rotation = Quaternion.identity;
             levelObjectContainer.transform.parent = levelTransformCategory.categoryTransform;
+            levelObjectContainer.transform.localPosition = Vector2.zero;
 
             return levelObjectContainer.transform;
         }
@@ -211,10 +211,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
                 //Create Layer container
                 GameObject containerObject = new GameObject();
-                containerObject.transform.position = Vector2.zero;
                 containerObject.transform.rotation = Quaternion.identity;
                 containerObject.name = layer.item.name;
                 containerObject.transform.parent = transform;
+                containerObject.transform.localPosition = Vector2.zero;
 
                 //Create Layer transform container
                 newLevelTransformLayer.layerGuid = layer.guid;
@@ -223,10 +223,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                 //Create unknown category
                 GameObject unknownCategory = new GameObject();
-                unknownCategory.transform.position = Vector2.zero;
                 unknownCategory.transform.rotation = Quaternion.identity;
                 unknownCategory.name = UNCATEGORIZED;
                 unknownCategory.transform.parent = newLevelTransformLayer.layerTransform;
+                unknownCategory.transform.localPosition = Vector2.zero;
 
                 //Create unknown category transform container
                 LevelTransformCategory unknownCategoryTransformContainer = new LevelTransformCategory()
@@ -250,10 +250,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             LevelTransformLayer newLevelTransformLayer = new LevelTransformLayer();
             //Create Layer container
             GameObject containerObject = new GameObject();
-            containerObject.transform.position = Vector2.zero;
             containerObject.transform.rotation = Quaternion.identity;
             containerObject.name = NO_LAYER;
             containerObject.transform.parent = transform;
+            containerObject.transform.localPosition = Vector2.zero;
 
             //Create Layer transform container
             newLevelTransformLayer.layerGuid = Guid.Empty.ToString();
@@ -262,10 +262,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //Create unknown category
             GameObject unknownCategory = new GameObject();
-            unknownCategory.transform.position = Vector2.zero;
             unknownCategory.transform.rotation = Quaternion.identity;
             unknownCategory.name = UNCATEGORIZED;
             unknownCategory.transform.parent = newLevelTransformLayer.layerTransform;
+            unknownCategory.transform.localPosition = Vector2.zero;
 
             //Create unknown category transform container
             LevelTransformCategory unknownCategoryTransformContainer = new LevelTransformCategory()
@@ -288,10 +288,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             if (parentTransformLayer.layerTransform != null)
             {
                 GameObject containerObject = new GameObject();
-                containerObject.transform.position = Vector2.zero;
                 containerObject.transform.rotation = Quaternion.identity;
                 containerObject.name = UNCATEGORIZED;
                 containerObject.transform.parent = parentTransformLayer.layerTransform;
+                containerObject.transform.localPosition = Vector2.zero;
 
                 newLevelTransformCategory.categoryGuid = Guid.Empty.ToString();
                 newLevelTransformCategory.categoryTransform = containerObject.transform;
@@ -307,10 +307,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             {
 
                 GameObject containerObject = new GameObject();
-                containerObject.transform.position = Vector2.zero;
                 containerObject.transform.rotation = Quaternion.identity;
                 containerObject.name = category.item.name;
                 containerObject.transform.parent = parentTransformLayer.layerTransform;
+                containerObject.transform.localPosition = Vector2.zero;
 
                 newLevelTransformCategory.categoryGuid = category.guid;
                 newLevelTransformCategory.categoryTransform = containerObject.transform;
@@ -357,23 +357,26 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     foreach (LevelTransformLayer layer in levelTransforms)
                     {
-                        float speedX = 1f;
-                        foreach (LevelLayer levelLayer in settings.levelLayers)
+                        if (layer.layerTransform != null)
                         {
-                            if (levelLayer.guid == layer.layerGuid)
+                            float speedX = 1f;
+                            foreach (LevelLayer levelLayer in settings.levelLayers)
                             {
-                                speedX = levelLayer.parallaxSpeed;
-                                break;
+                                if (levelLayer.guid == layer.layerGuid)
+                                {
+                                    speedX = levelLayer.parallaxSpeed;
+                                    break;
+                                }
                             }
-                        }
-                        if (true || speedX != 1f)
-                        {
-                            Vector2 distance = sceneViewCamera.transform.position;
-                            layer.layerTransform.position = new Vector3(-Vector2.Scale(distance, new Vector2(speedX - 1f, 0f)).x, 0f, 0f);
-                        }
-                        else
-                        {
-                            layer.layerTransform.position = Vector3.zero;
+                            if (speedX != 1f)
+                            {
+                                Vector2 distance = sceneViewCamera.transform.position;
+                                layer.layerTransform.position = new Vector3(-Vector2.Scale(distance, new Vector2(speedX - 1f, 0f)).x, 0f, 0f);
+                            }
+                            else
+                            {
+                                layer.layerTransform.position = Vector3.zero;
+                            }
                         }
                     }
                 }

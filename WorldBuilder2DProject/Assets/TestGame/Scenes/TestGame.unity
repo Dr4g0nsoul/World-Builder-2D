@@ -279,7 +279,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1655132357
-  m_SortingLayer: 9
+  m_SortingLayer: 10
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 46f8b5ecb738cf3428c64598708ed661,
     type: 3}
@@ -432,7 +432,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1523648028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 13.55, y: 4.39, z: -9}
+  m_LocalPosition: {x: 26.32, y: 7.56, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 505354390}
@@ -597,12 +597,12 @@ PrefabInstance:
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 38.98
+      value: 37.42
       objectReference: {fileID: 0}
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.44
+      value: 5.08
       objectReference: {fileID: 0}
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
@@ -648,6 +648,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5566378221684900527, guid: c268adf48a89a014b81645708963b3a9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6471973245531550187, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
