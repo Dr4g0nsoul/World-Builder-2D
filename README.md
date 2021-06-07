@@ -1,19 +1,19 @@
 # World-Builder-2D
 A unity asset to easilly create interconnected 2D levels and worlds.
 
-# Level Editor
+## Level Editor
 
-# Manual Part 1 of Heuristic Evaluation
-## First Level Template
+## Manual Part 1 of Heuristic Evaluation
+### First Level Template
 Image here
 
-## Keyboard shortcuts
+### Keyboard shortcuts
 - F11: Fullscreen Scene View
 - F12: Open World Editor
 - Space: Open Level Editor
 - Q/W/E: Switch to Move/Scale/Rotate
 
-## Step by step instructions
+### Step by step instructions
 1. Create a level by switching to the World Editor (F12) and right clicking on an empty space
 2. Then simply select Level->Create Level and put in a name (e.g. "Start Area")
 3. Open the level by right clicking on the level title and clicking "Open Level"
