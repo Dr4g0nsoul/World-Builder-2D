@@ -1,16 +1,39 @@
 # World-Builder-2D
 A unity asset to easilly create interconnected 2D levels and worlds.
 
-## Level Editor
+## World Editor
+![World Editor Parts](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp3.png)
+- Right click on an empty space to create levels or worlds
+- Right click on the title section of a level to open/rename/delete the level
+- Connect levels by clicking on a level exit dot and dragging it to another dot
+- Use the bottom right corner of a world to resize the world by clicking and dragging the mouse
+### The World Editor Inspector
+![World Editor Inspector](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp4.png)
+- When clicking on a level or world you can change its properties.
+- Under the tab "Level Favorites" or "World Favorites", you can set categories and individual level objects, which are filtered by when activating the filters in the level editor
 
-## Manual Part 1 of Heuristic Evaluation
+## Level Editor
+![Level Editor Parts](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp1.png)
+- Press SPACE to open up the Level Editor
+- Select a layers on which you want to put your level objects
+  - If a layer has parallax scrolling enabled, it will automatically move the layer with the camera
+    - What you see in the scene is what you get when playing the game
+- Select one or multiple categories to filter out unneeded level objects
+- You can also search for individual level objects using the search function or by using the Level and World filter function, which can be set up in the World Editor inspector of the current World / Level.
+### The Level Editor Inspector
+![Level Editor Inspector](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp2.png)
+- Here you get additional options and information about level objects
+- Some level object types will also give you additional controlls, like for example Tile Maps, where you can select the tile to place on the selected tilemap
+
+## Manual for Part 1 of the Heuristic Evaluation
 ### First Level Template
-Image here
+![First Level Template](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/level.png)
 
 ### Keyboard shortcuts
 - F11: Fullscreen Scene View
 - F12: Open World Editor
 - Space: Open Level Editor
+- Esc: Deselect currently selected level object
 - Q/W/E: Switch to Move/Scale/Rotate
 
 ### Step by step instructions
