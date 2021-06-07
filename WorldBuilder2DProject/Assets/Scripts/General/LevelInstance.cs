@@ -341,7 +341,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
-            if (levelTransforms != null && !Application.isPlaying && !blockParallaxPreview)
+            if (levelTransforms != null && !Application.isPlaying/* && !blockParallaxPreview*/)
             {
                 if (sceneViewCamera == null)
                 {
