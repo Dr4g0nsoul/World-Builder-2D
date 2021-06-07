@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Name: Mountain Road
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1944, y: -3112}
+  position: {x: -2104, y: -3048}
   ports:
     keys:
     - c450d9e2-9829-49d8-b7d9-d014457c31f3
@@ -54,10 +54,7 @@ MonoBehaviour:
       _node: {fileID: -4789111862040498701}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 7569911d-5696-4192-a179-854c438c3ccf
-        node: {fileID: -1618667538126382294}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -135,7 +132,7 @@ MonoBehaviour:
     levelObjects: []
   assignedSceneName: Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b
   assignedScenePath: Assets/Scenes/Levels/Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b.unity
---- !u!114 &-1618667538126382294
+--- !u!114 &-4511630258814673383
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,7 +145,40 @@ MonoBehaviour:
   m_Name: Start Area
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2744, y: -3112}
+  position: {x: -2856, y: -3064}
+  ports:
+    keys: []
+    values: []
+  guid: fafad6fa-781f-4c66-8388-0cdaf9e9f5ba
+  levelName: Start Area
+  levelDescription: 
+  levelBoundaries:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 20
+    height: 12
+  levelExits: []
+  levelExitsUpdated: 0
+  preferredItems:
+    categories: []
+    levelObjects: []
+  assignedSceneName: Level_fafad6fa-781f-4c66-8388-0cdaf9e9f5ba
+  assignedScenePath: Assets/Scenes/Levels/Level_fafad6fa-781f-4c66-8388-0cdaf9e9f5ba.unity
+--- !u!114 &-1618667538126382294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
+  m_Name: Start Area Reference
+  m_EditorClassIdentifier: 
+  graph: {fileID: 11400000}
+  position: {x: -2168, y: -2328}
   ports:
     keys:
     - 7569911d-5696-4192-a179-854c438c3ccf
@@ -157,16 +187,13 @@ MonoBehaviour:
       _node: {fileID: -1618667538126382294}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: c450d9e2-9829-49d8-b7d9-d014457c31f3
-        node: {fileID: -4789111862040498701}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
       _dynamic: 1
   guid: b6308798-f525-4ede-a632-19f0765bbdf7
-  levelName: Start Area
+  levelName: Start Area Reference
   levelDescription: 
   levelBoundaries:
     serializedVersion: 2
@@ -205,13 +232,14 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: -5378737646390321798}
   - {fileID: 3406478296349039305}
+  - {fileID: -5378737646390321798}
   - {fileID: 54554736457197497}
   - {fileID: -4789111862040498701}
   - {fileID: -1618667538126382294}
   - {fileID: 199429217961087287}
   - {fileID: 2404132269600895973}
+  - {fileID: -4511630258814673383}
 --- !u!114 &54554736457197497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,19 +445,18 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2808, y: -3304}
+  position: {x: -2136, y: -3080}
   ports:
     keys: []
     values: []
   guid: b2937ac3-b004-4819-8e61-b787d990c216
-  width: 2398
-  height: 637
+  width: 1526
+  height: 356
   worldName: Forest
   accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
   worldDescription: 
   levels:
   - 5195228c-691d-4793-b3c7-f8b9b1ab5b5b
-  - b6308798-f525-4ede-a632-19f0765bbdf7
   preferredItems:
     categories: []
     levelObjects: []

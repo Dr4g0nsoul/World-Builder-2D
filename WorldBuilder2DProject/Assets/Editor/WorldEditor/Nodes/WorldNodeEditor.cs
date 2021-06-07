@@ -18,7 +18,7 @@ namespace XNodeEditor.NodeGroups
 		private WorldNode _world;
 		public static Texture2D corner { get { return _corner != null ? _corner : _corner = Resources.Load<Texture2D>("xnode_corner"); } }
 		private static Texture2D _corner;
-		private bool isDragging;
+		public bool isDragging;
 		private Vector2 size;
 		private bool hoveringOverCorner = false;
 
@@ -143,8 +143,9 @@ namespace XNodeEditor.NodeGroups
 
 			if (e.type == EventType.Repaint && NodeEditorWindow.current.nodeSizes.TryGetValue(target, out size))
 			{
-				// Mouse position checking is in node local space
-				lowerRight = new Rect(size.x - 34, size.y - 34, 30, 30);
+                // Mouse position checking is in node local space
+                //lowerRight = new Rect(target.position, new Vector2(30, 30));
+                lowerRight = new Rect(size.x - 100, size.y - 100, 100, 100);
 				if (lowerRight.Contains(e.mousePosition))
 				{
 					hoveringOverCorner = true;

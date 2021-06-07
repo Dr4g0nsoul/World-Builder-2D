@@ -16,7 +16,7 @@ MonoBehaviour:
   objectPrefab: {fileID: 333998834333445862, guid: eaadc0c160a094e4ab1e7f1a0ded8c49,
     type: 3}
   item:
-    name: TreeStompTiles
+    name: Tree Trunk Tiles
     thumbnail: {fileID: 2800000, guid: 0261b7cf3d39778479a802f0bc2e69f4, type: 3}
     description: 
     accentColor: {r: 1, g: 1, b: 1, a: 1}
