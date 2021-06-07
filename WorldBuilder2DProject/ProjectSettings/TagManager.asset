@@ -50,6 +50,9 @@ TagManager:
   - name: Envrinment Back
     uniqueID: 2165190273
     locked: 0
+  - name: Hazards Back
+    uniqueID: 3918025685
+    locked: 0
   - name: Ground
     uniqueID: 2544443423
     locked: 0

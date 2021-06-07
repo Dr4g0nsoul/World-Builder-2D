@@ -10,20 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
-  m_Name: Fly
+  m_Name: Forest Bat
   m_EditorClassIdentifier: 
   guid: d17a9121-1d59-43e5-a5dc-c94e935be491
   objectPrefab: {fileID: 7311618406564186807, guid: b3e3ef778e1da814d8d479e2030c4b9a,
     type: 3}
   item:
-    name: Fly
+    name: Forest Bat
     thumbnail: {fileID: 0}
     description: 
     accentColor: {r: 1, g: 1, b: 1, a: 1}
   mainCategory: e74c1e07-5b1e-4051-b82d-ef180254a462
   categories:
   - e74c1e07-5b1e-4051-b82d-ef180254a462
-  - ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
   - e77fd903-9f45-4578-aae2-b58c430f8ca3
   levelLayers:
   - 7537e771-bde1-4499-9b15-2a7cd77fd6da

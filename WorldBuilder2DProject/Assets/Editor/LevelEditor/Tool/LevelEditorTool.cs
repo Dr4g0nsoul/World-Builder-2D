@@ -2115,7 +2115,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 LevelInstance levelInstance = level.GetComponent<LevelInstance>();
                 if (level != null && levelInstance != null)
                 {
-                    levelInstance.ResetParallaxScrolling();
+                    //levelInstance.ResetParallaxScrolling();
 
                     //Set default scene as active scene
                     EditorSceneManager.SetActiveScene(EditorSceneManager.GetSceneAt(0));
@@ -2166,6 +2166,8 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                     RenderTexture renderTexture = RenderTexture.GetTemporary(resolution, resolution, 24);
 
                     renderCamera.targetTexture = renderTexture;
+                    renderCamera.clearFlags = CameraClearFlags.SolidColor;
+                    renderCamera.backgroundColor = new Color(0.4509804f, 0.4509804f, 0.4509804f);
 
                     Vector4 bounds = new Vector4(levelRect.position.x + levelRect.size.x / 2f, levelRect.position.y - levelRect.size.y / 2f,//
                         levelRect.position.y + levelRect.size.y / 2f, levelRect.position.x - levelRect.size.x / 2f);
@@ -2175,17 +2177,26 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     Texture2D virtualPhoto = new Texture2D(xRes, yRes, TextureFormat.RGB24, false);
                     RenderTexture.active = renderTexture;
+                    int numberOfVerticalIterations = Mathf.CeilToInt((bounds.z - bounds.y) / (renderCamera.aspect * renderCamera.orthographicSize * 2)) - 1;
+                    float remainder = (bounds.z - bounds.y) / (renderCamera.aspect * renderCamera.orthographicSize * 2) - numberOfVerticalIterations;
 
                     for (float i = bounds.w, xPos = 0; i < bounds.x; i += renderCamera.aspect * renderCamera.orthographicSize * 2, xPos++)
                     {
                         for (float j = bounds.y, yPos = 0; j < bounds.z; j += renderCamera.aspect * renderCamera.orthographicSize * 2, yPos++)
                         {
-                            renderCamera.transform.position = new Vector3(i + renderCamera.aspect * renderCamera.orthographicSize, j + renderCamera.aspect * renderCamera.orthographicSize, cameraDistance);
+                            //Debug.Log(yPos + " " + numberOfVerticalIterations + " " + (numberOfVerticalIterations - yPos)+ " " + (int)(remainder * resolution));
+                            if (yPos != numberOfVerticalIterations)
+                            {
+                                renderCamera.transform.position = new Vector3(i + renderCamera.aspect * renderCamera.orthographicSize, j + renderCamera.aspect * renderCamera.orthographicSize, cameraDistance);
+                            }
+                            else
+                            {
+                                renderCamera.transform.position = new Vector3(i + renderCamera.aspect * renderCamera.orthographicSize, j + renderCamera.aspect * renderCamera.orthographicSize - renderCamera.aspect * renderCamera.orthographicSize * (1f - remainder) * 2f, cameraDistance);
+                            }
 
                             renderCamera.Render();
-
+                            
                             virtualPhoto.ReadPixels(new Rect(0, 0, resolution, resolution), (int)xPos * resolution, (int)yPos * resolution);
-
                         }
                     }
 
@@ -2216,7 +2227,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
                     DestroyImmediate(cameraObject);
                     LevelController.Instance.EmptyLevelThumbnailsCache();
-                    levelInstance.ReenableParrallaxScrolling();
+                    //levelInstance.ReenableParrallaxScrolling();
                 }
 
             }

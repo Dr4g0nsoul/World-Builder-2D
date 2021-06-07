@@ -297,7 +297,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             foreach (LevelObject obj in preferredLevelObjects.Values)
             {
                 //Check if level object contains layer
-                if(obj != null && Array.Exists(obj.levelLayers, (val) => val == layer))
+                if(obj != null && obj.levelLayers != null && Array.Exists(obj.levelLayers, (val) => val == layer))
                 {
                     //Check if level object contains all categories
                     if (!categories.Except(obj.categories.ToList()).Any())

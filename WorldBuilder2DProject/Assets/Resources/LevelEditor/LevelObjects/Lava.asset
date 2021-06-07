@@ -28,10 +28,9 @@ MonoBehaviour:
   - 7537e771-bde1-4499-9b15-2a7cd77fd6da
   autoTileGroups:
   - autoTileGroupName: Lava
-    autoTiles: ffffffff000000000000000000000000ffffffff020000000200000002000000ffffffff02000000020000000200000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    autoTiles: ffffffff000000000000000000000000ffffffff010000000100000001000000ffffffff02000000020000000200000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     fallbackTile: 2
   tiles:
   - {fileID: 11400000, guid: 4ce2bd92cb758c94ba58936fe136cd63, type: 2}
   - {fileID: 11400000, guid: 94ee77f2de78a624a83e3a3b5e9042a9, type: 2}
   - {fileID: 11400000, guid: d38f6766f02599d42a863982adea2615, type: 2}
-  - {fileID: 11400000, guid: 8717a2e92a4b9ee47995e3346169656d, type: 2}

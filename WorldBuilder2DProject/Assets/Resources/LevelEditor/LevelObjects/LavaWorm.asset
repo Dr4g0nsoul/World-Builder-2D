@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
+  m_Name: LavaWorm
+  m_EditorClassIdentifier: 
+  guid: 1b122e67-b2cc-4f13-998e-06572ee1c873
+  objectPrefab: {fileID: 5113622534353979694, guid: e5c8872b5e973b842964cc525970e8b0,
+    type: 3}
+  item:
+    name: LavaWorm
+    thumbnail: {fileID: 0}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: e74c1e07-5b1e-4051-b82d-ef180254a462
+  categories:
+  - e74c1e07-5b1e-4051-b82d-ef180254a462
+  - ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
+  - 09271e61-9543-4944-8024-557227e73140
+  levelLayers:
+  - 7537e771-bde1-4499-9b15-2a7cd77fd6da

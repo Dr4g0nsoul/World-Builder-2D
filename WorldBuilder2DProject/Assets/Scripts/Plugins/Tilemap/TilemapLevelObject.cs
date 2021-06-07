@@ -77,7 +77,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			return -1;
 		}
 
-		public LevelTile GetAutoTile(Tilemap tilemap, TilemapInformation tilemapInformation, int selectedGroupIndex, Vector2 worldPos, AutoTileMode mode = AutoTileMode.SameGroup)
+		public LevelTile GetAutoTile(Tilemap tilemap, TilemapInformation tilemapInformation, int selectedGroupIndex, Vector2 worldPos, AutoTileMode mode = AutoTileMode.SameGroupAutoTiles)
 		{
 			if (tilemap != null && tilemapInformation != null)
 			{
@@ -86,7 +86,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			return null;
 		}
 
-		public LevelTile GetAutoTile(Tilemap tilemap, TilemapInformation tilemapInformation, int selectedGroupIndex, Vector3Int tilePosition, AutoTileMode mode = AutoTileMode.SameGroup)
+		public LevelTile GetAutoTile(Tilemap tilemap, TilemapInformation tilemapInformation, int selectedGroupIndex, Vector3Int tilePosition, AutoTileMode mode = AutoTileMode.SameGroupAutoTiles)
 		{
 			if (selectedGroupIndex >= 0 && selectedGroupIndex < autoTileGroups.Length
 				&& selectedGroupIndex >= 0 && tilemap != null && tilemapInformation != null)
@@ -107,7 +107,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 
 				for (int i = 0; i < boundaryPositions.Length; i++)
 				{
-					if (IsValidAutotile(boundaryPositions[i], tilemapInformation, selectedGroupIndex, mode))
+					if (IsValidAutotile(boundaryPositions[i], tilemap, tilemapInformation, selectedGroupIndex, mode))
 					{
 						//2 to the power of ( i + 1 )
 						score += 1 << i;
@@ -150,19 +150,23 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			return null;
 		}
 
-		public bool IsValidAutotile(Vector3Int position, TilemapInformation tilemapInformation, int selectedGroupIndex, AutoTileMode mode)
+		public bool IsValidAutotile(Vector3Int position, Tilemap tilemap, TilemapInformation tilemapInformation, int selectedGroupIndex, AutoTileMode mode)
 		{
-			if (tilemapInformation != null) {
+			if (tilemap != null && tilemapInformation != null) {
 
 				TilemapCellProperties properties = tilemapInformation.GetTileProperties(position);
 
 				if (selectedGroupIndex >= 0 && selectedGroupIndex < autoTileGroups.Length)
 				{
-					if (mode == AutoTileMode.All)
+					if(mode == AutoTileMode.AllTiles)
+                    {
+						return tilemap.HasTile(position);
+                    }
+					else if (mode == AutoTileMode.AutoTilesOnly)
 					{
 						return properties.isAutoTile;
 					}
-					else if (mode == AutoTileMode.SameGroup)
+					else if (mode == AutoTileMode.SameGroupAutoTiles)
 					{
 						return properties.isAutoTile && properties.autoTileGroup == selectedGroupIndex;
 					}
@@ -180,6 +184,6 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 		public int fallbackTile;
 	}
 
-	public enum AutoTileMode { All, SameGroup, None }
+	public enum AutoTileMode { AllTiles, AutoTilesOnly, SameGroupAutoTiles }
 
 }

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047d56461352fda4ba9560c152f9f2a1, type: 3}
+  m_Name: Volcano Bat
+  m_EditorClassIdentifier: 
+  guid: 296fafd3-5eb2-4c2f-b9fc-46b5968a05b3
+  objectPrefab: {fileID: 7952290389579165483, guid: b3e08f917eeb63b45977dbf894f68d5e,
+    type: 3}
+  item:
+    name: Volcano Bat
+    thumbnail: {fileID: 0}
+    description: 
+    accentColor: {r: 1, g: 1, b: 1, a: 1}
+  mainCategory: e74c1e07-5b1e-4051-b82d-ef180254a462
+  categories:
+  - ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
+  - e74c1e07-5b1e-4051-b82d-ef180254a462
+  levelLayers:
+  - 7537e771-bde1-4499-9b15-2a7cd77fd6da

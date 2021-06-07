@@ -911,7 +911,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			int group = forceDefaultGroup ? 0 : t_selectedAutoTileGroup;
 			foreach (Vector3Int boundaryTilePosition in boundaryTilePositions)
 			{
-				if (tilemapSettings.IsValidAutotile(boundaryTilePosition, t_currentTilemapInformation, group, mode))
+				if (tilemapSettings.IsValidAutotile(boundaryTilePosition, t_currentTilemap, t_currentTilemapInformation, group, mode))
 				{
 					LevelTile selectedBoundaryTile = tilemapSettings.GetAutoTile(t_currentTilemap, t_currentTilemapInformation, group, boundaryTilePosition, mode);
 					if (selectedBoundaryTile != null)
@@ -1035,7 +1035,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			t_inDeletionMode = false;
 			t_inRectToolMode = false;
 			t_rectToolStartSet = false;
-			t_autoTileMode = AutoTileMode.SameGroup;
+			t_autoTileMode = AutoTileMode.AllTiles;
 
 			GenerateTileTextures(obj);
         }

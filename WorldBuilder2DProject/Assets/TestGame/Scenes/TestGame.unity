@@ -279,7 +279,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1655132357
-  m_SortingLayer: 10
+  m_SortingLayer: 11
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 46f8b5ecb738cf3428c64598708ed661,
     type: 3}
@@ -390,8 +390,8 @@ Camera:
   m_GameObject: {fileID: 1523648028}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.122641504, g: 0.122641504, b: 0.122641504, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -597,12 +597,12 @@ PrefabInstance:
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 37.42
+      value: 49.59
       objectReference: {fileID: 0}
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.08
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5250749561336129594, guid: c268adf48a89a014b81645708963b3a9,
         type: 3}

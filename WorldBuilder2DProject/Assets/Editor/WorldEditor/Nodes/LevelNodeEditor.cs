@@ -769,6 +769,7 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 
     private void RebuildLevelExitConnections()
     {
+        Debug.Log("Level Exits updated");
         LevelNode lNode = target as LevelNode;
 
         if (lNode != null)
@@ -809,7 +810,6 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
                 {
                     lNode.AddDynamicBoth(typeof(LevelNode), Node.ConnectionType.Override, Node.TypeConstraint.Strict, exit.guid);
                 }
-                Debug.Log(exit.name);
             }
             
 
