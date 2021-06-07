@@ -62,3 +62,17 @@ If it doesn't show up press SPACE to open up the Level Editor!
 22. After you changed everything save the scene (Ctrl+S)
 23. Now you can open the World Editor again (F12) and connect the level exit dot with the left dot of the other forest level
 24. Lastly, drag the green forest world box over both forest levels
+
+## Requirements for Part 2 of the Heuristic Evaluation
+-	Create a volcano level with two level exits.
+-	The size of the level should be approximatly 2 screens wide and 1 screen tall.
+-	Add a background image to the level
+-	Foreground and background layers are optional.
+-	Obstacles and/or enemies should be added
+-	Obstacles/Enemies contain only volcano themed objects.
+  -	Try to avoid objects that are not mountain or lava themed.
+  -	Use the “volcano” category to filter out the right objects.
+-	Adjust the level boundaries and connect the level to other adjacent levels.
+
+### A reference for level ideas (The actual level should be smaller)
+![Second Level Reference](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/level2.png)
