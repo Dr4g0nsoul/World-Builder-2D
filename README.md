@@ -25,7 +25,7 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 - Here you get additional options and information about level objects
 - Some level object types will also give you additional controlls, like for example Tile Maps, where you can select the tile to place on the selected tilemap
 
-## Manual Part 1 of Heuristic Evaluation
+## Manual for Part 1 of the Heuristic Evaluation
 ### First Level Template
 ![First Level Template](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/level.png)
 
