@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Caverns
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1000, y: -2520}
+  position: {x: -1448, y: -2568}
   ports:
     keys: []
     values: []
@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Name: Mountain Road
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2104, y: -3048}
+  position: {x: -2088, y: -3160}
   ports:
     keys:
     - c450d9e2-9829-49d8-b7d9-d014457c31f3
@@ -75,10 +75,7 @@ MonoBehaviour:
       _node: {fileID: -4789111862040498701}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: cc864522-7e82-4651-a2e5-0becca957d7f
-        node: {fileID: 2404132269600895973}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -132,39 +129,6 @@ MonoBehaviour:
     levelObjects: []
   assignedSceneName: Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b
   assignedScenePath: Assets/Scenes/Levels/Level_5195228c-691d-4793-b3c7-f8b9b1ab5b5b.unity
---- !u!114 &-4511630258814673383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d7dd95484c628244a4b2f9e3a1a8aa3, type: 3}
-  m_Name: Start Area
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -2856, y: -3064}
-  ports:
-    keys: []
-    values: []
-  guid: fafad6fa-781f-4c66-8388-0cdaf9e9f5ba
-  levelName: Start Area
-  levelDescription: 
-  levelBoundaries:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 20
-    height: 12
-  levelExits: []
-  levelExitsUpdated: 0
-  preferredItems:
-    categories: []
-    levelObjects: []
-  assignedSceneName: Level_fafad6fa-781f-4c66-8388-0cdaf9e9f5ba
-  assignedScenePath: Assets/Scenes/Levels/Level_fafad6fa-781f-4c66-8388-0cdaf9e9f5ba.unity
 --- !u!114 &-1618667538126382294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,7 +142,7 @@ MonoBehaviour:
   m_Name: Start Area Reference
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2168, y: -2328}
+  position: {x: -2008, y: -1704}
   ports:
     keys:
     - 7569911d-5696-4192-a179-854c438c3ccf
@@ -232,44 +196,12 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 54554736457197497}
-  - {fileID: -5378737646390321798}
   - {fileID: 3406478296349039305}
+  - {fileID: -5378737646390321798}
   - {fileID: -4789111862040498701}
   - {fileID: -1618667538126382294}
   - {fileID: 199429217961087287}
   - {fileID: 2404132269600895973}
-  - {fileID: -4511630258814673383}
---- !u!114 &54554736457197497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
-  m_Name: Volcano
-  m_EditorClassIdentifier: 
-  graph: {fileID: 11400000}
-  position: {x: -312, y: -3240}
-  ports:
-    keys: []
-    values: []
-  guid: 7884dd4e-8a98-4dac-a41e-90d7058e8aa3
-  width: 1774
-  height: 425
-  worldName: Volcano
-  accentColor: {r: 0.9150943, g: 0.3178583, b: 0.21150766, a: 1}
-  worldDescription: 
-  levels:
-  - cc554526-ce2f-4b54-9da9-9123a59f8bab
-  preferredItems:
-    categories: []
-    levelObjects: []
-  assignedSceneName: 
-  assignedScenePath: 
 --- !u!114 &199429217961087287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +215,7 @@ MonoBehaviour:
   m_Name: Underground Passage
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -936, y: -2488}
+  position: {x: -1384, y: -2536}
   ports:
     keys:
     - e7e4ede9-d37c-4b09-9839-679661c0361c
@@ -305,10 +237,7 @@ MonoBehaviour:
       _node: {fileID: 199429217961087287}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: c96ef97d-dde6-4766-8b70-2d2529861075
-        node: {fileID: 2404132269600895973}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -364,7 +293,7 @@ MonoBehaviour:
   m_Name: Volcano Entrace Area
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -280, y: -3208}
+  position: {x: -776, y: -1720}
   ports:
     keys:
     - cc864522-7e82-4651-a2e5-0becca957d7f
@@ -374,10 +303,7 @@ MonoBehaviour:
       _node: {fileID: 2404132269600895973}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 08782a35-ad72-4eb0-964d-f296e389f960
-        node: {fileID: -4789111862040498701}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -386,10 +312,7 @@ MonoBehaviour:
       _node: {fileID: 2404132269600895973}
       _typeQualifiedName: dr4g0nsoul.WorldBuilder2D.WorldEditor.LevelNode, Assembly-CSharp,
         Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      connections:
-      - fieldName: 13ceedb9-13f8-4da6-b9f7-656a7712b382
-        node: {fileID: 199429217961087287}
-        reroutePoints: []
+      connections: []
       _direction: 2
       _connectionType: 1
       _typeConstraint: 2
@@ -445,13 +368,13 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2136, y: -3080}
+  position: {x: -2120, y: -3208}
   ports:
     keys: []
     values: []
   guid: b2937ac3-b004-4819-8e61-b787d990c216
-  width: 1526
-  height: 356
+  width: 1582
+  height: 401
   worldName: Forest
   accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
   worldDescription: 

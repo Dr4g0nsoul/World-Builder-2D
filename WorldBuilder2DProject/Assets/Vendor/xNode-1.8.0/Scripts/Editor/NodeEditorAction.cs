@@ -277,7 +277,8 @@ namespace XNodeEditor {
                                     }
                                 }
                                 // Open context menu for auto-connection if there is no target node
-                                else if (draggedOutputTarget == null && NodeEditorPreferences.GetSettings().dragToCreate && autoConnectOutput != null)
+                                // WB2D-Custom: Force no create dialog
+                                else if (draggedOutputTarget == null && false && NodeEditorPreferences.GetSettings().dragToCreate && autoConnectOutput != null)
                                 {
                                     GenericMenu menu = new GenericMenu();
                                     graphEditor.AddContextMenuItems(menu);

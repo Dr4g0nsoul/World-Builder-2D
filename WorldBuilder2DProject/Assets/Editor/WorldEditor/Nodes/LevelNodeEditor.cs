@@ -769,8 +769,8 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 
     private void RebuildLevelExitConnections()
     {
-        Debug.Log("Level Exits updated");
-        LevelNode lNode = target as LevelNode;
+        serializedObject.Update();
+        LevelNode lNode = serializedObject.targetObject as LevelNode;
 
         if (lNode != null)
         {
@@ -808,13 +808,18 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
 
                 if(levelPort == null)
                 {
+                    Debug.Log($"{exit.name} created");
                     lNode.AddDynamicBoth(typeof(LevelNode), Node.ConnectionType.Override, Node.TypeConstraint.Strict, exit.guid);
+                    Debug.Log(lNode.DynamicPorts.ToArray().Length);
                 }
             }
             
 
             //Verify node connections
             lNode.VerifyConnections();
+
+            //serializedObject.FindProperty("Ports").objectReferenceValue = (Object)lNode.Ports;
+            serializedObject.ApplyModifiedProperties();
         }
     }
 
