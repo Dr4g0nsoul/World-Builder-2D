@@ -44,8 +44,9 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 If it doesn't show up press SPACE to open up the Level Editor!
 5. Press SPACE after the initialization to show all possible Level Objects, which can be placed inside the scene
 6. Select "All Categories" to open up the category menu and then select the tree icon to limit the objects to pick to only forest objects
-7. Click on the "Sky Icon" to select it and then on the level itself to place the background
-8. Now select the "Forest Ground" tiles and the "Main Ground" layer.
+7. Click on the Level Object with the "Sky Image" to select it and then on the level itself to place the background
+8. Now select the "Forest Ground" tiles and the "Main Ground" layer. 
+(You can hover over buttons to reveal a tooltip, which tells you what element you are currently hovering)
 9. A burger menu button should pop up on the top right (if not try clicking on the "All Categories" button to hide the other categories)
 10. If you click on the burger menu button and then on the level, a tilemap will be generated.
 11. This is the level object inspector: Now you can click on the "Auto Tiles" tab and select the first tile to draw the ground
@@ -54,14 +55,14 @@ If it doesn't show up press SPACE to open up the Level Editor!
 14. Now you can also place some flowers (they are not tiles so you can just click to spawn them)
 15. Now click on the background layer and place the background trees just like before by selecting the darker auto-tiles or normal tiles
 16. Finally select foreground and place ground and tree on the foreground layer
-17. After completing the level click on the "Level" Game Object in the Hierarchy
-18. Here you can set the boundaries of the level by clicking the "Edit with gizmo" button
-19. After changing the size of the green/blueish rectangle click on "Save Bounds"
-20. Now click on "Level Exits" and add one by clicking the "+" button.
-21. Click on the newly created level exit and here you can change its name the trigger for exiting the level and the entering position when entering this level
-22. After you changed everything save the scene (Ctrl+S)
+17. After completing the level, click on the "Level" Game Object in the Hierarchy
+18. In the normal inspector window, you can set the boundaries of the level by clicking the "Edit with gizmo" button
+19. After changing the size of the green/blueish rectangle, click on "Save Bounds" to save your changes
+20. Now click on the "Level Exits" tab and add a new level exit by clicking the "+" button.
+21. Click on the newly created level exit. Below the list, new options appear where you can change the level exits name, the trigger for exiting the level, and the entering position when entering this level
+22. After you are done save the scene (Ctrl+S)
 23. Now you can open the World Editor again (F12) and connect the level exit dot with the left dot of the other forest level
-24. Lastly, drag the green forest world box over both forest levels
+24. Lastly, drag the green forest world box over both forest levels by first dragging the world box to the left and then expanding it using the bottom right corner
 
 ## Requirements for Part 2 of the Heuristic Evaluation
 -	Create a volcano level with two level exits.
