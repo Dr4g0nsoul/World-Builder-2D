@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: Start Area Reference
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2008, y: -1704}
+  position: {x: -3272, y: -2280}
   ports:
     keys:
     - 7569911d-5696-4192-a179-854c438c3ccf
