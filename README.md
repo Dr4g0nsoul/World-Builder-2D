@@ -1,6 +1,14 @@
 # World-Builder-2D
 A unity asset to easilly create interconnected 2D levels and worlds.
 
+## Keyboard shortcuts
+- F11: Fullscreen Scene View
+- F12: Open World Editor
+- Space: Open Level Editor
+- Esc: Deselect currently selected level object
+- Q/W/E: Switch to Move/Scale/Rotate
+- Ctrl+S: Save
+
 ## World Editor
 ![World Editor Parts](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp3.png)
 - Right click on an empty space to create levels or worlds
@@ -25,16 +33,43 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 - Here you get additional options and information about level objects
 - Some level object types will also give you additional controlls, like for example Tile Maps, where you can select the tile to place on the selected tilemap
 
+## Level Properties
+![Level Properties](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp5.png)
+- Here you can adjust different properties about the current level, like Name, Description, its boundaries/size and level exits
+- To change the levels size just press the "Edit with gizmo" button under "Level Bounds" to make the handles appear on the boundary indicator.
+  - Just drag the handles to resize the box and click the "Save Bounds" button to apply the changes
+### Level Exits
+![Level Exit Properties](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp6.png)
+- When clicking on the "Level Exits" tab you can add level exits which bring you to other levels
+- When selecting a level exit, a box and a dot appear.
+  - The dot can be dragged around, which sets the entry point of the level when you enter the current level from another level
+  - The box can be adjusted exactly like the level bounds and represents the trigger which triggers the level transition and brings the player to another level
+
+## Tilemap Editor
+![Tilemap Editor](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp7.png)
+- Click on the Burger icon on the top right to access the tilemap properties
+  - If they don't show up or the button is not visible, try closing the "All categories" and "All layers" popup.
+  - If another message appears instead of the tiles try clicking on the level
+- To draw tiles just select them from the tile list
+- Use the "fill rectangle" tool to fill a square with the selected tile
+  - Just press on the "Fill rectangle" button after selecting the tile and it should stay blue
+  - Now just click on one part of the map and then on another and it should fill that area with the selected tile
+    - Two clicks no mouse drag
+- Use the "Enter Deletion Mode" button to delete tiles
+  - If the button stays red you are in deletion mode
+### Auto-tiles
+![Auto Tiles](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp8.png)
+- Auto tiles select the correct tile depending on its neighbours
+- Use the dropdown to select the auto tile mode, this mode changes the behavior on how neighbouring tiles are checked and updated
+  - **All Tiles**: Every tile on the same tilemap are considered valid
+  - **Auto Tiles only**: Only auto tiles on the same tilemap are considered valid
+  - **Same group auto tiles**: Only auto tiles of the same group, on the same tilemap, are considered valid
+- You can check the tilemap group by hovering over a placed tile on the tilemap.
+  - If a number appears it is an auto-tile, the number corresponds to the group index
+
 ## Manual for Part 1 of the Heuristic Evaluation
 ### First Level Template
 ![First Level Template](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/level.png)
-
-### Keyboard shortcuts
-- F11: Fullscreen Scene View
-- F12: Open World Editor
-- Space: Open Level Editor
-- Esc: Deselect currently selected level object
-- Q/W/E: Switch to Move/Scale/Rotate
 
 ### Step by step instructions
 1. Create a level by switching to the World Editor (F12) and right clicking on an empty space
