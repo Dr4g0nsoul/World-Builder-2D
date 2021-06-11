@@ -13,12 +13,30 @@ MonoBehaviour:
   m_Name: LevelEditorSettings
   m_EditorClassIdentifier: 
   levelObjectCategories:
+  - guid: e77fd903-9f45-4578-aae2-b58c430f8ca3
+    item:
+      name: Forest
+      thumbnail: {fileID: 2800000, guid: 1a1475ba53c88c04a959e7dfe7065ee7, type: 3}
+      description: 
+      accentColor: {r: 0.6320754, g: 0.4601859, b: 0.1699448, a: 1}
+  - guid: ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
+    item:
+      name: Volcano
+      thumbnail: {fileID: 2800000, guid: 7422fd5a2923ea24b9506e65eba12c0f, type: 3}
+      description: 
+      accentColor: {r: 0.85882354, g: 0.35259774, b: 0.23137254, a: 1}
   - guid: 09271e61-9543-4944-8024-557227e73140
     item:
       name: Ground
       thumbnail: {fileID: 2800000, guid: 4a12e71485b58974ba655335d2ded96a, type: 3}
       description: 
       accentColor: {r: 0.5660378, g: 0.35683766, b: 0.15218939, a: 1}
+  - guid: 17865518-a62f-44c4-b3bb-efbb3c282810
+    item:
+      name: Decoration
+      thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
+      description: 
+      accentColor: {r: 0.23082057, g: 0.8584906, b: 0.60305536, a: 1}
   - guid: e74c1e07-5b1e-4051-b82d-ef180254a462
     item:
       name: Enemy
@@ -37,24 +55,6 @@ MonoBehaviour:
       thumbnail: {fileID: 2800000, guid: d06e0f64cc91ca1498c94eef75c021f5, type: 3}
       description: 
       accentColor: {r: 0.23137254, g: 0.6883784, b: 0.85882354, a: 1}
-  - guid: 17865518-a62f-44c4-b3bb-efbb3c282810
-    item:
-      name: Decoration
-      thumbnail: {fileID: 2800000, guid: ecb26f119f0b42b4fac1263cc94f2e59, type: 3}
-      description: 
-      accentColor: {r: 0.23082057, g: 0.8584906, b: 0.60305536, a: 1}
-  - guid: e77fd903-9f45-4578-aae2-b58c430f8ca3
-    item:
-      name: Forest
-      thumbnail: {fileID: 2800000, guid: 1a1475ba53c88c04a959e7dfe7065ee7, type: 3}
-      description: 
-      accentColor: {r: 0.6320754, g: 0.4601859, b: 0.1699448, a: 1}
-  - guid: ec8c3bbc-eb0c-4347-a5fc-f0b9c8e84824
-    item:
-      name: Volcano
-      thumbnail: {fileID: 2800000, guid: 7422fd5a2923ea24b9506e65eba12c0f, type: 3}
-      description: 
-      accentColor: {r: 0.85882354, g: 0.35259774, b: 0.23137254, a: 1}
   levelLayers:
   - guid: abcc027e-5800-4c96-a981-ffbd8a2c03d4
     item:
