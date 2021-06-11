@@ -945,10 +945,10 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 					}
                 }
 
-				if(t_inDeletionMode && GUILayout.Button("Exit Deletion Mode", LevelEditorStyles.ButtonDangerActive)) {
+				if(t_inDeletionMode && GUILayout.Button("Go back to placing tiles", LevelEditorStyles.ButtonDangerActive)) {
 					t_inDeletionMode = false;
                 }
-				else if (!t_inDeletionMode && GUILayout.Button("Enter Deletion Mode", LevelEditorStyles.Button)){
+				else if (!t_inDeletionMode && GUILayout.Button("Delete Tiles", LevelEditorStyles.Button)){
 					t_inDeletionMode = true;
 					t_inRectToolMode = false;
 					t_rectToolStartSet = false;
