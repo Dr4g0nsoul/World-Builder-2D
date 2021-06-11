@@ -53,8 +53,8 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 ## Tilemap Editor
 ![Tilemap Editor](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp7.png)
 - Click on the Burger icon on the top right to access the tilemap properties
-  - If they don't show up or the button is not visible, try closing the "All categories" and "All layers" popup.
   - If another message appears instead of the tiles try clicking on the level
+  - Tiles from a different Level Object or Layer will be drawn on a separate tilemap
 - To draw tiles just select them from the tile list
 - Use the "fill rectangle" tool to fill a square with the selected tile
   - Just press on the "Fill rectangle" button after selecting the tile and it should stay blue
