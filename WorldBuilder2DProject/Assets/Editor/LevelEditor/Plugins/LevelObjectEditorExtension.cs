@@ -263,6 +263,12 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         /// <param name="serializedObject">Serialized object representing the level object</param>
         public virtual void OnCustomInspectorTabGUI(LevelObjectEditor levelObjectEditor, SerializedObject serializedObject) { }
 
+        /// <summary>
+        /// Called when the scene view loses focus
+        /// while the level editor tool is active and this Level Object is currently selected
+        /// </summary>
+        public virtual void OnSceneWindowLostFocus() { }
+
 
         ///////////////////////////////////////
         //           Static Methods          //

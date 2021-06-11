@@ -37,7 +37,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
         //Parallax preview
         private Camera sceneViewCamera;
-        private bool blockParallaxPreview = false;
+        //private bool blockParallaxPreview = false;
 
         //Level Transforms
         public LevelTransformLayer[] levelTransforms;
@@ -196,7 +196,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             //If none is found create it
             GameObject levelObjectContainer = new GameObject();
-            levelObjectContainer.name = obj.name;
+            levelObjectContainer.name = obj.item.name;
             levelObjectContainer.transform.rotation = Quaternion.identity;
             levelObjectContainer.transform.parent = levelTransformCategory.categoryTransform;
             levelObjectContainer.transform.localPosition = Vector2.zero;
@@ -383,7 +383,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             }
         }
 #endif
-
+        /*
         public void ResetParallaxScrolling()
         {
             if (levelTransforms != null)
@@ -400,6 +400,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         {
             blockParallaxPreview = false;
         }
+        */
 
 #endregion
 

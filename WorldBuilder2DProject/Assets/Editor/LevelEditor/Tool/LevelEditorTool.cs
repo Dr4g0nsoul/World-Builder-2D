@@ -202,6 +202,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private ObjectToPlace objectToPlace;
         private GameObject temporaryObject;
         private bool canObjectBePlaced;
+        private bool blockNextSpawn = false;
         private Transform levelRootTransform;
 
         //Object inspector
@@ -215,6 +216,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
         private float showInspectorWindowAnimationValue;
         private readonly float showInspectorWindowAnimationDuration = 0.5f;
         private bool canShowInspectorWindow;
+        private bool canShowInspectorWindowContents;
         private Action beforeGUIAction;
         private EventType beforeGUIActionEventType;
         public static float ObjectInspectorWidth => IsLevelEditorInitialized ? LevelEditorToolInstance.objectInspectorMinSize.x : 0f;
@@ -242,6 +244,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             SceneView.beforeSceneGui += ToolInput;
             SceneView.beforeSceneGui += WindowFocus;
             SceneView.beforeSceneGui += OnBeforeSceneGUI;
+            ToolManager.activeToolChanged += OnActiveToolChanged;
 
             //Setup Tool icon
             m_ToolIcon = Resources.Load<Texture2D>($"{LevelEditorStyles.ICON_ROOT}LevelEditorIcon");
@@ -331,6 +334,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Object placement
             objectToPlace.Unset();
             canObjectBePlaced = false;
+            blockNextSpawn = false;
             levelRootTransform = null;
             SetLevelRoot(true);
 
@@ -343,6 +347,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             objectInspectorScrollPos = 0f;
             showInspectorWindowAnimationValue = 0f;
             canShowInspectorWindow = false;
+            canShowInspectorWindowContents = false;
             beforeGUIAction = null;
             beforeGUIActionEventType = EventType.Layout;
 
@@ -447,6 +452,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             SceneView.beforeSceneGui -= ToolInput;
             SceneView.beforeSceneGui -= WindowFocus;
             SceneView.beforeSceneGui -= OnBeforeSceneGUI;
+            ToolManager.activeToolChanged -= OnActiveToolChanged;
             //EditorSceneManager.sceneSaved -= SceneSaved;
         }
 
@@ -513,7 +519,7 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     if (e.button == 0)
                     {
-                        if (inObjectPlacementMode && objectToPlace.IsValid() && canObjectBePlaced)
+                        if (inObjectPlacementMode && objectToPlace.IsValid() && canObjectBePlaced && !blockNextSpawn)
                         {
                             GameObject newObject = objectToPlace.levelObjectEditor.SpawnObject(objectToPlace.levelObject, temporaryObject, 
                                 GetLevelObjectParentTransform(objectToPlace.levelObject), Util.EditorUtility.SceneViewToWorldPos(view), Event.current.mousePosition);
@@ -534,10 +540,10 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                                     }
                                 }
                             }
-
                             
                             //Instantiate(objectToPlace.objectPrefab, Util.EditorUtility.SceneViewToWorldPos(view), Quaternion.identity);
                         }
+                        blockNextSpawn = false;
                     }
 
                     //Toggle search menu when clicking out of it
@@ -597,8 +603,6 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
                 {
                     HoveringButton = false;
                 }
-
-                
             }
         }
 
@@ -623,7 +627,35 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             //Lost Focus
             if (EditorWindow.focusedWindow != view)
             {
-                DeselectCurrentlySelectedObject();
+
+                //DeselectCurrentlySelectedObject();
+                if (temporaryObject != null)
+                {
+                    DestroyImmediate(temporaryObject);
+                    temporaryObject = null;
+                }
+                blockNextSpawn = true;
+
+                if(objectToPlace.IsValid())
+                {
+                    objectToPlace.levelObjectEditor.OnSceneWindowLostFocus();
+                }
+            }
+        }
+
+        private void OnActiveToolChanged()
+        {
+            if (objectToPlace.IsValid() && ToolManager.activeToolType != typeof(LevelEditorTool))
+            {
+                if (temporaryObject != null)
+                {
+                    DestroyImmediate(temporaryObject);
+                    temporaryObject = null;
+                }
+
+                objectToPlace.levelObjectEditor.OnSceneWindowLostFocus();
+                 
+                forgetNextSpacePress = true;
             }
         }
 
@@ -839,15 +871,17 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
 
             if(Event.current.type == EventType.Layout)
             {
-                canShowInspectorWindow = 
-                    objectToPlace.IsValid() 
+                canShowInspectorWindow = !objectToPlace.IsValid() || objectToPlace.levelObjectEditor.UseLevelEditorToolInspector();
+
+                canShowInspectorWindowContents =
+                    objectToPlace.IsValid()
                     && objectToPlace.levelObjectEditor.UseLevelEditorToolInspector()
-                    && !string.IsNullOrEmpty(selectedLayer) 
-                    && objectDrawerHidden 
-                    && showCategoryMoreBoxAnimationValue <= 0f 
-                    && showLayerMoreBoxAnimationValue <= 0f;
+                    && !string.IsNullOrEmpty(selectedLayer);
+                    //&& objectDrawerHidden 
+                    //&& showCategoryMoreBoxAnimationValue <= 0f 
+                    //&& showLayerMoreBoxAnimationValue <= 0f;
             }
-            if (canShowInspectorWindow && objectToPlace.IsValid())
+            if (canShowInspectorWindow)
             {
                 DrawObjectInspector(objectInspectorRect);
                 DrawMenuButton(new Vector2(screenRect.width - 55f, 15f), otherSystemItems[0], () => ToggleInspectorWindow(), Mathf.Round(showInspectorWindowAnimationValue) > 0f, new Vector2(100f, -25f));
@@ -1579,20 +1613,33 @@ namespace dr4g0nsoul.WorldBuilder2D.LevelEditor
             GUILayout.BeginArea(objectInspectorRect);
             objectInspectorScrollPos = GUILayout.BeginScrollView(new Vector2(0f, objectInspectorScrollPos), false, false, 
                 GUI.skin.horizontalScrollbar, GUI.skin.verticalScrollbar, LevelEditorStyles.EditorContainer, GUILayout.ExpandHeight(true)).y;
-            GUILayout.BeginVertical();
-            GUILayout.Label(objectToPlace.levelObject.item.name, LevelEditorStyles.HeaderCenteredBig);
-            LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(30, 30, 0, 10));
+
 
             GUILayout.BeginVertical();
-            objectToPlace.levelObjectEditor.OnLevelEditorToolInspectorGUI(objectToPlace.levelObject);
-            GUILayout.EndVertical();
-            if (Event.current.type == EventType.Repaint)
+
+            if (canShowInspectorWindowContents && objectToPlace.IsValid())
             {
-                objectInspectorGUIContentRect = GUILayoutUtility.GetLastRect();
-                objectInspectorGUIContentRect.position += objectInspectorRect.position;
+                GUILayout.Label(objectToPlace.levelObject.item.name, LevelEditorStyles.HeaderCenteredBig);
+                LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(30, 30, 0, 10));
+
+                GUILayout.BeginVertical();
+                objectToPlace.levelObjectEditor.OnLevelEditorToolInspectorGUI(objectToPlace.levelObject);
+                GUILayout.EndVertical();
+                if (Event.current.type == EventType.Repaint)
+                {
+                    objectInspectorGUIContentRect = GUILayoutUtility.GetLastRect();
+                    objectInspectorGUIContentRect.position += objectInspectorRect.position;
+                }
+            }
+            else
+            {
+                GUILayout.Space(30f);
+                GUILayout.Label("No game object or layer selected", LevelEditorStyles.HeaderCentered);
+                LevelEditorStyles.DrawHorizontalLine(Color.white, new RectOffset(30, 30, 0, 10));
             }
 
             GUILayout.EndVertical();
+
             if(Event.current.type == EventType.Repaint)
             {
                 objectInspectorContentRect = GUILayoutUtility.GetLastRect();

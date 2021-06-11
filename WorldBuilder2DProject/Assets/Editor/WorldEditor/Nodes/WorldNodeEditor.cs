@@ -255,9 +255,9 @@ namespace XNodeEditor.NodeGroups
 					// Add scale cursors
 					if (NodeEditorWindow.current.nodeSizes.TryGetValue(target, out size))
 					{
-						Rect lowerRight2 = new Rect(target.position, new Vector2(30, 30));
-						lowerRight2.y += size.y - 34;
-						lowerRight2.x += size.x - 34;
+						Rect lowerRight2 = new Rect(target.position, new Vector2(100, 100));
+						lowerRight2.y += size.y - 104;
+						lowerRight2.x += size.x - 104;
 						lowerRight2 = NodeEditorWindow.current.GridToWindowRect(lowerRight2);
 						NodeEditorWindow.current.onLateGUI += () => AddMouseRect(lowerRight2);
 					}
@@ -267,7 +267,7 @@ namespace XNodeEditor.NodeGroups
 			// Control height of node
 			GUILayout.Space(world.height);
 
-			GUI.DrawTexture(new Rect(world.width - 34, world.height + 16, 24, 24), corner);
+			GUI.DrawTexture(new Rect(world.width - 44, world.height, 24, 24), corner);
 		}
 
 		public override int GetWidth()

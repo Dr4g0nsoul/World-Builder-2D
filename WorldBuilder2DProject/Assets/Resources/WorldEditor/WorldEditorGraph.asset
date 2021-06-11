@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03f96cea6ada90b4984cf627badd4634, type: 3}
-  m_Name: Caverns
+  m_Name: Volcano
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1448, y: -2568}
+  position: {x: -1160, y: -2648}
   ports:
     keys: []
     values: []
   guid: dbb3dd60-7889-450b-a520-0e7abe63f9e8
-  width: 1690
-  height: 708
-  worldName: Caverns
-  accentColor: {r: 1, g: 1, b: 1, a: 1}
+  width: 1577
+  height: 772
+  worldName: Volcano
+  accentColor: {r: 0.9150943, g: 0.2589229, b: 0.19424175, a: 1}
   worldDescription: 
   levels:
   - 3b44fb92-f27b-4265-b13e-763e17ffa4f3
@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Name: Mountain Road
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2840, y: -3144}
+  position: {x: -2824, y: -3064}
   ports:
     keys:
     - c450d9e2-9829-49d8-b7d9-d014457c31f3
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: Start Area Reference
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -3464, y: -2136}
+  position: {x: -3960, y: -1448}
   ports:
     keys:
     - 7569911d-5696-4192-a179-854c438c3ccf
@@ -196,8 +196,8 @@ MonoBehaviour:
   m_Name: WorldEditorGraph
   m_EditorClassIdentifier: 
   nodes:
-  - {fileID: 3406478296349039305}
   - {fileID: -5378737646390321798}
+  - {fileID: 3406478296349039305}
   - {fileID: -4789111862040498701}
   - {fileID: -1618667538126382294}
   - {fileID: 199429217961087287}
@@ -215,7 +215,7 @@ MonoBehaviour:
   m_Name: Underground Passage
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -1384, y: -2536}
+  position: {x: -1144, y: -2584}
   ports:
     keys:
     - e7e4ede9-d37c-4b09-9839-679661c0361c
@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Name: Volcano Entrace Area
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -776, y: -1720}
+  position: {x: -2824, y: -1432}
   ports:
     keys:
     - cc864522-7e82-4651-a2e5-0becca957d7f
@@ -368,13 +368,13 @@ MonoBehaviour:
   m_Name: Forest
   m_EditorClassIdentifier: 
   graph: {fileID: 11400000}
-  position: {x: -2856, y: -3176}
+  position: {x: -2840, y: -3112}
   ports:
     keys: []
     values: []
   guid: b2937ac3-b004-4819-8e61-b787d990c216
-  width: 1515
-  height: 368
+  width: 1538
+  height: 411
   worldName: Forest
   accentColor: {r: 0.48334357, g: 0.8679245, b: 0.20879315, a: 0.5372549}
   worldDescription: 

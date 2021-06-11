@@ -717,6 +717,9 @@ public class LevelNodeEditor : NodeEditor, INodeEditorInspector
              
             Scene openedLevel = EditorSceneManager.OpenScene(lNode.assignedScenePath, OpenSceneMode.Additive);
             LevelEditorMenu.OpenLevelEditor();
+
+            EditorWindow worldEditorWindow = EditorWindow.GetWindow<NodeEditorWindow>();
+            worldEditorWindow.Close();
         }
     }
 

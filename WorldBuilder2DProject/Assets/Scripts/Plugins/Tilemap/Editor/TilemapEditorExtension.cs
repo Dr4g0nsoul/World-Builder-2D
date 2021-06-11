@@ -928,6 +928,13 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
         {
 			return true;
         }
+        public override void OnSceneWindowLostFocus()
+        {
+            if(t_currentTilemap != null)
+            {
+				t_currentTilemap.ClearAllEditorPreviewTiles();
+            }
+        }
 
         #region Level Editor Tool Inspector
 
@@ -977,7 +984,10 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
             }
 			else
             {
-				GUILayout.Label("Click on the Scene to spawn/select tilemap");
+				GUILayout.Space(10f);
+				GUILayout.Label("Click on the Scene to spawn/select the tilemap and to open up the tile selection.");
+				GUILayout.Space(10f);
+				GUILayout.Label("Alternatively, click one of the buttons below to perform different actions:");
 				base.OnLevelEditorToolInspectorGUI(obj);
 				t_selectedTile = -1;
 				t_selectedAutoTileGroup = -1;
@@ -1120,7 +1130,7 @@ namespace dr4g0nsoul.WorldBuilder2D.TilemapPlugin
 			GUILayout.Label("Auto Tiles", LevelEditorStyles.HeaderCentered);
 			GUILayout.Space(5f);
 
-			t_autoTileMode = (AutoTileMode)EditorGUILayout.EnumPopup(t_autoTileMode);
+			t_autoTileMode = (AutoTileMode)EditorGUILayout.EnumPopup("Auto Tile Mode: ", t_autoTileMode);
 			
 			int objectsPerRow = Mathf.FloorToInt(LevelEditorTool.ObjectInspectorWidth / tileSize - 2f);
 			int objectCount = tilemapSettings.autoTileGroups.Length;
