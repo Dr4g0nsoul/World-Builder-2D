@@ -26,8 +26,12 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 - Select a layers on which you want to put your level objects
   - If a layer has parallax scrolling enabled, it will automatically move the layer with the camera
     - What you see in the scene is what you get when playing the game
+  - Only the layers available to the currently selected level object are shown
+    - Press ESCAPE to deselect the current level object to show all layers
 - Select one or multiple categories to filter out unneeded level objects
 - You can also search for individual level objects using the search function or by using the Level and World filter function, which can be set up in the World Editor inspector of the current World / Level.
+- ***Filters only work on the level objects under "All items" and not within the recently used items bar***
+- If the filter/layer button stays colored, it meanst that it is currently active
 ### The Level Editor Inspector
 ![Level Editor Inspector](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp2.png)
 - Here you get additional options and information about level objects
@@ -35,6 +39,7 @@ A unity asset to easilly create interconnected 2D levels and worlds.
 
 ## Level Properties
 ![Level Properties](https://github.com/Dr4g0nsoul/World-Builder-2D/blob/release/images/EditorHelp5.png)
+- To access the level properties in the Inspector, you need to click on the GameObject called "Level" at the root of your Level Scene.
 - Here you can adjust different properties about the current level, like Name, Description, its boundaries/size and level exits
 - To change the levels size just press the "Edit with gizmo" button under "Level Bounds" to make the handles appear on the boundary indicator.
   - Just drag the handles to resize the box and click the "Save Bounds" button to apply the changes
@@ -66,6 +71,9 @@ A unity asset to easilly create interconnected 2D levels and worlds.
   - **Same group auto tiles**: Only auto tiles of the same group, on the same tilemap, are considered valid
 - You can check the tilemap group by hovering over a placed tile on the tilemap.
   - If a number appears it is an auto-tile, the number corresponds to the group index
+### Level background
+- To place the level background, just select the background level object and then click on the level to place it
+- No further action is needen, the background will move automatically with the game or scene camera, depending if you are currently in game mode or not
 
 ## Manual for Part 1 of the Heuristic Evaluation
 ### First Level Template
